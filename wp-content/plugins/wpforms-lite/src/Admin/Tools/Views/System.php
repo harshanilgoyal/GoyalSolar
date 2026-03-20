@@ -1,6 +1,11 @@
 <?php
 
+// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+/** @noinspection PhpIllegalPsrClassPathInspection */
+
 namespace WPForms\Admin\Tools\Views;
+
+use WPForms\Helpers\DB;
 
 /**
  * Class System.
@@ -56,11 +61,13 @@ class System extends View {
 	 */
 	public function display() {
 		?>
-
 		<div class="wpforms-setting-row tools wpforms-settings-row-system-information">
 			<h4 id="form-export"><?php esc_html_e( 'System Information', 'wpforms-lite' ); ?></h4>
-			<textarea id="wpforms-system-information" class="info-area" readonly><?php echo esc_textarea( $this->get_system_info() ); ?></textarea>
-			<button type="button" id="wpforms-system-information-copy" class="wpforms-btn wpforms-btn-md wpforms-btn-light-grey">
+			<textarea id="wpforms-system-information" class="info-area" readonly>
+				<?php echo esc_textarea( $this->get_system_info() ); ?>
+			</textarea>
+			<button type="button" id="wpforms-system-information-copy"
+					class="wpforms-btn wpforms-btn-md wpforms-btn-light-grey">
 				<?php esc_html_e( 'Copy System Information', 'wpforms-lite' ); ?>
 			</button>
 		</div>
@@ -73,6 +80,21 @@ class System extends View {
 			</button>
 		</div>
 
+		<?php
+		DB::flush_existing_tables_cache();
+
+		if ( DB::custom_tables_exist() ) {
+			return;
+		}
+		?>
+
+		<div class="wpforms-setting-row tools wpforms-settings-row-recreate-tables">
+			<h4 id="recreate-tables"><?php esc_html_e( 'Recreate custom tables', 'wpforms-lite' ); ?></h4>
+			<p class="desc"><?php esc_html_e( 'Click the button below to recreate WPForms custom database tables.', 'wpforms-lite' ); ?></p>
+			<button type="button" id="wpforms-recreate-tables" class="wpforms-btn wpforms-btn-md wpforms-btn-orange">
+				<?php esc_html_e( 'Recreate Tables', 'wpforms-lite' ); ?>
+			</button>
+		</div>
 		<?php
 	}
 
@@ -115,15 +137,33 @@ class System extends View {
 		$activated = get_option( 'wpforms_activated', [] );
 		$data      = '-- WPForms Info' . "\n\n";
 
+		$values = [];
+
 		if ( ! empty( $activated['pro'] ) ) {
-			$data .= 'Pro:                      ' . $this->get_formatted_datetime( $activated['pro'] ) . "\n";
+			$values['Pro'] = $this->get_formatted_datetime( $activated['pro'] );
 		}
 
 		if ( ! empty( $activated['lite'] ) ) {
-			$data .= 'Lite:                     ' . $this->get_formatted_datetime( $activated['lite'] ) . "\n";
+			$values['Lite'] = $this->get_formatted_datetime( $activated['lite'] );
 		}
 
-		$data .= 'Lite Connect:             ' . $this->get_lite_connect_info() . "\n";
+		$values['Lite Connect'] = $this->get_lite_connect_info();
+
+		/**
+		 * Filters the WPForms information values in the system info.
+		 *
+		 * Allows developers to add or modify information in the WPForms info section
+		 * that appears in the system information tool.
+		 *
+		 * @since 1.10.0
+		 *
+		 * @param array $values Associative array of WPForms information key-value pairs.
+		 */
+		$values = (array) apply_filters( 'wpforms_admin_tools_views_system_wpforms_info', $values );
+
+		foreach ( $values as $key => $value ) {
+			$data .= $key . ': ' . $value . "\n";
+		}
 
 		return $data;
 	}
@@ -167,7 +207,7 @@ class System extends View {
 		$data .= 'Active Theme:             ' . $theme . "\n";
 		$data .= 'Show On Front:            ' . get_option( 'show_on_front' ) . "\n";
 
-		// Only show page specs if front page is set to 'page'.
+		// Only show page specs if the front page is set to 'page'.
 		if ( get_option( 'show_on_front' ) === 'page' ) {
 			$front_page_id = get_option( 'page_on_front' );
 			$blog_page_id  = get_option( 'page_for_posts' );
@@ -246,7 +286,7 @@ class System extends View {
 		if ( ! empty( $muplugins ) && count( $muplugins ) > 0 ) {
 			$data = "\n" . '-- Must-Use Plugins' . "\n\n";
 
-			foreach ( $muplugins as $plugin => $plugin_data ) {
+			foreach ( $muplugins as $plugin_data ) {
 				$data .= $plugin_data['Name'] . ': ' . $plugin_data['Version'] . "\n";
 			}
 		}

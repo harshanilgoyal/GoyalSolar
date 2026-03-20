@@ -28,6 +28,10 @@ class FormTemplate
      */
     private $button_skip_label;
     /**
+     * @var string|null
+     */
+    private $notice_message;
+    /**
      * @var string
      */
     private $field_name_reason = 'request_reason';
@@ -35,13 +39,14 @@ class FormTemplate
      * @var string
      */
     private $field_name_comment = 'request_comment_%s';
-    public function __construct(string $api_url, string $form_title, string $form_desc, string $button_submit_label, string $button_skip_label)
+    public function __construct(string $api_url, string $form_title, string $form_desc, string $button_submit_label, string $button_skip_label, ?string $notice_message = null)
     {
         $this->api_url = $api_url;
         $this->form_title = $form_title;
         $this->form_desc = $form_desc;
         $this->button_submit_label = $button_submit_label;
         $this->button_skip_label = $button_skip_label;
+        $this->notice_message = $notice_message;
     }
     public function get_api_url() : string
     {
@@ -62,6 +67,13 @@ class FormTemplate
     public function get_button_skip_label() : string
     {
         return $this->button_skip_label;
+    }
+    /**
+     * @return string|null
+     */
+    public function get_notice_message()
+    {
+        return $this->notice_message;
     }
     public function get_field_name_reason() : string
     {

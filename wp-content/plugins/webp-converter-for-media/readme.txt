@@ -1,78 +1,89 @@
-=== Converter for Media - One-click image optimization | Convert WebP and AVIF & Optimize Images ===
+=== Converter for Media - Optimize images | Convert WebP & AVIF ===
 Contributors: mateuszgbiorczyk
-Donate link: https://mattplugins.com/products/webp-converter-for-media-pro/?utm_source=webp-converter-for-media&utm_campaign=upgrade-to-pro&utm_medium=readme-donate
+Donate link: https://url.mattplugins.com/converter-readme-donate-link
 Tags: convert webp, webp, optimize images, image optimization, compress images
 Requires at least: 4.9
-Tested up to: 6.0
-Requires PHP: 7.0
-Stable tag: trunk
+Tested up to: 6.9
+Requires PHP: 7.1
+Stable tag: 6.5.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Speed up your website by using our WebP & AVIF Converter. Serve WebP and AVIF images instead of standard formats JPEG, PNG and GIF just now!
+Speed up your website by using our WebP & AVIF Converter. Optimize images and serve WebP and AVIF images instead of standard formats!
 
 == Description ==
 
 **Speed up your website using our ease image optimizer by serving WebP and AVIF images.** By replacing files in standard JPEG, PNG and GIF formats with WebP and AVIF formats, you can save over a half of the page weight without losing quality.
 
-After installing the plugin you do not have to do anything more. Your current images will be converted into a new format. When image optimization by our image optimizer is finished, users will automatically receive new, much lighter images than the original ones.
+[youtube https://www.youtube.com/watch?v=Ls2h38avpRw]
 
-As of today, over 90% of users use browsers that support the WebP format. The loading time of your website depends to a large extent on its weight and the level of image optimization. **Using our WebP Converter, now you can and speed up it in a few seconds without much effort!**
+After installing the plugin, you can optimize your entire Media Library with a single click — no further action required. When image optimization finishes, every visitor will automatically receive new images with significantly reduced file sizes.
+
+As of today, over 95% of users use browsers that support the WebP format. The loading time of your website depends to a large extent on its weight and the level of image optimization. **Using our WebP Converter, now you can and speed up it in a few seconds without much effort!**
 
 This will be a profit both for your users who will not have to download so much data, but also for a server that will be less loaded. Remember that a better optimized website also affects your Google ranking. Image optimization is very important.
 
 #### AVIF support
 
-Now in [the PRO version](https://mattplugins.com/products/webp-converter-for-media-pro/?utm_source=webp-converter-for-media&utm_campaign=upgrade-to-pro&utm_medium=readme-avif-support) you can use AVIF as the output format for your images. The AVIF format is a new extension - is the successor to WebP. **AVIF allows you to achieve even higher levels of image compression**, and the quality of the converted images after image optimization is better than in WebP.
+Now in [the PRO version](https://url.mattplugins.com/converter-readme-avif-support-upgrade) you can use AVIF as the output format for your images. The AVIF format is a new extension — is the successor to WebP. **Images converted to the AVIF format weigh about 50% less than images converted only to the WebP format**, while maintaining better image quality.
+
+Enjoy peace of mind knowing that AVIF is supported by over 90% of browsers. And if any visitor has an older browser, our plugin will automatically fall back to WebP — so every user gets fast, high-quality images without a hitch.
+
+Unlock the magic of AVIF in our PRO version — [upgrade today](https://url.mattplugins.com/converter-readme-avif-support-upgrade-2) for unparalleled image performance.
 
 #### How does this work?
 
-- If you have just installed the plugin, you can optimize images with one click. Image size will be smaller after generate webp!
-- New images that will be added to the Media Library will be converted automatically.
-- Our image optimizer does not modify your original images in any way. This means security for you and your files.
-- When the browser loads an image, our plugin checks if it supports the WebP format. If so, the image in WebP format is loaded.
-- The plugin does not make redirects in default mode, so the URL is always the same. Only the MIME type of the image changes to `image/webp`.
-- No redirects means no cache issues, faster and trouble-free operation of your website. If you want to know more about how it works, check out [the plugin FAQ](#faq) below.
-- It does not matter if the image display as an `img` HTML tag or you use `background-image`. It works always!
-- In case rewriting by rules from .htaccess file is blocked, a mode is available which loads images via PHP file. Then image URLs are changed, but the logic of operation is the same as in the case of the default mode.
-- The final result after image optimization is that your users download less than half of the data, and the website itself loads faster!
-- You lose nothing - if you had to remove the plugin, it will remove everything after itself. It does not leave any trace, so you can check it with ease.
+When a browser tries to load an image file, the plugin checks if it supports the AVIF format (if enabled in the plugin settings). If so, the browser will receive the equivalent of the original image in the AVIF format. If it does not support AVIF, but supports the WebP format, the browser will receive the equivalent of the original image in WebP format. In case the browser does not support either WebP or AVIF, the original image is loaded. **This means full support for all browsers.**
 
-#### Convert WebP - it is the future of image optimization!
+A guide on how to test whether the plugin is working properly can be found [here](https://mattplugins.com/docs/how-to-test-converter-for-media-plugin).
+
+#### Additional information
+- If you have just installed the plugin, you can optimize images with **one click**. Image size will be smaller after generate AVIF and WebP!
+- New images that will be added to the Media Library will be converted **automatically**.
+- Our image optimizer does not modify your original images in any way. **This means security for you and your files.** Files converted to AVIF and WebP format are saved in a separate directory: /wp-content/uploads-webpc/.
+- **You lose nothing** - if you had to remove the plugin, it will remove everything after itself. It does not leave any trace, so you can check it with ease.
+
+#### Convert WebP and AVIF - it is the future of image optimization!
 
 Optimize images and raise your website to a new level now! Install the plugin and enjoy the website that loads faster by image optimization. Surely you and your users will appreciate it.
 
+Converting images to WebP and AVIF simultaneously guarantees the lowest weight of your images and compatibility with all browsers. By using [the AVIF format](https://url.mattplugins.com/converter-readme-both-formats-upgrade) you will reduce the weight of your images even more compared to WebP.
+
 #### Support for additional directories
 
-You can convert WebP and optimize images not only from `/uploads` directory but also from `/plugins` and `/themes` directories. This allows full integration with the WebP format!
+You can convert WebP and AVIF, and optimize images not only from `/uploads` directory but also from `/plugins` and `/themes` directories. This allows full integration with WebP and AVIF formats!
 
-#### Support to the development of plugin
+#### Development of the plugin
 
-We spend hours working on the development of this plugin. Technical support also requires a lot of time, but we do it because we want to offer you the best plugin. We enjoy every new plugin installation.
-
-If you would like to appreciate it, you can try [the PRO version](https://mattplugins.com/products/webp-converter-for-media-pro/?utm_source=webp-converter-for-media&utm_campaign=upgrade-to-pro&utm_medium=readme-plugin-development). In addition, you will gain access to extra functionalities that will allow you to achieve **even better image optimization results**.
+If you love our plugin, [leave a ★★★★★ review on WordPress.org](https://url.mattplugins.com/converter-readme-development-support-review) — it really makes our day and helps others discover it!
 
 #### Please also read the FAQ below. Thank you for being with us!
 
 == Installation ==
 
-1. Upload the plugin files to `/wp-content/plugins/webp-converter-for-media` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through `Plugins` screen in WordPress Admin Panel.
-3. Use `Settings -> Settings -> Converter for Media` screen to configure the plugin.
-4. Click on the button `Start Bulk Optimization` and wait.
-5. Check if everything works fine using [this tutorial](https://wordpress.org/support/topic/how-can-i-check-if-the-plugin-is-working-properly/).
+1. Upload the plugin files to the `/wp-content/plugins/webp-converter-for-media` directory, or install the plugin through the WordPress plugins screen directly.
+2. Activate the plugin through the `Plugins` screen in WordPress Admin Panel.
+3. Use the `Settings -> Settings -> Converter for Media` screen to configure the plugin.
+4. Click on the `Start Bulk Optimization` button and wait.
+5. Check if everything works fine using [this tutorial](https://url.mattplugins.com/converter-readme-installation-instruction).
 
 That's all! Your website is already loading faster!
 
 == Frequently Asked Questions ==
 
+= How can I report security bugs? =
+
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities.
+
+[Report a security vulnerability](https://patchstack.com/database/vdp/webp-converter-for-media)
+
 = How to get technical support? (before you ask for help) =
 
-Before you add a new thread, **read all other questions in this FAQ and other threads in [the support forum](https://wordpress.org/support/plugin/webp-converter-for-media/) first**. Perhaps someone had a similar problem and it has been resolved.
+Before you add a new thread, **read all other questions in this FAQ and other threads in [the support forum](https://url.mattplugins.com/converter-plugin-faq-technical-support-forum) first**. Perhaps someone had a similar problem and it has been resolved.
 
 When adding a thread, follow these steps and reply to each of them:
 
-**1.** Do you have any errors on the plugin settings page? Please read [this thread](https://wordpress.org/support/topic/server-configuration-error-what-to-do/) if you have any errors.
+**1.** Do you have any errors on the plugin settings page? Please read [this thread](https://url.mattplugins.com/converter-plugin-faq-technical-support-error-instruction) if you have any errors.
 
 **2.** URL of your website.
 
@@ -82,11 +93,23 @@ When adding a thread, follow these steps and reply to each of them:
 
 Please remember to include the answers to all questions by adding a thread. It is much easier and accelerates the solution of your problem.
 
+= Configuration for Nginx =
+
+If you are using a Nginx server that does not support .htaccess rules, additional Nginx server configuration is required for the plugin to work properly.
+
+Please read [this tutorial](https://url.mattplugins.com/converter-plugin-faq-nginx-configuration-instruction) for more information.
+
+= Configuration for Nginx Proxy =
+
+If you are using a Nginx server that supports .htaccess rules, but you still have a server configuration error on the plugin settings page, additional Nginx server configuration is required for the plugin to work properly.
+
+Please read [this tutorial](https://url.mattplugins.com/converter-plugin-faq-nginx-proxy-configuration-instruction) for more information.
+
 = Error on plugin settings screen? =
 
 If you have an error on the plugin settings screen, first of all, please read it carefully. They are displayed when there is a problem with the configuration of your server or website.
 
-The messages are designed to reduce the number of support requests that are repeated. It saves your and our time. Please read [this thread](https://wordpress.org/support/topic/server-configuration-error-what-to-do/) for more information.
+The messages are designed to reduce the number of support requests that are repeated. It saves your and our time. Please read [this thread](https://url.mattplugins.com/converter-plugin-faq-configuration-error-instruction) for more information.
 
 = Error while converting? =
 
@@ -106,7 +129,7 @@ Practically every hosting meets these requirements. You must use PHP at least 7.
 
 They are required native PHP extensions, used among others by WordPress to generate thumbnails. Your server must also have the modules `mod_mime`, `mod_rewrite` and `mod_expires` enabled.
 
-An example of the correct server configuration can be found [here](https://mattplugins.com/files/webp-server-config.png). The link to your current configuration can be found in the Help Center tab on plugin settings screen.
+An example of the correct server configuration can be found [here](https://url.mattplugins.com/converter-plugin-faq-plugin-requirements-configuration-image). The link to your current configuration can be found in the Help Center tab on plugin settings screen.
 
 **Note the items marked in red.** If the values marked in red do not appear in your case, it means that your server does not meet the technical requirements. Pay attention to the **WebP Support** value for the GD library and **WEBP in the list of supported extensions** for the Imagick library.
 
@@ -116,7 +139,7 @@ Also, REST API must be enabled and work without additional restrictions. If you 
 
 = How to check if the plugin works? =
 
-You can find more information on how the plugin works in [our manual](https://wordpress.org/support/topic/how-can-i-check-if-the-plugin-is-working-properly/).
+You can find more information on how the plugin works in [our manual](https://url.mattplugins.com/converter-plugin-faq-plugin-check-instruction).
 
 = How to change the path to uploads? =
 
@@ -128,22 +151,20 @@ Path to the root installation directory of WordPress *(`ABSPATH` by default)*:
 	return ABSPATH;
 } );`
 
-Path to `/uploads` directory *(relative to the root directory)*:
+Paths to directories *(relative to the root directory)*:
 
 `add_filter( 'webpc_dir_name', function( $path, $directory ) {
-	if ( $directory !== 'uploads' ) {
-		return $path;
+	switch ( $directory ) {
+		case 'uploads':
+			return 'wp-content/uploads';
+		case 'webp':
+			return 'wp-content/uploads-webpc';
+		case 'plugins':
+			return 'wp-content/plugins';
+		case 'themes':
+			return 'wp-content/themes';
 	}
-	return 'wp-content/uploads';
-}, 10, 2 );`
-
-Directory path with converted WebP files *(relative to the root directory)*:
-
-`add_filter( 'webpc_dir_name', function( $path, $directory ) {
-	if ( $directory !== 'webp' ) {
-		return $path;
-	}
-	return 'wp-content/uploads-webpc';
+	return $path;
 }, 10, 2 );`
 
 **Note that the `/uploads-webpc` directory must be at the same nesting level as the `/uploads`, `/plugins` and `/themes` directories.**
@@ -176,36 +197,34 @@ add_filter( 'webpc_htaccess_rewrite_path', function( $prefix ) {
 	return '/';
 } );
 add_filter( 'webpc_dir_name', function( $path, $directory ) {
-	if ( $directory !== 'uploads' ) {
-		return $path;
+	switch ( $directory ) {
+		case 'uploads':
+			return 'app/uploads';
+		case 'webp':
+			return 'app/uploads-webpc';
+		case 'plugins':
+			return 'app/plugins';
+		case 'themes':
+			return 'app/themes';
 	}
-	return 'app/uploads';
-}, 10, 2 );
-add_filter( 'webpc_dir_name', function( $path, $directory ) {
-	if ( $directory !== 'webp' ) {
-		return $path;
-	}
-	return 'app/uploads-webpc';
+	return $path;
 }, 10, 2 );`
 
 After setting the filters go to `Settings -> Converter for Media` in the admin panel and click the `Save Changes` button. `.htaccess` files with appropriate rules should be created in the directories `/uploads` and `/uploads-webpc`.
 
 = How to exclude paths from converting? =
 
-To exclude selected directories, use the following filter:
+To exclude selected directories, provide them in the `Excluded directories` field in the Advanced Settings tab in the plugin settings.
 
-`add_filter( 'webpc_supported_source_directory', function( bool $status, string $directory_name, string $server_path ): bool {
-    $excluded_directories = [ 'my-directory' ];
-    if ( in_array( $directory_name, $excluded_directories ) ) {
-        return false;
-    }
-    return $status;
-}, 10, 3 );`
+In this field, you can enter a directory name or path. Here are examples:
+- `2023`
+- `2024/01`
+- `2023,2024/01`
 
-To exclude selected files use the following filter *(in this case with the suffix "-skipwebp" in a filename, e.g. image-skipwebp.png)*:
+To exclude selected files, use the following filter *(in this case with the suffix "-skipped" in a filename, e.g. image-skipped.png)*:
 
 `add_filter( 'webpc_supported_source_file', function( bool $status, string $file_name, string $server_path ): bool {
-    $excluded_suffix = '-skipwebp';
+    $excluded_suffix = '-skipped';
     if ( strpos( $file_name, $excluded_suffix . '.' ) !== false ) {
         return false;
     }
@@ -214,7 +233,24 @@ To exclude selected files use the following filter *(in this case with the suffi
 
 Argument `$server_path` is the absolute server path to a directory or file. Inside the filters, you can apply more complicated rules as needed.
 
-Filters run before images are converted - they no longer support converted images. You have to delete them manually if they should not be converted.
+Changes to excluded directories and files take effect before images are converted - they do not affect already converted images. These images must be manually removed from the directory: `/wp-content/uploads-webpc/`.
+
+= Support for custom directories =
+
+The plugin supports the following directories by default:
+- `/gallery`
+- `/plugins`
+- `/themes`
+- `/uploads`
+
+If you want to add support for a custom directory, add the following code to the functions.php file in your theme directory *(use a correct directory name instead of `custom-directory`)*:
+
+`add_filter( 'webpc_source_directories', function ( $directories ) {
+	$directories[] = 'custom-directory';
+	return $directories;
+} );`
+
+Remember that this directory must be located in the `/wp-content` directory.
 
 = How to run manually conversion? =
 
@@ -228,21 +264,11 @@ It is a solution for advanced users. If you would like to integrate with another
 
 You can manually run converting selected files, you can use the action to which you will pass an array with a list of paths *(they must be absolute server paths)*:
 
-`do_action( 'webpc_convert_paths', $paths );`
+`do_action( 'webpc_convert_paths', $paths, true );`
 
 An alternative method is to manually start converting the selected attachment by passing the post ID from the Media Library. Remember to run this action after registering all image sizes *(i.e. after running the `add_image_size` function)*:
 
-`do_action( 'webpc_convert_attachment', $post_id );`
-
-Argument `$paths` is array of absolute server paths and `$skip_exists` means whether to skip converted images.
-
-You can also modify the list of image paths for an attachment, e.g. to exclude one image size. To do this, use the following filter:
-
-`add_filter( 'webpc_attachment_paths', function( $paths, $attachment_id ) {
-	return $paths;
-}, 10, 2 );`
-
-Argument `$paths` is array of absolute server paths and `$attachment_id` is the post ID of attachment, added to the Media Library.
+`do_action( 'webpc_convert_attachment', $post_id, true );`
 
 To delete manually converted files, use the following action, providing as an argument an array of absolute server paths to the files *(this will delete manually converted files)*:
 
@@ -254,15 +280,15 @@ The plugin supports WP-CLI, which enables faster image conversion from the serve
 
 Checking how many maximum images for conversion are on website:
 
-`wp webp-converter calculate`
+`wp converter-for-media calculate`
 
 Converting all images:
 
-`wp webp-converter regenerate`
+`wp converter-for-media regenerate`
 
 Converting all images (with "Force convert all images again" option):
 
-`wp webp-converter regenerate -force`
+`wp converter-for-media regenerate --force`
 
 = Does plugin support CDN? =
 
@@ -270,50 +296,8 @@ The website files (WordPress files) and the images from the Media Library must b
 
 If only your images are on another CDN server, unfortunately correct operation is impossible, because such images are managed by another server.
 
-= Configuration for Nginx =
-
-For Nginx server that does not support .htaccess rules, additional Nginx server configuration is required for the plugin to function properly.
-
-Find the configuration file in one of the paths *(remember to select configuration file used by your vhost)*:
-- `/etc/nginx/sites-available/` or `/etc/nginx/sites-enabled/`
-- `/etc/nginx/conf.d/`
-
-and add this code *(add these lines at the beginning of the `server { ... }` block)* - **remember to add these rules before any other `location {}` rules**:
-
-`# BEGIN Converter for Media`
-`set $ext_avif ".avif";`
-`if ($http_accept !~* "image/avif") {`
-`	set $ext_avif "";`
-`}`
-``
-`set $ext_webp ".webp";`
-`if ($http_accept !~* "image/webp") {`
-`	set $ext_webp "";`
-`}`
-``
-`location ~ /wp-content/(?<path>.+)\.(?<ext>jpe?g|png|gif|webp)$ {`
-`	add_header Vary Accept;`
-`	expires 365d;`
-`	try_files`
-`		/wp-content/uploads-webpc/$path.$ext$ext_avif`
-`		/wp-content/uploads-webpc/$path.$ext$ext_webp`
-`		$uri =404;`
-`}`
-`# END Converter for Media`
-
-**Then add support for the required MIME types**, if they are not supported. Edit the configuration file:
-- `/etc/nginx/mime.types`
-
-and add this code *(add these lines inside the `types { ... }` block)*:
-
-`image/webp webp;`
-`image/avif avif;`
-
-After making changes, remember to restart the machine:
-
-`systemctl restart nginx`
-
-In case of problems, please contact us in [the support forum](https://wordpress.org/support/plugin/webp-converter-for-media/). We will try to help.
+Current list of supported CDN servers:
+- BunnyCDN (refer to [the instructions](https://url.mattplugins.com/converter-plugin-faq-cdn-bunny-instruction) before use)
 
 == Screenshots ==
 
@@ -321,32 +305,89 @@ In case of problems, please contact us in [the support forum](https://wordpress.
 2. Advanced tab of the plugin settings
 3. Bulk optimization of images
 4. Optimization statistics of Media Library
+5. Ability to manually undo optimization of selected image
 
 == Changelog ==
 
-= 5.1.0 (2022-08-28) =
-* `[Fixed]` Exclusion of converted files from backup generated by UpdraftPlus plugin
-* `[Added]` Optimization statistics in Media Library
+= 6.5.4 (2026-02-26) =
+* `[Fixed]` Displaying notification about Cloudflare cache
 
-= 5.0.1 (2022-08-26) =
-* `[Removed]` Filter `webpc_uploads_prefix`
-* `[Fixed]` Calculating number of images to convert in WP-CLI
-* `[Fixed]` Converting files that contain plus sign in filename
-* `[Changed]` Notification asking to clear cache for LiteSpeed
-* `[Added]` Exclusion of converted files from backup generated by All-in-One WP Migration plugin
-* `[Added]` Exclusion of converted files from backup generated by UpdraftPlus plugin
-* `[Added]` Exclusion of converted files from backup generated by BackWPup plugin
+= 6.5.3 (2026-01-24) =
+* `[Changed]` The Pass Thru loading mode is now restricted to standard WordPress directory structures only
 
-= 5.0.0 (2022-08-20) =
-* `[Changed]` Information about plugin operation and technical support on plugin settings page
-* `[Changed]` Labels of options in plugin settings
-* `[Changed]` Option field for configuration of quality level
-* `[Changed]` Widget for conversion process
-* `[Added]` Filter `webpc_htaccess_cache_control_private` to disable Cache-Control as private
-* `[Added]` Statistics on number of converted images
-* `[Added]` Tabs for plugin settings
+= 6.5.2 (2026-01-24) =
+* `[Security]` Replaced cURL-based fetching with native readfile(), implemented a whitelist of trusted website URLs and stricter extension validation in the Pass Thru loading mode to prevent unauthorized server-side requests (CVE-2026-1356)
+* `[Security]` Implemented physical path identity verification for the Pass Thru loading mode using realpath() to provide extra protection against Directory Traversal
+* `[Security]` Added X-Content-Type-Options: nosniff header for browser-side protection in the Pass Thru loading mode
+* `[Fixed]` Priority logic for loading next-generation image formats (AVIF/WebP)
+* `[Added]` Automatic refresh of an image loading mode after a plugin update
+* `[Added]` Significant performance boost for the Pass Thru loading mode by direct filesystem access instead of cURL requests
+* `[Added]` Support for Content-Length headers to optimize image delivery in the Pass Thru loading mode
 
-See [changelog.txt](https://plugins.svn.wordpress.org/webp-converter-for-media/trunk/changelog.txt) for previous versions.
+= 6.5.1 (2026-01-23) =
+* Version superseded by 6.5.2
+
+= 6.5.0 (2026-01-11) =
+* `[Fixed]` Rewrite rules to handle environments where RewriteRule may receive an absolute filesystem path
+* `[Changed]` Field to select the format to which the images should be converted
+* `[Added]` Settings field to modify the prefix used in RewriteRule to fix the absolute filesystem path issue
+
+= 6.4.0 (2025-12-08) =
+* `[Security]` Added permission check to ensure the user can edit the post before manually converting an image in the Media Library (CVE-2025-13750)
+* `[Security]` Added stricter permission checks to REST API endpoints for authenticated users
+
+= 6.3.2 (2025-11-24) =
+* `[Added]` Support for WordPress 6.9
+
+= 6.3.1 (2025-11-09) =
+* `[Fixed]` Support for Bunny CDN and BunnyCDN plugin
+* `[Fixed]` Support for QUIC.cloud CDN
+
+= 6.3.0 (2025-10-28) =
+* `[Changed]` Message about rewrites_uploads_blocked server configuration error
+
+= 6.2.4 (2025-09-09) =
+* `[Fixed]` Deprecated notice for implicitly nullable parameter when converting images
+
+= 6.2.3 (2025-09-02) =
+* `[Fixed]` Unknown error when converting images when file is unavailable or file size verification failed
+
+= 6.2.2 (2025-04-29) =
+* `[Security]` Update of Axios HTTP client
+
+= 6.2.1 (2025-04-01) =
+* `[Fixed]` Handling of excluded directories when uploading new images
+* `[Added]` Error detection of required functions in disable_functions list in PHP configuration
+* `[Added]` Support for WordPress 6.8
+
+= 6.2.0 (2024-12-18) =
+* `[Changed]` Minimum required PHP version from 7.0 to 7.1
+* `[Added]` Compatibility with PHP 8.4
+
+= 6.1.3 (2024-11-19) =
+* `[Fixed]` Translations in command registration for WP-CLI
+* `[Added]` Support for WordPress 6.7
+
+= 6.1.2 (2024-10-26) =
+* `[Fixed]` Removing converted files after uninstalling plugin
+
+= 6.1.1 (2024-10-02) =
+* `[Changed]` Bulk Optimization of Images section
+
+= 6.1.0 (2024-09-13) =
+* `[Removed]` Filter `webpc_supported_source_directory`
+* `[Fixed]` Handling of excluded directories when uploading new images
+* `[Fixed]` Handling of excluded filenames when uploading new images
+* `[Fixed]` Adding support for custom directories using webpc_source_directories filter
+* `[Fixed]` Verification of rewrites_not_working server configuration error when HTTP referer is required
+
+= 6.0.0 (2024-08-28) =
+* `[Fixed]` Generating statistics on plugin settings page when WebP format is unchecked
+* `[Fixed]` Restoring original images in Media Library
+* `[Changed]` Optimization statistics in Media Library
+* `[Added]` Warnings with explanations in plugin settings field: Image loading mode
+
+See [changelog.txt](https://url.mattplugins.com/converter-readme-changelog) for previous versions.
 
 == Upgrade Notice ==
 

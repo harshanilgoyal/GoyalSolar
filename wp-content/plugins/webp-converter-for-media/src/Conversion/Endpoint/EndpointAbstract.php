@@ -2,58 +2,53 @@
 
 namespace WebpConverter\Conversion\Endpoint;
 
-use WebpConverter\Service\NonceManager;
-
 /**
  * Abstract class for class that supports image conversion method.
  */
 abstract class EndpointAbstract implements EndpointInterface {
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_url_lifetime(): int {
-		return ( 24 * 60 * 60 );
-	}
+	const ROUTE_NONCE_HEADER = 'X-WP-Nonce';
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function is_valid_request( \WP_REST_Request $request ): bool {
-		return ( new NonceManager( $this->get_url_lifetime(), false ) )
-			->verify_nonce(
-				$request->get_param( EndpointIntegration::ROUTE_NONCE_PARAM ),
-				sprintf( EndpointIntegration::ROUTE_NONCE_ACTION, $this->get_route_name() )
-			);
+	public function is_valid_request( string $request_nonce, array $request_params ): bool {
+		return ( ( wp_verify_nonce( $request_nonce, 'wp_rest' ) !== false )
+			&& current_user_can( 'manage_options' ) );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function get_route_args(): array {
-		return [
-			'nonce_token' => [
-				'description' => 'WordPress Nonce',
-				'required'    => true,
-			],
-		];
+		return [];
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_route_url(): string {
-		$nonce_value = ( new NonceManager( $this->get_url_lifetime(), false ) )
-			->generate_nonce( sprintf( EndpointIntegration::ROUTE_NONCE_ACTION, $this->get_route_name() ) );
-
+	public static function get_route_url(): string {
 		return get_rest_url(
 			null,
 			sprintf(
-				'%1$s/%2$s-%3$s',
-				EndpointIntegration::ROUTE_NAMESPACE,
-				$this->get_route_name(),
-				$nonce_value
+				'%1$s/%2$s',
+				EndpointIntegrator::ROUTE_NAMESPACE,
+				static::get_route_name()
 			)
 		);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function get_route_nonce(): string {
+		return wp_create_nonce( 'wp_rest' );
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_route_nonce_header(): string {
+		return self::ROUTE_NONCE_HEADER;
 	}
 }

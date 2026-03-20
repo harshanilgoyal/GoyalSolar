@@ -5,6 +5,10 @@
  * @package Converter for Media
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WebpConverter\Service\PathsGenerator;
 
 ?>
@@ -12,15 +16,15 @@ use WebpConverter\Service\PathsGenerator;
 <table>
 	<tbody>
 	<tr>
-		<td class="e">webpc_site_root</td>
+		<td class="e">webpc_site_url</td>
 		<td class="v">
-			<?php echo esc_html( PathsGenerator::get_wordpress_root_path() ); ?>
+			<?php echo esc_html( apply_filters( 'webpc_site_url', ( defined( 'WP_HOME' ) ) ? WP_HOME : get_site_url() ) ); ?>
 		</td>
 	</tr>
 	<tr>
-		<td class="e">webpc_site_url</td>
+		<td class="e">webpc_site_root</td>
 		<td class="v">
-			<?php echo esc_html( apply_filters( 'webpc_site_url', get_site_url() ) ); ?>
+			<?php echo esc_html( PathsGenerator::get_wordpress_root_path() ); ?>
 		</td>
 	</tr>
 	<tr>
@@ -48,6 +52,12 @@ use WebpConverter\Service\PathsGenerator;
 		</td>
 	</tr>
 	<tr>
+		<td class="e">webpc_source_directories</td>
+		<td class="v">
+			<?php echo esc_html( json_encode( apply_filters( 'webpc_source_directories', [] ) ) ?: '-' ); ?>
+		</td>
+	</tr>
+	<tr>
 		<td class="e">webpc_htaccess_rewrite_root</td>
 		<td class="v">
 			<?php echo esc_html( PathsGenerator::get_rewrite_root() ); ?>
@@ -57,6 +67,18 @@ use WebpConverter\Service\PathsGenerator;
 		<td class="e">webpc_htaccess_rewrite_path</td>
 		<td class="v">
 			<?php echo esc_html( PathsGenerator::get_rewrite_path() ); ?>
+		</td>
+	</tr>
+	<tr>
+		<td class="e">webpc_htaccess_rewrite_parent</td>
+		<td class="v">
+			<?php echo esc_html( apply_filters( 'webpc_htaccess_rewrite_parent', '' ) ?: '-' ); ?>
+		</td>
+	</tr>
+	<tr>
+		<td class="e">webpc_htaccess_rewrite_output</td>
+		<td class="v">
+			<?php echo esc_html( apply_filters( 'webpc_htaccess_rewrite_output', PathsGenerator::get_rewrite_path(), PathsGenerator::get_rewrite_root() ) ); ?>
 		</td>
 	</tr>
 	</tbody>

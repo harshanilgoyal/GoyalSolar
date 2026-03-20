@@ -37,6 +37,8 @@ class PaymentElementCreditCard extends WPForms_Field {
 		// Save form data for future usage in the class.
 		$this->form_data = $form_data;
 
+		unset( $properties['label']['attr']['for'] );
+
 		return $properties;
 	}
 
@@ -329,13 +331,13 @@ class PaymentElementCreditCard extends WPForms_Field {
 	 * @param array $deprecated Deprecated field attributes. Use field properties.
 	 * @param array $form_data  Form data and settings.
 	 */
-	public function field_display( $field, $deprecated, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function field_display( $field, $deprecated, $form_data ) {
 
 		if ( $this->field_display_errors( $form_data ) ) {
 			return;
 		}
 
-		if ( $this->is_block_editor() ) {
+		if ( wpforms_is_editor_page() ) {
 			$this->block_editor_field_display( $field );
 
 			return;

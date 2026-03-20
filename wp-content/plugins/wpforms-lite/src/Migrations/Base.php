@@ -1,10 +1,14 @@
 <?php
 
+// phpcs:disable Generic.Commenting.DocComment.MissingShort
+/** @noinspection PhpIllegalPsrClassPathInspection */
+/** @noinspection AutoloadingIssuesInspection */
+// phpcs:enable Generic.Commenting.DocComment.MissingShort
+
 namespace WPForms\Migrations;
 
 use ReflectionClass;
 use WPForms\Helpers\DB;
-use WPForms\Helpers\Transient;
 
 /**
  * Class Migrations handles both Lite and Pro plugin upgrade routines.
@@ -16,60 +20,71 @@ abstract class Base {
 	/**
 	 * WP option name to store the migration versions.
 	 * Must have 'versions' in the name defined in extending classes,
-	 * like 'wpforms_versions', 'wpforms_versions_lite, 'wpforms_stripe_versions' etc.
+	 * like 'wpforms_versions', 'wpforms_versions_lite, 'wpforms_stripe_versions', etc.
 	 *
 	 * @since 1.7.5
 	 */
-	const MIGRATED_OPTION_NAME = '';
+	protected const MIGRATED_OPTION_NAME = '';
 
 	/**
 	 * Current plugin version.
 	 *
 	 * @since 1.7.5
 	 */
-	const CURRENT_VERSION = WPFORMS_VERSION;
+	protected const CURRENT_VERSION = WPFORMS_VERSION;
+
+	/**
+	 * WP option name to store the upgraded from version number.
+	 *
+	 * @since      1.8.8
+	 * @deprecated 1.9.8
+	 *
+	 * @todo       Delete this option later. There is no sense to creating a separate migration for it.
+	 * @noinspection PhpUnusedPrivateFieldInspection
+	 */
+	private const UPGRADED_FROM_OPTION_NAME = 'wpforms_version_upgraded_from';
+
+	/**
+	 * WP option name to store the previous plugin version.
+	 *
+	 * @since 1.8.8
+	 */
+	public const PREVIOUS_CORE_VERSION_OPTION_NAME = 'wpforms_version_previous';
 
 	/**
 	 * Name of the core plugin used in log messages.
 	 *
 	 * @since 1.7.5
 	 */
-	const PLUGIN_NAME = '';
+	protected const PLUGIN_NAME = '';
 
 	/**
 	 * Upgrade classes.
 	 *
 	 * @since 1.7.5
 	 */
-	const UPGRADE_CLASSES = [];
-
-	/**
-	 * Custom table handler classes.
-	 *
-	 * @since 1.7.6
-	 */
-	const CUSTOM_TABLE_HANDLER_CLASSES = [];
+	protected const UPGRADE_CLASSES = [];
 
 	/**
 	 * Migration started status.
 	 *
 	 * @since 1.7.5
 	 */
-	const STARTED = - 1;
+	private const STARTED = - 1;
 
 	/**
 	 * Migration failed status.
 	 *
 	 * @since 1.7.5
 	 */
-	const FAILED = - 2;
+	private const FAILED = - 2;
 
 	/**
 	 * Initial fake version for comparisons.
 	 *
 	 * @since 1.7.5
 	 */
-	const INITIAL_FAKE_VERSION = '0.0.1';
+	private const INITIAL_FAKE_VERSION = '0.0.1';
 
 	/**
 	 * Reflection class instance.
@@ -113,7 +128,7 @@ abstract class Base {
 	 *
 	 * @since 1.7.5
 	 */
-	public function init() {
+	public function init(): void {
 
 		if ( ! $this->is_allowed() ) {
 			return;
@@ -128,7 +143,7 @@ abstract class Base {
 	 *
 	 * @since 1.7.5
 	 */
-	protected function hooks() {
+	protected function hooks(): void {
 
 		$priority = $this->is_core_plugin() ? - 9999 : 100;
 
@@ -143,7 +158,7 @@ abstract class Base {
 	 *
 	 * @noinspection NotOptimalIfConditionsInspection
 	 */
-	public function migrate() {
+	public function migrate(): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$classes   = $this->get_upgrade_classes();
 		$namespace = $this->reflector->getNamespaceName() . '\\';
@@ -164,7 +179,7 @@ abstract class Base {
 			$this->maybe_create_tables();
 
 			if ( ! isset( $this->migrated[ $upgrade_version ] ) ) {
-				$this->migrated[ $upgrade_version ] = static::STARTED;
+				$this->migrated[ $upgrade_version ] = self::STARTED;
 
 				$this->log( sprintf( 'Migration of %1$s to %2$s started.', $plugin_name, $upgrade_version ) );
 			}
@@ -178,31 +193,33 @@ abstract class Base {
 				continue;
 			}
 
-			$this->migrated[ $upgrade_version ] = $migrated ? time() : static::FAILED;
+			$this->migrated[ $upgrade_version ] = $migrated ? time() : self::FAILED;
 
 			$this->log_migration_message( $migrated, $plugin_name, $upgrade_version );
 		}
 	}
 
 	/**
-	 * If upgrade has occurred, update versions option in the database.
+	 * If an upgrade has occurred, update a version option in the database.
 	 *
 	 * @since 1.7.5
 	 */
-	public function update_versions() {
+	public function update_versions(): void {
+
+		$this->update_previous_core_version();
 
 		// Retrieve the last migrated versions.
 		$last_migrated = get_option( static::MIGRATED_OPTION_NAME, [] );
 		$migrated      = array_merge( $last_migrated, $this->migrated );
 
 		/**
-		 * Store current version upgrade timestamp even if there were no migrations to it.
+		 * Store the current version upgrade timestamp even if there were no migrations to it.
 		 * We need it in wpforms_get_upgraded_timestamp() for further usage in Event Driven Plugin Notifications.
 		 */
 		$migrated[ static::CURRENT_VERSION ] = $migrated[ static::CURRENT_VERSION ] ?? time();
 
-		ksort( $last_migrated );
-		ksort( $migrated );
+		uksort( $last_migrated, 'version_compare' );
+		uksort( $migrated, 'version_compare' );
 
 		if ( $migrated === $last_migrated ) {
 			return;
@@ -226,25 +243,45 @@ abstract class Base {
 		$this->log(
 			sprintf( 'Migration of %1$s to %2$s is fully completed.', static::PLUGIN_NAME, static::CURRENT_VERSION )
 		);
+	}
 
-		// We need to run further only for core plugin (Lite and Pro).
+	/**
+	 * Update previous core version.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @return void
+	 */
+	private function update_previous_core_version(): void {
+
 		if ( ! $this->is_core_plugin() ) {
 			return;
 		}
 
-		$last_completed = array_filter(
-			$last_migrated,
-			static function ( $status ) {
+		// Retrieve the last migrated versions.
+		$last_migrated         = get_option( static::MIGRATED_OPTION_NAME, [] );
+		$previous_core_version = $this->get_max_version( $last_migrated );
 
-				return $status >= 0;
-			}
-		);
-
-		if ( ! $last_completed ) {
+		if (
+			$previous_core_version === self::INITIAL_FAKE_VERSION ||
+			version_compare( $previous_core_version, static::CURRENT_VERSION, '>=' )
+		) {
 			return;
 		}
 
-		update_option( 'wpforms_version_upgraded_from', $this->get_max_version( $last_completed ) );
+		// Store the previous core version in the option.
+		update_option( self::PREVIOUS_CORE_VERSION_OPTION_NAME, $previous_core_version );
+
+		/**
+		 * Fires after the core plugin has been upgraded.
+		 * Please note: some of the migrations that run via Active Scheduler can be not completed yet.
+		 *
+		 * @since 1.8.8
+		 *
+		 * @param string $previous_core_version The core version from which the plugin was upgraded.
+		 * @param Base   $migration_obj         The migration class instance.
+		 */
+		do_action( 'wpforms_migrations_base_core_upgraded', $previous_core_version, $this );
 	}
 
 	/**
@@ -272,18 +309,26 @@ abstract class Base {
 	 *
 	 * @return string
 	 */
-	protected function get_upgrade_version( string $class_name ): string {
+	public function get_upgrade_version( string $class_name ): string {
 
-		// Find only the digits to get version number.
-		if ( ! preg_match( '/\d+/', $class_name, $matches ) ) {
+		// Find only the digits and underscores to get the version number.
+		if ( ! preg_match( '/(\d_?)+/', $class_name, $matches ) ) {
 			return '';
 		}
 
-		return implode( '.', str_split( $matches[0] ) );
+		$raw_version = $matches[0];
+
+		if ( strpos( $raw_version, '_' ) ) {
+			// Modern notation: 1_10_0_3 means 1.10.0.3 version.
+			return str_replace( '_', '.', $raw_version );
+		}
+
+		// Legacy notation, with 1-digit subversion numbers: 1751 means 1.7.5.1 version.
+		return implode( '.', str_split( $raw_version ) );
 	}
 
 	/**
-	 * Get plugin/addon name.
+	 * Get a plugin /addon name.
 	 *
 	 * @since 1.7.5
 	 *
@@ -298,22 +343,22 @@ abstract class Base {
 	}
 
 	/**
-	 * Log message to WPForms logger and standard debug.log file.
+	 * Force log message to WPForms logger.
 	 *
 	 * @since 1.7.5
 	 *
 	 * @param string $message The error message that should be logged.
-	 *
-	 * @noinspection ForgottenDebugOutputInspection
-	 * @noinspection PhpUndefinedConstantInspection
 	 */
-	protected function log( string $message ) {
+	protected function log( string $message ): void {
 
-		if ( defined( 'WPFORMS_DEBUG' ) && WPFORMS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( $message );
-			wpforms_log( 'Migration', $message, [ 'type' => 'log' ] );
-		}
+		wpforms_log(
+			'Migration',
+			$message,
+			[
+				'type'  => 'log',
+				'force' => true,
+			]
+		);
 	}
 
 	/**
@@ -336,33 +381,18 @@ abstract class Base {
 	 *
 	 * @since 1.7.6
 	 */
-	public function maybe_create_tables() {
+	public function maybe_create_tables(): void {
 
 		if ( $this->tables_check_done ) {
 			/**
-			 * We should do tables check only once - when the first migration has been started.
+			 * We should do table check only once - when the first migration has been started.
 			 * The DB::get_existing_custom_tables() without caching causes performance issue
 			 * on huge multisite with thousands of tables.
 			 */
 			return;
 		}
 
-		// We need actual information about existing tables, so drop the cache.
-		Transient::delete( DB::EXISTING_TABLES_TRANSIENT_NAME );
-
-		$custom_tables = DB::get_existing_custom_tables();
-
-		foreach ( static::CUSTOM_TABLE_HANDLER_CLASSES as $custom_table_handler_class ) {
-			if ( ! class_exists( $custom_table_handler_class ) ) {
-				continue;
-			}
-
-			$custom_table_handler = new $custom_table_handler_class();
-
-			if ( ! in_array( $custom_table_handler->table_name, $custom_tables, true ) ) {
-				$custom_table_handler->create_table();
-			}
-		}
+		DB::create_custom_tables( true );
 
 		$this->tables_check_done = true;
 	}
@@ -372,7 +402,7 @@ abstract class Base {
 	 *
 	 * @since 1.7.5
 	 */
-	private function maybe_convert_migration_option() {
+	private function maybe_convert_migration_option(): void {
 
 		/**
 		 * Retrieve the migration option and check its format.
@@ -380,7 +410,7 @@ abstract class Base {
 		 * New format: [ 'x.y.z' => {status}, 'x1.y1.z1' => {status}... ],
 		 * where {status} is a migration status.
 		 * Negative means some status (-1 for 'started' etc.),
-		 * zero means completed earlier at unknown time,
+		 * zero means completed earlier at an unknown time,
 		 * positive means completion timestamp.
 		 */
 		$this->migrated = get_option( static::MIGRATED_OPTION_NAME );
@@ -394,9 +424,9 @@ abstract class Base {
 		 * Convert the option to the new format.
 		 *
 		 * Old option names contained 'version',
-		 * like 'wpforms_version', 'wpforms_version_lite', 'wpforms_stripe_version' etc.
+		 * like 'wpforms_version', 'wpforms_version_lite', 'wpforms_stripe_version', etc.
 		 * We preserve old options for downgrade cases.
-		 * New option names should contain 'versions' and be like 'wpforms_versions' etc.
+		 * New option names should contain 'versions' and be like 'wpforms_versions', etc.
 		 */
 		$this->migrated = get_option(
 			str_replace( 'versions', 'version', static::MIGRATED_OPTION_NAME )
@@ -471,7 +501,7 @@ abstract class Base {
 	 *
 	 * @return void
 	 */
-	private function log_migration_message( bool $migrated, string $plugin_name, string $upgrade_version ) {
+	private function log_migration_message( bool $migrated, string $plugin_name, string $upgrade_version ): void {
 
 		$message = $migrated ?
 			sprintf( 'Migration of %1$s to %2$s completed.', $plugin_name, $upgrade_version ) :

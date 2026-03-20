@@ -282,14 +282,16 @@ class Schema_DotOrg_Plugin_Feedback {
 }
 endif;
 
-
+add_action( 'admin_init', 'schema_wp_init_plugin_feedback' );
 /*
 * Instantiate Schema_DotOrg_Plugin_Feedback class
 *
-* @since 1.5.4
+* @since 1.7.9.6
 */
-new Schema_DotOrg_Plugin_Feedback( array(
-	'slug'        => 'schema',						// The plugin slug
-	'name'        => __('Schema', 'schema-wp'), 	// The plugin name
-	'time_limit'  => WEEK_IN_SECONDS,				// The time limit at which notice is shown
-) );
+function schema_wp_init_plugin_feedback() {
+    new Schema_DotOrg_Plugin_Feedback( array(
+        'slug'       => 'schema',
+        'name'       => __( 'Schema', 'schema-wp' ),
+        'time_limit' => WEEK_IN_SECONDS,
+    ) );
+}

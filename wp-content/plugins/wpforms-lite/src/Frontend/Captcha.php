@@ -30,10 +30,32 @@ class Captcha {
 		add_filter( 'script_loader_tag',  [ $this, 'set_defer_attribute' ], 10, 3 );
 
 		// Actions.
+		add_action( 'send_headers', [ $this, 'send_headers' ] );
 		add_action( 'wpforms_frontend_output', [ $this, 'recaptcha' ], 20, 5 );
 		add_action( 'wp_enqueue_scripts', [ $this, 'recaptcha_noconflict' ], 9999 );
 		add_action( 'wp_footer', [ $this, 'recaptcha_noconflict' ], 19 );
 		add_action( 'wpforms_wp_footer', [ $this, 'assets_recaptcha' ] );
+	}
+
+	/**
+	 * Send HTTP headers to prevent warning in the browser console.
+	 *
+	 * @since 1.9.8.3
+	 */
+	public function send_headers(): void {
+
+		if ( headers_sent() ) {
+			return;
+		}
+
+		$urls = '"https://www.google.com" "https://www.gstatic.com" "https://recaptcha.net" "https://challenges.cloudflare.com" "https://hcaptcha.com"';
+
+		header(
+			'Permissions-Policy: ' .
+			"private-state-token-redemption=(self $urls), " .
+			"private-state-token-issuance=(self $urls)",
+			false
+		);
 	}
 
 	/**
@@ -59,7 +81,7 @@ class Captcha {
 			return;
 		}
 
-		$frontend = wpforms()->get( 'frontend' );
+		$frontend = wpforms()->obj( 'frontend' );
 
 		$container_classes = [ 'wpforms-recaptcha-container', 'wpforms-is-' . $captcha_settings['provider'] ];
 
@@ -80,6 +102,26 @@ class Captcha {
 		}
 
 		echo '</div>';
+	}
+
+	/**
+	 * Get a provider-specific captcha class.
+	 *
+	 * @since 1.9.8.3
+	 *
+	 * @param string $provider Captcha provider.
+	 *
+	 * @return string
+	 */
+	private function get_captcha_class( string $provider ): string {
+
+		$classes = [
+			'recaptcha' => 'g-recaptcha',
+			'hcaptcha'  => 'h-captcha',
+			'turnstile' => 'wpforms-turnstile',
+		];
+
+		return $classes[ $provider ] ?? 'g-recaptcha';
 	}
 
 	/**
@@ -160,7 +202,10 @@ class Captcha {
 			return;
 		}
 
-		echo '<div ' . wpforms_html_attributes( '', [ 'g-recaptcha' ], $data ) . '></div>';
+		$captcha_class = $this->get_captcha_class( $captcha_settings['provider'] );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '<div ' . wpforms_html_attributes( '', [ $captcha_class ], $data ) . '></div>';
 
 		if ( $is_recaptcha && $captcha_settings['recaptcha_type'] === 'invisible' ) {
 			return;
@@ -206,7 +251,7 @@ class Captcha {
 
 		$is_recaptcha_v3 = $captcha_settings['provider'] === 'recaptcha' && $captcha_settings['recaptcha_type'] === 'v3';
 
-		if ( wpforms()->get( 'amp' )->output_captcha( $is_recaptcha_v3, $captcha_settings, $form_data ) ) {
+		if ( wpforms()->obj( 'amp' )->output_captcha( $is_recaptcha_v3, $captcha_settings, $form_data ) ) {
 			return null;
 		}
 
@@ -295,7 +340,7 @@ class Captcha {
 			apply_filters( 'wpforms_frontend_recaptcha_url', 'https://www.google.com/recaptcha/api.js?onload=wpformsRecaptchaLoad&render=explicit' ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
 
 		$captcha_api_array = [
-			'hcaptcha'  => 'https://hcaptcha.com/1/api.js?onload=wpformsRecaptchaLoad&render=explicit',
+			'hcaptcha'  => 'https://hcaptcha.com/1/api.js?onload=wpformsRecaptchaLoad&render=explicit&recaptchacompat=off',
 			'recaptcha' => $recaptcha_url,
 			'turnstile' => 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=wpformsRecaptchaLoad&render=explicit',
 		];
@@ -307,21 +352,22 @@ class Captcha {
 		 * @param string $captcha_api The CAPTCHA API URL.
 		 */
 		$captcha_api = apply_filters( 'wpforms_frontend_captcha_api', $captcha_api_array[ $captcha_settings['provider'] ] );
+		$in_footer   = ! wpforms_is_frontend_js_header_force_load();
 
 		wp_enqueue_script(
 			'wpforms-recaptcha',
 			$captcha_api,
 			$is_recaptcha_v3 ? [] : [ 'jquery' ],
-			null,
-			true
+			null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+			$in_footer
 		);
 
 		/**
-		 * Filter the string containing the CAPTCHA javascript to be added.
+		 * Filter the string containing the CAPTCHA JavaScript to be added.
 		 *
 		 * @since 1.6.4
 		 *
-		 * @param string $captcha_inline The CAPTCHA javascript.
+		 * @param string $captcha_inline The CAPTCHA JavaScript.
 		 */
 		$captcha_inline = apply_filters(
 			'wpforms_frontend_captcha_inline_script',
@@ -379,7 +425,7 @@ class Captcha {
 		}
 
 		// Return early.
-		if ( ! $captcha && ! wpforms()->get( 'frontend' )->assets_global() ) {
+		if ( ! $captcha && ! wpforms()->obj( 'frontend' )->assets_global() ) {
 			return null;
 		}
 
@@ -431,10 +477,11 @@ class Captcha {
 		// Update container class after changing Turnstile type.
 		$turnstile_update_class = /** @lang JavaScript */
 			'var turnstileUpdateContainer = function (el) {
-				let form = el.closest( "form" ),
-				iframeHeight = el.getElementsByTagName("iframe")[0].style.height;
 
-				parseInt(iframeHeight) === 0 ?
+				let form = el.closest( "form" ),
+				iframeWrapperHeight = el.offsetHeight;
+
+				parseInt(iframeWrapperHeight) === 0 ?
 					form.querySelector(".wpforms-is-turnstile").classList.add( "wpforms-is-turnstile-invisible" ) :
 					form.querySelector(".wpforms-is-turnstile").classList.remove( "wpforms-is-turnstile-invisible" );
 			};
@@ -452,13 +499,27 @@ class Captcha {
 			};
 		';
 
+		$sync = /** @lang JavaScript */
+			'const wpformsRecaptchaSync = ( func ) => {
+				return function() {
+					const context = this;
+					const args = arguments;
+
+					// Sync with jQuery ready event.
+					jQuery( document ).ready( function() {
+						func.apply( context, args );
+					} );
+				}
+			};
+		';
+
 		if ( $captcha_settings['provider'] === 'hcaptcha' ) {
 			$data  = $dispatch;
 			$data .= $callback;
 
 			$data .= /** @lang JavaScript */
 				'var wpformsRecaptchaLoad = function () {
-					Array.prototype.forEach.call(document.querySelectorAll(".g-recaptcha"), function (el) {
+					Array.prototype.forEach.call(document.querySelectorAll(".h-captcha"), function (el) {
 						var captchaID = hcaptcha.render(el, {
 							callback: function () {
 								wpformsRecaptchaCallback(el);
@@ -474,14 +535,13 @@ class Captcha {
 		}
 
 		if ( $captcha_settings['provider'] === 'turnstile' ) {
-
 			$data  = $dispatch;
 			$data .= $callback;
 			$data .= $turnstile_update_class;
 
 			$data .= /** @lang JavaScript */
 				'var wpformsRecaptchaLoad = function () {
-					Array.prototype.forEach.call(document.querySelectorAll(".g-recaptcha"), function (el) {
+					Array.prototype.forEach.call(document.querySelectorAll(".wpforms-turnstile"), function (el) {
 						let form = el.closest( "form" ),
 						formId = form.dataset.formid,
 						captchaID = turnstile.render(el, {
@@ -525,9 +585,10 @@ class Captcha {
 		} elseif ( $captcha_settings['recaptcha_type'] === 'invisible' ) {
 			$data  = $polyfills;
 			$data .= $dispatch;
+			$data .= $sync;
 
 			$data .= /** @lang JavaScript */
-				'var wpformsRecaptchaLoad = function () {
+				'var wpformsRecaptchaLoad = wpformsRecaptchaSync( function () {
 					Array.prototype.forEach.call(document.querySelectorAll(".g-recaptcha"), function (el) {
 						try {
 							var recaptchaID = grecaptcha.render(el, {
@@ -542,7 +603,7 @@ class Captcha {
 						} catch (error) {}
 					});
 					wpformsDispatchEvent(document, "wpformsRecaptchaLoaded", true);
-				};
+				} );
 				var wpformsRecaptchaCallback = function (el) {
 					var $form = el.closest("form");
 					if (typeof wpforms.formSubmit === "function") {

@@ -35,11 +35,11 @@ class DebugPage extends PageAbstract {
 	public function __construct(
 		PluginInfo $plugin_info,
 		PluginData $plugin_data,
-		FileLoader $file_loader = null
+		?FileLoader $file_loader = null
 	) {
 		$this->plugin_info = $plugin_info;
 		$this->plugin_data = $plugin_data;
-		$this->file_loader = $file_loader ?: new FileLoader( $plugin_info, $plugin_data );
+		$this->file_loader = $file_loader ?: new FileLoader();
 	}
 
 	/**
@@ -52,7 +52,7 @@ class DebugPage extends PageAbstract {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_label(): string {
+	public static function get_label(): string {
 		return __( 'Help Center', 'webp-converter-for-media' );
 	}
 
@@ -69,14 +69,14 @@ class DebugPage extends PageAbstract {
 	public function get_template_vars(): array {
 		$uploads_url  = apply_filters( 'webpc_dir_url', '', 'uploads' );
 		$uploads_path = apply_filters( 'webpc_dir_path', '', 'uploads' );
-		$ver_param    = time();
+		$ver_param    = uniqid();
+
+		$errors_messages = apply_filters( 'webpc_server_errors_messages', [] );
+		$errors_codes    = apply_filters( 'webpc_server_errors', [] );
 
 		do_action( LoaderAbstract::ACTION_NAME, true, true );
-
-		$data = [
+		return [
 			'logo_url'              => $this->plugin_info->get_plugin_directory_url() . 'assets/img/logo-headline.png',
-			'errors_messages'       => apply_filters( 'webpc_server_errors_messages', [] ),
-			'errors_codes'          => apply_filters( 'webpc_server_errors', [] ),
 			'size_png_path'         => $this->file_loader->get_file_size_by_path(
 				$uploads_path . RewritesErrorsDetector::PATH_OUTPUT_FILE_PNG
 			),
@@ -103,11 +103,23 @@ class DebugPage extends PageAbstract {
 				true,
 				$ver_param
 			),
-			'plugin_settings'       => $this->plugin_data->get_public_settings(),
-			'url_debug_page'        => PageIntegration::get_settings_page_url( self::PAGE_SLUG ),
+			'plugin_settings'       => $this->plugin_data->get_plugin_settings_public(),
+			'url_debug_page'        => PageIntegrator::get_settings_page_url( self::PAGE_SLUG ),
+			'errors_messages'       => $errors_messages,
+			'errors_codes'          => $errors_codes,
 		];
+	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function do_action_before_load() {
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function do_action_after_load() {
 		do_action( LoaderAbstract::ACTION_NAME, true );
-		return $data;
 	}
 }

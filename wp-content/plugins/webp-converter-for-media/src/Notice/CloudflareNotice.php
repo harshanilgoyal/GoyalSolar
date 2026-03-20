@@ -2,8 +2,9 @@
 
 namespace WebpConverter\Notice;
 
+use WebpConverter\Service\CloudflareConfigurator;
 use WebpConverter\Service\OptionsAccessManager;
-use WebpConverter\Settings\Page\PageIntegration;
+use WebpConverter\Settings\Page\PageIntegrator;
 
 /**
  * Supports notice asking to clear CDN cache for Cloudflare.
@@ -23,13 +24,6 @@ class CloudflareNotice extends NoticeAbstract implements NoticeInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_default_value(): string {
-		return '';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function is_available(): bool {
 		$cdn_server = strtolower( $_SERVER['HTTP_CDN_LOOP'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		if ( isset( $_SERVER['KINSTA_CACHE_ZONE'] ) ) {
@@ -38,9 +32,15 @@ class CloudflareNotice extends NoticeAbstract implements NoticeInterface {
 
 		if ( ( strpos( $cdn_server, 'cloudflare' ) === false ) && ! is_plugin_active( 'cloudflare/cloudflare.php' ) ) {
 			return false;
+		} elseif ( strpos( $_SERVER['SERVER_NAME'] ?? '', 'tastewp.com' ) !== false ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			return false;
 		}
 
-		return ( ( $_GET['page'] ?? '' ) === PageIntegration::SETTINGS_MENU_PAGE ); // phpcs:ignore WordPress.Security
+		if ( OptionsAccessManager::get_option( CloudflareConfigurator::REQUEST_CACHE_PURGE_OPTION, '-' ) === 'yes' ) {
+			return false;
+		}
+
+		return ( ( $_GET['page'] ?? '' ) === PageIntegrator::SETTINGS_MENU_PAGE ); // phpcs:ignore WordPress.Security
 	}
 
 	/**
@@ -67,6 +67,8 @@ class CloudflareNotice extends NoticeAbstract implements NoticeInterface {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @return mixed[]
 	 */
 	public function get_vars_for_view(): array {
 		return [
@@ -86,7 +88,7 @@ class CloudflareNotice extends NoticeAbstract implements NoticeInterface {
 				),
 				sprintf(
 				/* translators: %1$s: section label, %2$s: button label */
-					__( 'Under %1$s, click %2$s. A warning window appears.', 'webp-converter-for-media' ),
+					__( 'Under %1$s, click %2$s. A warning window will appear.', 'webp-converter-for-media' ),
 					'<strong>"Purge Cache"</strong>',
 					'<strong>"Purge Everything"</strong>'
 				),

@@ -5,20 +5,9 @@
  * @package automattic/jetpack
  */
 
-/**
- * Returns the location of Jetpack's lib directory. This filter is applied
- * in require_lib().
- *
- * @since 4.0.2
- *
- * @return string Location of Jetpack library directory.
- *
- * @filter require_lib_dir
- */
-function jetpack_require_lib_dir() {
-	return JETPACK__PLUGIN_DIR . '_inc/lib';
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 0 );
 }
-add_filter( 'jetpack_require_lib_dir', 'jetpack_require_lib_dir' );
 
 /**
  * Checks if the code debug mode turned on, and returns false if it is. When Jetpack is in
@@ -50,17 +39,16 @@ require_once JETPACK__PLUGIN_DIR . 'functions.global.php';
 require_once JETPACK__PLUGIN_DIR . 'functions.compat.php';
 require_once JETPACK__PLUGIN_DIR . 'class-jetpack-gallery-settings.php';
 require_once JETPACK__PLUGIN_DIR . 'functions.cookies.php';
-require_once JETPACK__PLUGIN_DIR . 'require-lib.php';
 require_once JETPACK__PLUGIN_DIR . 'class.jetpack-autoupdate.php';
 require_once JETPACK__PLUGIN_DIR . 'class.frame-nonce-preview.php';
 require_once JETPACK__PLUGIN_DIR . 'modules/module-headings.php';
-require_once JETPACK__PLUGIN_DIR . 'class.jetpack-connection-banner.php';
 require_once JETPACK__PLUGIN_DIR . 'class.jetpack-plan.php';
-// Used by the API endpoints.
+// Used by the API endpoints or used in an odd number of places.
 require_once JETPACK__PLUGIN_DIR . 'modules/seo-tools/class-jetpack-seo-utils.php';
 require_once JETPACK__PLUGIN_DIR . 'modules/seo-tools/class-jetpack-seo-titles.php';
 require_once JETPACK__PLUGIN_DIR . 'modules/seo-tools/class-jetpack-seo-posts.php';
 require_once JETPACK__PLUGIN_DIR . 'modules/verification-tools/verification-tools-utils.php';
+require_once JETPACK__PLUGIN_DIR . 'modules/shortcodes/shortcode-utils.php'; // Shortcodes are often referenced in other modules, so making it available early.
 
 require_once JETPACK__PLUGIN_DIR . 'class-jetpack-xmlrpc-methods.php';
 Jetpack_XMLRPC_Methods::init();
@@ -68,12 +56,16 @@ Jetpack_XMLRPC_Methods::init();
 require_once JETPACK__PLUGIN_DIR . 'class-jetpack-connection-status.php';
 Jetpack_Connection_Status::init();
 
-jetpack_require_lib( 'class-jetpack-recommendations' );
-require_once JETPACK__PLUGIN_DIR . 'class-jetpack-recommendations-banner.php';
+require_once JETPACK__PLUGIN_DIR . '_inc/lib/class-jetpack-recommendations.php';
 
 if ( is_admin() ) {
 	require_once JETPACK__PLUGIN_DIR . 'class.jetpack-admin.php';
-	jetpack_require_lib( 'debugger' );
+	require_once JETPACK__PLUGIN_DIR . '_inc/lib/debugger.php';
+
+	// Initialize Newsletter Settings (always-loaded so the settings page URL works even when module is inactive).
+	\Automattic\Jetpack\Newsletter\Settings::init();
+
+	\Automattic\Jetpack\Plugin\Jetpack_Script_Data::configure();
 }
 
 // Play nice with https://wp-cli.org/.

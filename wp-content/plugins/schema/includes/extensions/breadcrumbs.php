@@ -44,6 +44,10 @@ if ( ! class_exists( 'SCHEMA_JSON_LD_Breadcrumbs' ) ) {
 		 */
 		private $crumbs = array();
 
+		private $post;
+		private $show_on_front;
+		private $page_for_posts;
+		
 		/**
 		 * Initiate the class JSON_LD_Breadcrumbs
 		 *

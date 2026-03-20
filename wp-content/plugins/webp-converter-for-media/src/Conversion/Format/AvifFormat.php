@@ -4,7 +4,6 @@ namespace WebpConverter\Conversion\Format;
 
 use WebpConverter\Conversion\Method\RemoteMethod;
 use WebpConverter\Repository\TokenRepository;
-use WebpConverter\WebpConverterConstants;
 
 /**
  * Supports AVIF as output format for images.
@@ -18,8 +17,8 @@ class AvifFormat extends FormatAbstract {
 	 */
 	private $token_repository;
 
-	public function __construct( TokenRepository $token_repository = null ) {
-		$this->token_repository = $token_repository ?: new TokenRepository();
+	public function __construct( TokenRepository $token_repository ) {
+		$this->token_repository = $token_repository;
 	}
 
 	/**
@@ -40,20 +39,7 @@ class AvifFormat extends FormatAbstract {
 	 * {@inheritdoc}
 	 */
 	public function get_label(): string {
-		if ( $this->token_repository->get_token()->get_valid_status() ) {
-			return 'AVIF';
-		}
-
-		return sprintf(
-			'%1$s (%2$s)',
-			'AVIF',
-			sprintf(
-			/* translators: %1$s: open anchor tag, %2$s: close anchor tag */
-				__( 'available in %1$sthe PRO version%2$s', 'webp-converter-for-media' ),
-				'<a href="' . esc_url( sprintf( WebpConverterConstants::UPGRADE_PRO_PREFIX_URL, 'field-output-formats-avif-upgrade' ) ) . '" target="_blank">',
-				'</a>'
-			)
-		);
+		return 'AVIF';
 	}
 
 	/**

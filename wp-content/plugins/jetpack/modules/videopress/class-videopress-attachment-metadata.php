@@ -7,6 +7,10 @@
 
 use Automattic\Jetpack\Connection\Client;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 0 );
+}
+
 /**
  * Class Videopress_Attachment_Metadata
  */
@@ -44,7 +48,7 @@ class Videopress_Attachment_Metadata {
 		$endpoint       = 'videos';
 		$values['guid'] = $guid;
 
-		$result = Client::wpcom_json_api_request_as_blog( $endpoint, '2', $args, wp_json_encode( $values ), 'wpcom' );
+		$result = Client::wpcom_json_api_request_as_blog( $endpoint, '2', $args, wp_json_encode( $values, JSON_UNESCAPED_SLASHES ), 'wpcom' );
 
 		$validated_result = self::validate_result( $result );
 		if ( true !== $validated_result ) {
@@ -88,7 +92,7 @@ class Videopress_Attachment_Metadata {
 	 */
 	public static function is_videopress_media( $item ) {
 		if ( defined( 'IS_WPCOM' ) && IS_WPCOM ) {
-			return 0 === strpos( $item->mime_type, 'video/' );
+			return str_starts_with( $item->mime_type, 'video/' );
 		}
 
 		// Else, we are in Jetpack and we need to check if the video is video/videopress.

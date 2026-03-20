@@ -8,10 +8,13 @@
  * @var string  $nonce_input_name         Name of hidden field with WordPress Nonce value.
  * @var string  $nonce_input_value        WordPress Nonce value.
  * @var bool    $token_valid_status       Status of PRO version.
- * @var string  $api_calculate_url        URL of REST API endpoint.
  *
  * @package Converter for Media
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 ?>
 <div class="webpcPage__widget webpcPage__widget--border">
@@ -27,7 +30,9 @@
 			<div class="webpcPage__widgetRow">
 				<ul class="webpcPage__widgetColumns">
 					<li class="webpcPage__widgetColumn">
-						<h4><?php echo esc_html( $option['label'] ); ?></h4>
+						<?php if ( $option['label'] ) : ?>
+							<h4><?php echo esc_html( $option['label'] ); ?></h4>
+						<?php endif; ?>
 						<?php include dirname( __DIR__ ) . '/fields/' . $option['type'] . '.php'; ?>
 					</li>
 					<?php if ( $option['notice_lines'] ) : ?>

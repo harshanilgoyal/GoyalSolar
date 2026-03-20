@@ -12,8 +12,9 @@ namespace Automattic\Jetpack\Extensions\OpenTable;
 use Automattic\Jetpack\Blocks;
 use Jetpack_Gutenberg;
 
-const FEATURE_NAME = 'opentable';
-const BLOCK_NAME   = 'jetpack/' . FEATURE_NAME;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 0 );
+}
 
 /**
  * Registers the block for use in Gutenberg
@@ -22,7 +23,7 @@ const BLOCK_NAME   = 'jetpack/' . FEATURE_NAME;
  */
 function register_block() {
 	Blocks::jetpack_register_block(
-		BLOCK_NAME,
+		__DIR__,
 		array(
 			'render_callback' => __NAMESPACE__ . '\load_assets',
 			'plan_check'      => true,
@@ -40,7 +41,7 @@ add_action( 'init', __NAMESPACE__ . '\register_block' );
  */
 function load_assets( $attributes ) {
 
-	Jetpack_Gutenberg::load_assets_as_required( FEATURE_NAME );
+	Jetpack_Gutenberg::load_assets_as_required( __DIR__ );
 
 	$classes    = array();
 	$class_name = get_attribute( $attributes, 'className' );
@@ -52,7 +53,7 @@ function load_assets( $attributes ) {
 	}
 
 	// Handles case of deprecated version using theme instead of block styles.
-	if ( ! $class_name || strpos( $class_name, 'is-style-' ) === false ) {
+	if ( ! $class_name || ! str_contains( $class_name, 'is-style-' ) ) {
 		$classes[] = sprintf( 'is-style-%s', $style );
 	}
 
@@ -62,7 +63,7 @@ function load_assets( $attributes ) {
 	if ( array_key_exists( 'negativeMargin', $attributes ) && $attributes['negativeMargin'] ) {
 		$classes[] = 'has-no-margin';
 	}
-	$classes = Blocks::classes( FEATURE_NAME, $attributes, $classes );
+	$classes = Blocks::classes( Blocks::get_block_feature( __DIR__ ), $attributes, $classes );
 	$content = '<div class="' . esc_attr( $classes ) . '">';
 
 	$script_url = build_embed_url( $attributes );
@@ -140,7 +141,7 @@ function get_attribute( $attributes, $attribute_name ) {
  * @return string The filtered attribute
  */
 function get_type_attribute( $attributes ) {
-	if ( ! empty( $attributes['rid'] ) && count( $attributes['rid'] ) > 1 ) {
+	if ( ! empty( $attributes['rid'] ) && is_countable( $attributes['rid'] ) && count( $attributes['rid'] ) > 1 ) {
 		return 'multi';
 	}
 
@@ -155,7 +156,7 @@ function get_type_attribute( $attributes ) {
  * Get the block theme attribute
  *
  * OpenTable has a confusing mix of themes and types for the widget. A type
- * can have a theme, but the button style can not have a theme. The other two
+ * can have a theme, but the button style cannot have a theme. The other two
  * types (multi and standard) can have one of the three themes.
  *
  * We have combined these into a `style` attribute as really there are 4 styles

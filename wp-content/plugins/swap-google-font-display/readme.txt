@@ -1,13 +1,15 @@
-=== Swap Google Fonts Display ===
+=== Swap Google Fonts Display: Improve Font Rendering & Performance ===
 
 Contributors: gijo
 Tags: fonts, google fonts, web font, display swap
 Requires at least: 4.7
-Tested up to: 6.0
+Tested up to: 6.9
 Requires PHP: 5.6
 Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+Ensure text remains visible during webfont load, reduce FOUT, and improve performance for a smoother user experience.
 
 == Description ==
 
@@ -21,8 +23,8 @@ Ensure text remains visible during webfont load
 - [Facebook Group](https://www.facebook.com/groups/wpspeedmatters)
 
 ## Our premium products
-- [FlyingPress](https://flying-press.com)
-- [FlyingProxy](https://flyingproxy.com)
+- [FlyingPress](https://flyingpress.com)
+- [FlyingCDN](https://flyingcdn.com)
 
 ## Our free plugins
 - [Flying Pages](https://wordpress.org/plugins/flying-pages/)

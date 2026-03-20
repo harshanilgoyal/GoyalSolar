@@ -2,11 +2,14 @@
 
 namespace WebpConverter\Conversion\Method;
 
+use WebpConverter\Conversion\CrashedFilesOperator;
 use WebpConverter\Conversion\Format\AvifFormat;
+use WebpConverter\Conversion\Format\FormatFactory;
 use WebpConverter\Conversion\Format\WebpFormat;
-use WebpConverter\Conversion\OutputPath;
+use WebpConverter\Conversion\LargerFilesOperator;
+use WebpConverter\Conversion\OutputPathGenerator;
 use WebpConverter\Exception;
-use WebpConverter\Settings\Option\ExtraFeaturesOption;
+use WebpConverter\Service\ServerConfigurator;
 
 /**
  * Abstract class for class that converts images.
@@ -14,12 +17,36 @@ use WebpConverter\Settings\Option\ExtraFeaturesOption;
 abstract class MethodAbstract implements MethodInterface {
 
 	/**
-	 * @var OutputPath
+	 * @var CrashedFilesOperator
+	 */
+	protected $skip_crashed;
+
+	/**
+	 * @var LargerFilesOperator
+	 */
+	protected $skip_larger;
+
+	/**
+	 * @var ServerConfigurator
+	 */
+	protected $server_configurator;
+
+	/**
+	 * @var OutputPathGenerator
 	 */
 	private $output_path;
 
-	public function __construct( OutputPath $output_path = null ) {
-		$this->output_path = $output_path ?: new OutputPath();
+	public function __construct(
+		FormatFactory $format_factory,
+		CrashedFilesOperator $skip_crashed,
+		LargerFilesOperator $skip_larger,
+		ServerConfigurator $server_configurator,
+		?OutputPathGenerator $output_path = null
+	) {
+		$this->skip_crashed        = $skip_crashed;
+		$this->skip_larger         = $skip_larger;
+		$this->server_configurator = $server_configurator;
+		$this->output_path         = $output_path ?: new OutputPathGenerator( $format_factory );
 	}
 
 	/**
@@ -49,21 +76,11 @@ abstract class MethodAbstract implements MethodInterface {
 	protected $size_after = 0;
 
 	/**
-	 * @var int
+	 * @var mixed[]
 	 */
-	protected $files_to_conversion = 0;
-
-	/**
-	 * @var int
-	 */
-	protected $files_converted = 0;
-
-	/**
-	 * @var int[]
-	 */
-	protected $output_files_converted = [
-		WebpFormat::FORMAT_EXTENSION => 0,
-		AvifFormat::FORMAT_EXTENSION => 0,
+	protected $files_statuses = [
+		WebpFormat::FORMAT_EXTENSION => [],
+		AvifFormat::FORMAT_EXTENSION => [],
 	];
 
 	/**
@@ -97,22 +114,22 @@ abstract class MethodAbstract implements MethodInterface {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_files_to_conversion(): int {
-		return $this->files_to_conversion;
+	public function get_files_available( string $output_format ): int {
+		return count( $this->files_statuses[ $output_format ] );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_files_converted(): int {
-		return $this->files_converted;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_files_converted_to_format( string $output_format ): int {
-		return $this->output_files_converted[ $output_format ];
+	public function get_files_converted( string $output_format ): int {
+		return count(
+			array_filter(
+				$this->files_statuses[ $output_format ],
+				function ( $value ) {
+					return ( $value === true );
+				}
+			)
+		);
 	}
 
 	/**
@@ -125,18 +142,18 @@ abstract class MethodAbstract implements MethodInterface {
 	/**
 	 * Checks server path of source image.
 	 *
-	 * @param string $source_path Server path of source image.
-	 *
-	 * @return string Server path of source image.
+	 * @param string   $source_path  Server path of source image.
+	 * @param int|null $max_filesize Maximum allowed filesize in bytes.
 	 *
 	 * @throws Exception\SourcePathException
+	 * @throws Exception\FilesizeOversizeException
 	 */
-	protected function get_image_source_path( string $source_path ): string {
+	protected function check_image_source_path( string $source_path, ?int $max_filesize = null ): void {
 		if ( ! is_readable( $source_path ) ) {
 			throw new Exception\SourcePathException( $source_path );
+		} elseif ( ( $max_filesize !== null ) && ( filesize( $source_path ) > $max_filesize ) ) {
+			throw new Exception\FilesizeOversizeException( [ $max_filesize, $source_path ] );
 		}
-
-		return $source_path;
 	}
 
 	/**
@@ -171,22 +188,20 @@ abstract class MethodAbstract implements MethodInterface {
 
 		$this->size_before += $size_before ?: 0;
 		$this->size_after  += $size_after ?: 0;
-
-		if ( $output_exist ) {
-			$this->files_converted++;
-		}
 	}
 
 	/**
 	 * @param string  $error_message   .
 	 * @param mixed[] $plugin_settings .
+	 * @param bool    $is_fatal_error  .
 	 *
 	 * @return void
 	 */
-	protected function log_conversion_error( string $error_message, array $plugin_settings ) {
-		$features = $plugin_settings[ ExtraFeaturesOption::OPTION_NAME ];
-		if ( in_array( ExtraFeaturesOption::OPTION_VALUE_DEBUG_ENABLED, $features ) ) {
-			error_log( sprintf( 'Converter for Media: %s', $error_message ) ); // phpcs:ignore
+	protected function save_conversion_error( string $error_message, array $plugin_settings, bool $is_fatal_error = false ) {
+		if ( $is_fatal_error ) {
+			$this->is_fatal_error = true;
 		}
+
+		$this->errors[] = $error_message;
 	}
 }

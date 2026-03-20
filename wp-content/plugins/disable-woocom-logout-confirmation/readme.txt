@@ -3,9 +3,9 @@ Contributors:hemthapa
 Donate link: http://www.hemthapa.com
 Tags: woocommerce, logout confirmation, my-account
 Requires at least: 4.0
-Requires PHP: 5.6
-Tested up to: 5.5
-WC tested up to: 4.4.1
+Requires PHP: 7.3
+Tested up to: 6.9
+WC tested up to: 10.4.3
 Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -34,7 +34,7 @@ First version.
 = 1.1 =
 Support for wp version upto v5.3 is updated.
 = 1.2 =
-Support for wp version upto v5.5 is updated.
+Support for wp version upto v6.9 is updated.
 
 
 == Upgrade Notice ==

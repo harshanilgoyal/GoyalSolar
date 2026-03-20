@@ -10,6 +10,10 @@
  * @package Converter for Media
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 <div class="notice notice-success is-dismissible"
 	data-notice="webp-converter-for-media"
@@ -22,7 +26,7 @@
 			echo esc_html(
 				sprintf(
 				/* translators: %1$s: service name */
-					__( 'You are using %1$s, right? Please follow the steps below for the plugin to function properly:', 'webp-converter-for-media' ),
+					__( 'You are using %1$s, right? Please, follow the steps below for the plugin to function properly:', 'webp-converter-for-media' ),
 					$service_name
 				)
 			);

@@ -2,7 +2,6 @@
 
 namespace WebpConverter\Loader;
 
-use WebpConverter\Settings\Option\LoaderTypeOption;
 use WebpConverter\Settings\Option\OutputFormatsOption;
 use WebpConverter\Settings\Option\SupportedDirectoriesOption;
 use WebpConverter\Settings\Option\SupportedExtensionsOption;
@@ -17,49 +16,67 @@ class PassthruLoader extends LoaderAbstract {
 	const LOADER_SOURCE = '/includes/passthru.php';
 
 	/**
+	 * @var string[]
+	 */
+	private $allowed_urls = [];
+
+	/**
 	 * {@inheritdoc}
 	 */
-	public function init_hooks() {
-		add_action( 'get_header', [ $this, 'start_buffer' ] );
+	public function get_type(): string {
+		return self::LOADER_TYPE;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function is_active_loader(): bool {
-		$settings = $this->plugin_data->get_plugin_settings();
-		return ( ( $settings[ LoaderTypeOption::OPTION_NAME ] ?? '' ) === self::LOADER_TYPE );
+		if ( ! parent::is_active_loader() ) {
+			return false;
+		}
+
+		return ( ( apply_filters( 'webpc_dir_name', '', 'uploads' ) === 'wp-content/uploads' )
+			&& ( apply_filters( 'webpc_dir_name', '', 'webp' ) === 'wp-content/uploads-webpc' ) );
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function init_admin_hooks() {
+		add_filter( 'webpc_debug_image_url', [ $this, 'update_image_urls' ] );
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function init_front_end_hooks() {
+		add_action( 'init', [ $this, 'start_buffering' ] );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function activate_loader( bool $is_debug = false ) {
-		$settings    = ( ! $is_debug ) ? $this->plugin_data->get_plugin_settings() : $this->plugin_data->get_debug_settings();
+		$settings    = ( ! $is_debug ) ? $this->plugin_data->get_plugin_settings() : $this->plugin_data->get_plugin_settings_debug();
 		$path_source = $this->plugin_info->get_plugin_directory_path() . self::LOADER_SOURCE;
 		$source_code = ( is_readable( $path_source ) ) ? file_get_contents( $path_source ) ?: '' : '';
 		if ( ! $source_code ) {
 			return;
 		}
 
-		$path_dir_uploads = apply_filters( 'webpc_dir_name', '', 'uploads' );
-		$path_dir_webp    = apply_filters( 'webpc_dir_name', '', 'webp' );
-		$upload_suffix    = implode( '/', array_diff( explode( '/', $path_dir_uploads ), explode( '/', $path_dir_webp ) ) );
-		$mime_types       = $this->format_factory->get_mime_types( $settings[ OutputFormatsOption::OPTION_NAME ] );
+		$path_dir_wp_content = dirname( apply_filters( 'webpc_dir_name', '', 'uploads' ) );
+		$path_dir_webp       = apply_filters( 'webpc_dir_name', '', 'webp' );
+		$allowed_urls        = $this->allowed_urls ?: $this->get_allowed_urls( $path_dir_wp_content, $path_dir_webp );
+		$mime_types          = $this->format_factory->get_mime_types( $settings[ OutputFormatsOption::OPTION_NAME ] );
 
 		$source_code = preg_replace(
-			'/(PATH_UPLOADS(?:\s+)= \')(\')/',
-			'$1' . $path_dir_uploads . '$2',
+			'/(ALLOWED_URL_PREFIXES(?:\s+)= \')(\')/',
+			'$1' . base64_encode( json_encode( $allowed_urls ) ?: '' ) . '$2',
 			$source_code
 		);
 		$source_code = preg_replace(
-			'/(PATH_UPLOADS_WEBP(?:\s+)= \')(\')/',
-			'$1' . $path_dir_webp . '/' . $upload_suffix . '$2',
-			$source_code ?: ''
-		);
-		$source_code = preg_replace(
 			'/(MIME_TYPES(?:\s+)= \')(\')/',
-			'$1' . json_encode( $mime_types ) . '$2',
+			'$1' . base64_encode( json_encode( $mime_types ) ?: '' ) . '$2',
 			$source_code ?: ''
 		);
 
@@ -67,6 +84,42 @@ class PassthruLoader extends LoaderAbstract {
 		if ( is_writable( $dir_output ) ) {
 			file_put_contents( $dir_output . self::PATH_LOADER, $source_code );
 		}
+	}
+
+	/**
+	 * @param string $path_dir_wp_content .
+	 * @param string $path_dir_webp       .
+	 *
+	 * @return string[]
+	 */
+	private function get_allowed_urls( string $path_dir_wp_content, string $path_dir_webp ): array {
+		$allowed_urls = [];
+
+		if ( is_multisite() ) {
+			$sites = get_sites(
+				[
+					'fields' => 'ids',
+					'number' => 0,
+				]
+			);
+
+			foreach ( $sites as $blog_id ) {
+				switch_to_blog( $blog_id );
+				$upload = wp_upload_dir();
+				if ( ! empty( $upload['baseurl'] ) ) {
+					$allowed_urls[ $upload['baseurl'] ] = realpath( str_replace( $path_dir_wp_content, $path_dir_webp, $upload['basedir'] ) );
+				}
+				restore_current_blog();
+			}
+		} else {
+			$upload = wp_upload_dir();
+			if ( ! empty( $upload['baseurl'] ) ) {
+				$allowed_urls[ $upload['baseurl'] ] = realpath( str_replace( $path_dir_wp_content, $path_dir_webp, $upload['basedir'] ) );
+			}
+		}
+
+		$this->allowed_urls = array_filter( $allowed_urls );
+		return $this->allowed_urls;
 	}
 
 	/**
@@ -80,12 +133,14 @@ class PassthruLoader extends LoaderAbstract {
 	}
 
 	/**
-	 * Opens buffer in which all output is stored.
-	 *
 	 * @return void
 	 * @internal
 	 */
-	public function start_buffer() {
+	public function start_buffering() {
+		if ( ! ( ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || ( ! is_admin() && ! is_network_admin() ) ) ) {
+			return;
+		}
+
 		ob_start(
 			function ( $buffer ) {
 				return $this->update_image_urls( $buffer );
@@ -103,14 +158,15 @@ class PassthruLoader extends LoaderAbstract {
 	 * @internal
 	 */
 	public function update_image_urls( string $buffer, bool $is_debug = false ): string {
-		if ( ! $this->is_active_loader() ) {
+		$settings   = ( ! $is_debug ) ? $this->plugin_data->get_plugin_settings() : $this->plugin_data->get_plugin_settings_debug();
+		$extensions = implode( '|', $settings[ SupportedExtensionsOption::OPTION_NAME ] );
+		if ( ! $extensions ) {
 			return $buffer;
 		}
 
-		$settings   = ( ! $is_debug ) ? $this->plugin_data->get_plugin_settings() : $this->plugin_data->get_debug_settings();
-		$extensions = implode( '|', $settings[ SupportedExtensionsOption::OPTION_NAME ] );
-		if ( ! $extensions || ( ! $source_dir = self::get_loader_url() )
-			|| ( ! $allowed_dirs = $this->get_allowed_dirs( $settings ) ) ) {
+		$source_dir   = $this->get_loader_url();
+		$allowed_dirs = $this->get_allowed_dirs( $settings );
+		if ( ! $source_dir || ! $allowed_dirs ) {
 			return $buffer;
 		}
 
@@ -119,7 +175,7 @@ class PassthruLoader extends LoaderAbstract {
 
 		return preg_replace(
 			'/(https?:\/\/(?:[^\s()"\']+)(?:' . $dir_paths . ')(?:[^\s()"\']+)\.(?:' . $extensions . '))/',
-			$source_dir . '?src=$1' . ( ( $has_nocache ) ? '&nocache=1' : '' ),
+			$source_dir . '?src=$1' . ( ( $has_nocache ) ? '&amp;nocache=1' : '' ),
 			$buffer
 		) ?: '';
 	}

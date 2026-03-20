@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Swap Google Fonts Display
  * Plugin URI:        https://wordpress.org/plugins/swap-google-font-display/
- * Description:       Ensure text remains visible during webfont load
+ * Description:       Ensure text remains visible during webfont load, reduce FOUT, and improve performance for a smoother user experience.
  * Version:           1.1.1
  * Author:            WP Speed Matters
  * Author URI:        https://wpspeedmatters.com/
@@ -44,15 +44,7 @@ add_action('init', 'google_fonts_ds_capture_html', 1);
 if (!defined('FLYING_PRESS_VERSION')) {
   add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
     $plugin_shortcuts[] =
-      '<a href="https://flying-press.com?ref=swap_google_fonts_display" target="_blank" style="color:#3db634;">Get FlyingPress</a>';
-    return array_merge($links, $plugin_shortcuts);
-  });
-}
-
-if (!defined('FLYINGPROXY_FILE')) {
-  add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
-    $plugin_shortcuts[] =
-      '<a href="https://flyingproxy.com?ref=swap_google_fonts_display" target="_blank" style="color:#3db634;">Get FlyingProxy</a>';
+      '<a href="https://flyingpress.com?ref=swap_google_fonts_display" target="_blank" style="color:#3db634;">Get FlyingPress</a>';
     return array_merge($links, $plugin_shortcuts);
   });
 }

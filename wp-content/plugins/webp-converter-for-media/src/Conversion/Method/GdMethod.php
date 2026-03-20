@@ -3,7 +3,12 @@
 namespace WebpConverter\Conversion\Method;
 
 use WebpConverter\Conversion\Format\WebpFormat;
-use WebpConverter\Exception;
+use WebpConverter\Exception\ConversionErrorException;
+use WebpConverter\Exception\ExtensionUnsupportedException;
+use WebpConverter\Exception\FunctionUnavailableException;
+use WebpConverter\Exception\ImageAnimatedException;
+use WebpConverter\Exception\ImageInvalidException;
+use WebpConverter\Exception\ResolutionOversizeException;
 use WebpConverter\Settings\Option\ImagesQualityOption;
 use WebpConverter\Settings\Option\SupportedExtensionsOption;
 
@@ -53,7 +58,7 @@ class GdMethod extends LibraryMethodAbstract {
 	 *
 	 * @return string|null Function name using for conversion.
 	 */
-	private static function get_format_function( string $format ) {
+	private static function get_format_function( string $format ): ?string {
 		switch ( $format ) {
 			case WebpFormat::FORMAT_EXTENSION:
 				return 'imagewebp';
@@ -66,10 +71,10 @@ class GdMethod extends LibraryMethodAbstract {
 	 * {@inheritdoc}
 	 *
 	 * @return resource Image object.
-	 * @throws Exception\ExtensionUnsupportedException
-	 * @throws Exception\FunctionUnavailableException
-	 * @throws Exception\ImageInvalidException
-	 * @throws Exception\ImageAnimatedException
+	 * @throws ExtensionUnsupportedException
+	 * @throws FunctionUnavailableException
+	 * @throws ImageInvalidException
+	 * @throws ImageAnimatedException
 	 */
 	public function create_image_by_path( string $source_path, array $plugin_settings ) {
 		$extension = strtolower( pathinfo( $source_path, PATHINFO_EXTENSION ) );
@@ -83,7 +88,7 @@ class GdMethod extends LibraryMethodAbstract {
 		);
 
 		if ( ( $extension === 'gif' ) && $this->is_animated( $source_path ) ) {
-			throw new Exception\ImageAnimatedException( $source_path );
+			throw new ImageAnimatedException( $source_path );
 		}
 
 		foreach ( $methods as $method => $extensions ) {
@@ -91,14 +96,45 @@ class GdMethod extends LibraryMethodAbstract {
 				|| ! in_array( $extension, $extensions ) ) {
 				continue;
 			} elseif ( ! function_exists( $method ) ) {
-				throw new Exception\FunctionUnavailableException( $method );
+				throw new FunctionUnavailableException( $method );
 			} elseif ( ! $image = @$method( $source_path ) ) { // phpcs:ignore
-				throw new Exception\ImageInvalidException( $source_path );
+				throw new ImageInvalidException( $source_path );
 			}
 		}
 
 		if ( ! isset( $image ) ) {
-			throw new Exception\ExtensionUnsupportedException( [ $extension, $source_path ] );
+			throw new ExtensionUnsupportedException( [ $extension, $source_path ] );
+		}
+
+		$exif = ( function_exists( 'exif_read_data' ) )
+			? ( @exif_read_data( $source_path ) ?: [] ) // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			: [];
+
+		switch ( $exif['Orientation'] ?? '' ) {
+			case 2:
+				imageflip( $image, IMG_FLIP_HORIZONTAL );
+				break;
+			case 3:
+				$image = imagerotate( $image, 180, 0 );
+				break;
+			case 4:
+				imageflip( $image, IMG_FLIP_HORIZONTAL );
+				$image = imagerotate( $image, 180, 0 );
+				break;
+			case 5:
+				imageflip( $image, IMG_FLIP_VERTICAL );
+				$image = imagerotate( $image, -90, 0 );
+				break;
+			case 6:
+				$image = imagerotate( $image, -90, 0 );
+				break;
+			case 7:
+				imageflip( $image, IMG_FLIP_VERTICAL );
+				$image = imagerotate( $image, 90, 0 );
+				break;
+			case 8:
+				$image = imagerotate( $image, 90, 0 );
+				break;
 		}
 
 		return $this->update_image_resource( $image, $extension );
@@ -111,16 +147,16 @@ class GdMethod extends LibraryMethodAbstract {
 	 * @param string   $extension Extension of output format.
 	 *
 	 * @return resource Image object.
-	 * @throws Exception\FunctionUnavailableException
+	 * @throws FunctionUnavailableException
 	 */
 	private function update_image_resource( $image, string $extension ) {
 		if ( ! function_exists( 'imageistruecolor' ) ) {
-			throw new Exception\FunctionUnavailableException( 'imageistruecolor' );
+			throw new FunctionUnavailableException( 'imageistruecolor' );
 		}
 
 		if ( ! imageistruecolor( $image ) ) {
 			if ( ! function_exists( 'imagepalettetotruecolor' ) ) {
-				throw new Exception\FunctionUnavailableException( 'imagepalettetotruecolor' );
+				throw new FunctionUnavailableException( 'imagepalettetotruecolor' );
 			}
 			imagepalettetotruecolor( $image );
 		}
@@ -128,12 +164,12 @@ class GdMethod extends LibraryMethodAbstract {
 		switch ( $extension ) {
 			case 'png':
 				if ( ! function_exists( 'imagealphablending' ) ) {
-					throw new Exception\FunctionUnavailableException( 'imagealphablending' );
+					throw new FunctionUnavailableException( 'imagealphablending' );
 				}
 				imagealphablending( $image, false );
 
 				if ( ! function_exists( 'imagesavealpha' ) ) {
-					throw new Exception\FunctionUnavailableException( 'imagesavealpha' );
+					throw new FunctionUnavailableException( 'imagesavealpha' );
 				}
 				imagesavealpha( $image, true );
 				break;
@@ -145,9 +181,9 @@ class GdMethod extends LibraryMethodAbstract {
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @throws Exception\ConversionErrorException
-	 * @throws Exception\FunctionUnavailableException
-	 * @throws Exception\ResolutionOversizeException
+	 * @throws ConversionErrorException
+	 * @throws FunctionUnavailableException
+	 * @throws ResolutionOversizeException
 	 */
 	public function convert_image_to_output( $image, string $source_path, string $output_path, string $format, array $plugin_settings ) {
 		$function = self::get_format_function( $format );
@@ -159,11 +195,11 @@ class GdMethod extends LibraryMethodAbstract {
 		$output_quality = min( $plugin_settings[ ImagesQualityOption::OPTION_NAME ], self::MAX_METHOD_QUALITY );
 
 		if ( ! function_exists( $function ) ) {
-			throw new Exception\FunctionUnavailableException( $function );
+			throw new FunctionUnavailableException( $function );
 		} elseif ( ( imagesx( $image ) > 8192 ) || ( imagesy( $image ) > 8192 ) ) {
-			throw new Exception\ResolutionOversizeException( $source_path );
+			throw new ResolutionOversizeException( $source_path );
 		} elseif ( is_callable( $function ) && ! $function( $image, $output_path, $output_quality ) ) {
-			throw new Exception\ConversionErrorException( $source_path );
+			throw new ConversionErrorException( $source_path );
 		}
 
 		if ( filesize( $output_path ) % 2 === 1 ) {

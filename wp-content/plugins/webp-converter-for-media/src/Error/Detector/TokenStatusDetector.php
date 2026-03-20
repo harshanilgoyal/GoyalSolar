@@ -2,7 +2,6 @@
 
 namespace WebpConverter\Error\Detector;
 
-use WebpConverter\Conversion\PathsFinder;
 use WebpConverter\Error\Notice\AccessTokenInvalidNotice;
 use WebpConverter\Error\Notice\ApiLimitExceededNotice;
 use WebpConverter\PluginData;
@@ -13,7 +12,7 @@ use WebpConverter\Settings\Option\AccessTokenOption;
 /**
  * Checks for the token status for the PRO version.
  */
-class TokenStatusDetector implements ErrorDetector {
+class TokenStatusDetector implements DetectorInterface {
 
 	/**
 	 * @var PluginData
@@ -32,12 +31,12 @@ class TokenStatusDetector implements ErrorDetector {
 
 	public function __construct(
 		PluginData $plugin_data,
-		TokenRepository $token_repository = null,
-		TokenValidator $token_validator = null
+		?TokenRepository $token_repository = null,
+		?TokenValidator $token_validator = null
 	) {
 		$this->plugin_data      = $plugin_data;
 		$this->token_repository = $token_repository ?: new TokenRepository();
-		$this->token_validator  = $token_validator ?: new TokenValidator();
+		$this->token_validator  = $token_validator ?: new TokenValidator( $token_repository );
 	}
 
 	/**
@@ -54,13 +53,11 @@ class TokenStatusDetector implements ErrorDetector {
 			return new AccessTokenInvalidNotice();
 		}
 
-		$images_usage = ( $token->get_images_usage() + ( PathsFinder::PATHS_PER_REQUEST_REMOTE_SMALL * 2 ) );
-		if ( $images_usage > $token->get_images_limit() ) {
+		if ( ! $token->is_active() ) {
 			$token = $this->token_validator->validate_token( $token->get_token_value() );
 		}
 
-		$images_usage = ( $token->get_images_usage() + ( PathsFinder::PATHS_PER_REQUEST_REMOTE_SMALL * 2 ) );
-		if ( $images_usage > $token->get_images_limit() ) {
+		if ( ! $token->is_active() ) {
 			return new ApiLimitExceededNotice();
 		}
 

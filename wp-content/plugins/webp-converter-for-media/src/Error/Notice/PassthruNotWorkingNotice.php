@@ -5,7 +5,7 @@ namespace WebpConverter\Error\Notice;
 /**
  * {@inheritdoc}
  */
-class PassthruNotWorkingNotice implements ErrorNotice {
+class PassthruNotWorkingNotice implements NoticeInterface {
 
 	const ERROR_KEY = 'passthru_not_working';
 
@@ -23,7 +23,7 @@ class PassthruNotWorkingNotice implements ErrorNotice {
 		return [
 			sprintf(
 			/* translators: %1$s: loader name */
-				__( '%1$s loading mode is not compatible with your server. Sorry for the inconvenience.', 'webp-converter-for-media' ),
+				__( 'The %1$s loading mode is not compatible with your server. Sorry for the inconvenience.', 'webp-converter-for-media' ),
 				'Pass Thru'
 			),
 		];

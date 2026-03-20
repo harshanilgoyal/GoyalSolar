@@ -3,9 +3,9 @@ Contributors: hishaman, schemapress
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NGVUBT2QXN7YL
 Tags: schema, schema.org, rich snippets, structured data, json-ld, json, google, seo, markup, search engine, search, breadcrumbs, social, post, page, plugin, wordpress, content, article, news, search results, site name, knowledge graph, social, social profiles, keywords, meta-tags, metadata, tags, categories, optimize, ranking, search engine optimization, search engines, serp, sitelinks, google sitelinks, sitelinks search box, google sitelinks search box, semantic, structured, canonical, custom post types, post type, title, terms, media, images, thumb, featured, url, video, video markup, video object, VideoObject, video schema, audio object, AudioObject, audio schema, audio, sameAs, about, contact, amp, mobile, taxonomy
 Requires at least: 4.0
-Tested up to: 6.0.1
+Tested up to: 6.8.1
 Requires PHP: 5.4
-Stable tag: 1.7.9.5
+Stable tag: 1.7.9.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -224,6 +224,12 @@ Yes, Schema plugin will detect AMP plugin and output a more complete and valid s
 8. Schema Plugin Easy Configuration Wizard.
 
 == Changelog ==
+
+= 1.7.9.6 =
+* Fix: A PHP notice caused when loading textdomain early.
+* Fix: A PHP notice caused when calling breadcrumbs function.
+* Enhancement: Added support for new translations languages.
+* Update: Pumped tested WordPress version to 6.8.1 release.
 
 = 1.7.9.5 =
 * Fix: A bug within the Schema type input select field.

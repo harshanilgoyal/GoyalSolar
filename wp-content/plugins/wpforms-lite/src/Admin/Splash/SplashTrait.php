@@ -2,34 +2,39 @@
 
 namespace WPForms\Admin\Splash;
 
+use WPForms\Migrations\Base as MigrationsBase;
+
 trait SplashTrait {
 
 	/**
-	 * Get splash data version.
+	 * Default plugin version.
 	 *
-	 * @since 1.8.7
+	 * @since 1.9.3
 	 *
-	 * @return string Splash data version.
+	 * @var string
 	 */
-	private function get_splash_data_version(): string {
-
-		return get_option( 'wpforms_splash_data_version', WPFORMS_VERSION );
-	}
+	private $default_plugin_version = '1.8.6'; // The last version before the "What's New?" feature.
 
 	/**
-	 * Update splash data version.
+	 * Previous plugin version.
 	 *
-	 * @since 1.8.7
+	 * @since 1.9.3
 	 *
-	 * @param string $version Splash data version.
+	 * @var string
 	 */
-	private function update_splash_data_version( string $version ) {
-
-		update_option( 'wpforms_splash_data_version', $version );
-	}
+	private $previous_plugin_version;
 
 	/**
-	 * Get latest splash version.
+	 * Latest splash version.
+	 *
+	 * @since 1.9.3
+	 *
+	 * @var string
+	 */
+	private $latest_splash_version;
+
+	/**
+	 * Get the latest splash version.
 	 *
 	 * @since 1.8.7
 	 *
@@ -37,35 +42,74 @@ trait SplashTrait {
 	 */
 	private function get_latest_splash_version(): string {
 
-		return get_option( 'wpforms_splash_version', '' );
+		if ( $this->latest_splash_version ) {
+			return $this->latest_splash_version;
+		}
+
+		$this->latest_splash_version = get_option( 'wpforms_splash_version', '' );
+
+		// Create option if it doesn't exist.
+		if ( empty( $this->latest_splash_version ) ) {
+			$this->latest_splash_version = $this->default_plugin_version;
+
+			update_option( 'wpforms_splash_version', $this->latest_splash_version );
+		}
+
+		return $this->latest_splash_version;
 	}
 
 	/**
-	 * Update option with latest splash version.
+	 * Update option with the latest splash version.
 	 *
 	 * @since 1.8.7
 	 */
-	private function update_splash_version() {
+	private function update_splash_version(): void {
 
 		update_option( 'wpforms_splash_version', $this->get_major_version( WPFORMS_VERSION ) );
 	}
 
 	/**
-	 * Remove hide_welcome_block widget meta key for all users.
+	 * Get user license type.
 	 *
-	 * @since 1.8.7
+	 * @since 1.8.8
+	 *
+	 * @return string
 	 */
-	private function remove_hide_welcome_block_widget_meta() {
+	private function get_user_license(): string {
 
-		global $wpdb;
+		$license = wpforms_get_license_type();
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->delete(
-			$wpdb->usermeta,
-			[
-				'meta_key' => 'wpforms_dash_widget_hide_welcome_block', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-			]
-		);
+		if ( empty( $license ) ) {
+			$license = 'lite';
+		}
+
+		/**
+		 * License type used for splash screen.
+		 *
+		 * @since 1.8.8
+		 *
+		 * @param string $license License type.
+		 */
+		return (string) apply_filters( 'wpforms_admin_splash_splashtrait_get_user_license', $license );
+	}
+
+	/**
+	 * Get user version.
+	 *
+	 * @since 1.9.7
+	 *
+	 * @return string User version.
+	 */
+	private function get_user_version(): string {
+
+		/**
+		 * User version used for splash screen.
+		 *
+		 * @since 1.9.7
+		 *
+		 * @param string $version User version.
+		 */
+		return (string) apply_filters( 'wpforms_admin_splash_splashtrait_get_user_version', $this->get_major_version( WPFORMS_VERSION ) );
 	}
 
 	/**
@@ -78,17 +122,19 @@ trait SplashTrait {
 	private function get_default_data(): array {
 
 		return [
-			'license' => wpforms_get_license_type(),
-			'buttons' => [
+			'license'        => $this->get_user_license(),
+			'display_notice' => false,
+			'update_url'     => $this->get_update_url(),
+			'buttons'        => [
 				'get_started' => __( 'Get Started', 'wpforms-lite' ),
 				'learn_more'  => __( 'Learn More', 'wpforms-lite' ),
 			],
-			'header'  => [
+			'header'         => [
 				'image'       => WPFORMS_PLUGIN_URL . 'assets/images/splash/sullie.svg',
 				'title'       => __( 'What’s New in WPForms', 'wpforms-lite' ),
-				'description' => __( 'Since you’ve been gone, we’ve added some great new features to help grow your business and generate more leads. Here are some highlights...', 'wpforms-lite' ),
+				'description' => __( 'We\'ve added some great new features to help grow your business and generate more leads. Here are the highlights...', 'wpforms-lite' ),
 			],
-			'footer'  => [
+			'footer'         => [
 				'title'       => __( 'Start Building Smarter WordPress Forms', 'wpforms-lite' ),
 				'description' => __( 'Add advanced form fields and conditional logic, plus offer more payment options, manage entries, and connect to your favorite marketing tools – all when you purchase a premium plan.', 'wpforms-lite' ),
 				'upgrade'     => [
@@ -97,6 +143,24 @@ trait SplashTrait {
 				],
 			],
 		];
+	}
+
+	/**
+	 * Get plugin update URL.
+	 *
+	 * @since 1.9.7
+	 *
+	 * @return string Update URL.
+	 */
+	private function get_update_url(): string {
+
+		$plugin_slug = defined( 'WPFORMS_PLUGIN_DIR' ) ? plugin_basename( WPFORMS_PLUGIN_DIR ) : 'wpforms';
+		$plugin_path = $plugin_slug . '/wpforms.php';
+
+		return wp_nonce_url(
+			self_admin_url( 'update.php?action=upgrade-plugin&plugin=' . $plugin_path ),
+			'upgrade-plugin_' . $plugin_path
+		);
 	}
 
 	/**
@@ -171,7 +235,7 @@ trait SplashTrait {
 	}
 
 	/**
-	 * Get major version.
+	 * Get a major version.
 	 *
 	 * @since 1.8.7.2
 	 *
@@ -181,14 +245,39 @@ trait SplashTrait {
 	 */
 	private function get_major_version( $version ): string {
 
-		// Get version parts.
-		$version_parts = explode( '.', $version );
+		// Allow only digits and dots.
+		$clean_version = preg_replace( '/[^0-9.]/', '.', $version );
 
-		// If version has more than 3 parts - use only first 3. Get block data only for major versions.
+		// Get version parts.
+		$version_parts = explode( '.', $clean_version );
+
+		// If a version has more than 3 parts - use only first 3. Get block data only for major versions.
 		if ( count( $version_parts ) > 3 ) {
 			$version = implode( '.', array_slice( $version_parts, 0, 3 ) );
 		}
 
 		return $version;
+	}
+
+	/**
+	 * Get the WPForms plugin previous version.
+	 *
+	 * @since 1.8.8
+	 *
+	 * @return string Previous WPForms version.
+	 */
+	private function get_previous_plugin_version(): string {
+
+		if ( $this->previous_plugin_version ) {
+			return $this->previous_plugin_version;
+		}
+
+		$this->previous_plugin_version = get_option( MigrationsBase::PREVIOUS_CORE_VERSION_OPTION_NAME, '' );
+
+		if ( empty( $this->previous_plugin_version ) ) {
+			$this->previous_plugin_version = $this->default_plugin_version; // The last version before the "What's New?" feature.
+		}
+
+		return $this->previous_plugin_version;
 	}
 }

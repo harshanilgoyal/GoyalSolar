@@ -5,7 +5,7 @@
  * Description: The next generation of Structured Data.
  * Author: Hesham
  * Author URI: http://zebida.com
- * Version: 1.7.9.5
+ * Version: 1.7.9.6
  * Text Domain: schema-wp
  * Domain Path: /languages
  * License:         GPLv2 or later
@@ -52,7 +52,7 @@ final class Schema_WP {
 	 *
 	 * @since 1.0
 	 */
-	private $version = '1.7.9.5';
+	private $version = '1.7.9.6';
 
 	/**
 	 * The settings instance variable
@@ -85,16 +85,16 @@ final class Schema_WP {
 	 */
 	public static function instance() {
 		
-		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof SCHEMA_WP ) ) {
-			self::$instance = new SCHEMA_WP;
+		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Schema_WP ) ) {
+			self::$instance = new Schema_WP;
 			
 			if ( class_exists( 'Schema_Premium' ) ) {
 				return self::$instance;
 			}
 			
-			if( version_compare( PHP_VERSION, '5.4', '<' ) ) {
+			if ( version_compare( PHP_VERSION, '5.4', '<' ) ) {
 
-				add_action( 'admin_notices', array( 'SCHEMA_WP', 'below_php_version_notice' ) );
+				add_action( 'admin_notices', array( 'Schema_WP', 'below_php_version_notice' ) );
 
 				return self::$instance;
 			}
@@ -103,10 +103,14 @@ final class Schema_WP {
 			self::$instance->includes();
 
 			add_action( 'plugins_loaded', array( self::$instance, 'setup_objects' ), -1 );
-			add_action( 'plugins_loaded', array( self::$instance, 'load_textdomain' ) );
-			
+
 			// initialize the classes
+			//
         	add_action( 'plugins_loaded', array( self::$instance, 'init_classes' ), 5 );
+
+			// @since 1.7.9.6
+			//
+			add_action( 'init', array( schema_wp(), 'load_textdomain' ) );
 		}
 		return self::$instance;
 	}
@@ -203,7 +207,7 @@ final class Schema_WP {
 		require_once SCHEMAWP_PLUGIN_DIR . 'includes/admin/admin-functions.php';
 		require_once SCHEMAWP_PLUGIN_DIR . 'includes/admin/ref.php';
 		
-		if( is_admin() ) {
+		if ( is_admin() ) {
 		
 			require_once SCHEMAWP_PLUGIN_DIR . 'includes/admin/meta/class-meta.php';
 			require_once SCHEMAWP_PLUGIN_DIR . 'includes/admin/meta.php';
@@ -308,31 +312,23 @@ final class Schema_WP {
 	 */
 	public function load_textdomain() {
         
-        load_plugin_textdomain( 'schema-wp', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
-        
-        /*
-		// Set filter for plugin's languages directory
-		$lang_dir = dirname( plugin_basename( SCHEMAWP_PLUGIN_FILE ) ) . '/languages/';
-		$lang_dir = apply_filters( 'schema_wp_languages_directory', $lang_dir );
+		$locale = determine_locale();
+		$mofile = sprintf('%1$s-%2$s.mo', 'schema-wp', $locale);
 
-		// Traditional WordPress plugin locale filter
-		$locale        = apply_filters( 'plugin_locale',  get_locale(), 'schema-wp' );
-		$mofile        = sprintf( '%1$s-%2$s.mo', 'schema-wp', $locale );
-
-		// Setup paths to current locale file
-		$mofile_local  = $lang_dir . $mofile;
-		$mofile_global = WP_LANG_DIR . '/schema-wp/' . $mofile;
+		// First, check WP_LANG_DIR (global)
+		$mofile_global = WP_LANG_DIR . '/plugins/' . $mofile;
 
 		if ( file_exists( $mofile_global ) ) {
-			// Look in global /wp-content/languages/schema/ folder
 			load_textdomain( 'schema-wp', $mofile_global );
-		} elseif ( file_exists( $mofile_local ) ) {
-			// Look in local /wp-content/plugins/schema/languages/ folder
-			load_textdomain( 'schema-wp', $mofile_local );
 		} else {
-			// Load the default language files
-			load_plugin_textdomain( 'schema-wp', false, $lang_dir );
-		}*/
+			// Fall back to local plugin folder
+			load_plugin_textdomain( 'schema-wp', false, basename( dirname( __FILE__ ) ) . '/languages/' );
+		}
+
+		// Debug
+		//
+		//error_log( 'Schema_WP load_textdomain fired at: ' . current_filter() );
+
 	}
 }
 

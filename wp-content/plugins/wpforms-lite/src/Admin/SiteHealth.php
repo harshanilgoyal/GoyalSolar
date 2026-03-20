@@ -38,7 +38,7 @@ class SiteHealth {
 	 *
 	 * @return array Array with added WPForms info section.
 	 */
-	public function add_info_section( $debug_info ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function add_info_section( $debug_info ) {
 
 		$wpforms = [
 			'label'  => 'WPForms',
@@ -95,7 +95,7 @@ class SiteHealth {
 
 		if ( ! wpforms()->is_pro() ) {
 
-			$forms = wpforms()->get( 'form' )->get( '', [ 'fields' => 'ids' ] );
+			$forms = wpforms()->obj( 'form' )->get( '', [ 'fields' => 'ids' ] );
 
 			if ( empty( $forms ) || ! is_array( $forms ) ) {
 				$forms = [];

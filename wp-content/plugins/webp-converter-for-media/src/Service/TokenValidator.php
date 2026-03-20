@@ -12,6 +12,7 @@ use WebpConverter\WebpConverterConstants;
 class TokenValidator {
 
 	const API_TOKEN_SUCCESS_CODE = 200;
+	const REQUEST_INFO_OPTION    = 'webpc_token_request_info';
 
 	/**
 	 * @var TokenRepository
@@ -23,25 +24,25 @@ class TokenValidator {
 	 */
 	private $token;
 
-	public function __construct( TokenRepository $token_repository = null ) {
+	public function __construct( ?TokenRepository $token_repository = null ) {
 		$this->token_repository = $token_repository ?: new TokenRepository();
 	}
 
-	public function validate_token( string $token_value = null ): Token {
-		$this->token = $this->token_repository->get_token();
+	public function validate_token( ?string $token_value = null ): Token {
+		$this->token = $this->token_repository->get_token( $token_value );
 		$status      = ( $token_value && $this->check_access_token( $token_value ) );
 
 		if ( $status ) {
-			$this->token_repository->update_token(
+			$this->token_repository->save_token(
 				$this->token
 					->set_token_value( $token_value )
 					->set_valid_status( true )
 			);
 		} else {
-			$this->token_repository->reset_token();
+			$this->token_repository->remove_token();
 		}
 
-		return $this->token_repository->get_token();
+		return $this->token_repository->get_token( $token_value );
 	}
 
 	private function check_access_token( string $token_value ): bool {
@@ -50,10 +51,11 @@ class TokenValidator {
 			return false;
 		}
 
-		curl_setopt( $connect, CURLOPT_SSL_VERIFYPEER, 0 );
-		curl_setopt( $connect, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt( $connect, CURLOPT_SSL_VERIFYPEER, false );
+		curl_setopt( $connect, CURLOPT_SSL_VERIFYHOST, 0 );
+		curl_setopt( $connect, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $connect, CURLOPT_TIMEOUT, 10 );
-		curl_setopt( $connect, CURLOPT_POST, 1 );
+		curl_setopt( $connect, CURLOPT_POST, true );
 		curl_setopt(
 			$connect,
 			CURLOPT_POSTFIELDS,
@@ -62,11 +64,12 @@ class TokenValidator {
 			]
 		);
 
-		$response = curl_exec( $connect );
-		$code     = curl_getinfo( $connect, CURLINFO_HTTP_CODE );
+		$response     = curl_exec( $connect );
+		$request_info = curl_getinfo( $connect );
 		curl_close( $connect );
 
-		if ( $code !== self::API_TOKEN_SUCCESS_CODE ) {
+		if ( $request_info['http_code'] !== self::API_TOKEN_SUCCESS_CODE ) {
+			OptionsAccessManager::update_option( self::REQUEST_INFO_OPTION, $request_info );
 			return false;
 		}
 

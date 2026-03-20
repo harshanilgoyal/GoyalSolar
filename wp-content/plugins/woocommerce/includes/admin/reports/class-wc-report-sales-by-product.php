@@ -5,6 +5,8 @@
  * @package WooCommerce\Admin\Reporting
  */
 
+use Automattic\WooCommerce\Enums\OrderStatus;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -85,7 +87,7 @@ class WC_Report_Sales_By_Product extends WC_Admin_Report {
 				),
 				'query_type'   => 'get_var',
 				'filter_range' => true,
-				'order_status' => array( 'completed', 'processing', 'on-hold', 'refunded' ),
+				'order_status' => array( OrderStatus::COMPLETED, OrderStatus::PROCESSING, OrderStatus::ON_HOLD, OrderStatus::REFUNDED ),
 			)
 		);
 
@@ -111,7 +113,7 @@ class WC_Report_Sales_By_Product extends WC_Admin_Report {
 					),
 					'query_type'   => 'get_var',
 					'filter_range' => true,
-					'order_status' => array( 'completed', 'processing', 'on-hold', 'refunded' ),
+					'order_status' => array( OrderStatus::COMPLETED, OrderStatus::PROCESSING, OrderStatus::ON_HOLD, OrderStatus::REFUNDED ),
 				)
 			)
 		);
@@ -256,7 +258,7 @@ class WC_Report_Sales_By_Product extends WC_Admin_Report {
 						'limit'        => 12,
 						'query_type'   => 'get_results',
 						'filter_range' => true,
-						'order_status' => array( 'completed', 'processing', 'on-hold', 'refunded' ),
+						'order_status' => array( OrderStatus::COMPLETED, OrderStatus::PROCESSING, OrderStatus::ON_HOLD, OrderStatus::REFUNDED ),
 					)
 				);
 
@@ -353,7 +355,7 @@ class WC_Report_Sales_By_Product extends WC_Admin_Report {
 						'limit'        => 12,
 						'query_type'   => 'get_results',
 						'filter_range' => true,
-						'order_status' => array( 'completed', 'processing', 'on-hold', 'refunded' ),
+						'order_status' => array( OrderStatus::COMPLETED, OrderStatus::PROCESSING, OrderStatus::ON_HOLD, OrderStatus::REFUNDED ),
 					)
 				);
 
@@ -389,7 +391,7 @@ class WC_Report_Sales_By_Product extends WC_Admin_Report {
 			} );
 			jQuery( '.section' ).slideUp( 100, function() {
 				<?php if ( empty( $this->product_ids ) ) : ?>
-					jQuery( '.section_title:eq(1)' ).click();
+					jQuery( '.section_title:eq(1)' ).trigger( 'click' );
 				<?php endif; ?>
 			} );
 		</script>
@@ -464,7 +466,7 @@ class WC_Report_Sales_By_Product extends WC_Admin_Report {
 					'order_by'     => 'post_date ASC',
 					'query_type'   => 'get_results',
 					'filter_range' => true,
-					'order_status' => array( 'completed', 'processing', 'on-hold', 'refunded' ),
+					'order_status' => array( OrderStatus::COMPLETED, OrderStatus::PROCESSING, OrderStatus::ON_HOLD, OrderStatus::REFUNDED ),
 				)
 			);
 
@@ -502,7 +504,7 @@ class WC_Report_Sales_By_Product extends WC_Admin_Report {
 					'order_by'     => 'post_date ASC',
 					'query_type'   => 'get_results',
 					'filter_range' => true,
-					'order_status' => array( 'completed', 'processing', 'on-hold', 'refunded' ),
+					'order_status' => array( OrderStatus::COMPLETED, OrderStatus::PROCESSING, OrderStatus::ON_HOLD, OrderStatus::REFUNDED ),
 				)
 			);
 
@@ -610,15 +612,15 @@ class WC_Report_Sales_By_Product extends WC_Admin_Report {
 							}
 						);
 
-						jQuery('.chart-placeholder').resize();
+						jQuery('.chart-placeholder').trigger( 'resize' );
 					}
 
 					drawGraph();
 
-					jQuery('.highlight_series').hover(
+					jQuery('.highlight_series').on( 'mouseenter',
 						function() {
 							drawGraph( jQuery(this).data('series') );
-						},
+						} ).on( 'mouseleave',
 						function() {
 							drawGraph();
 						}

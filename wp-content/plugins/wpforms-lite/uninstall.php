@@ -78,17 +78,27 @@ $wpdb->query( 'DROP TABLE IF EXISTS ' . TasksMeta::get_table_name() );
 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 $wpdb->query( 'DROP TABLE IF EXISTS ' . Repository::get_table_name() );
 
+// Delete file restrictions table.
+// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'wpforms_file_restrictions' );
+
+// Delete protected files table.
+// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'wpforms_protected_files' );
+
 /**
  * Delete tables that might be created by "Add-ons".
  *
  * 1. Form Locker.
  * 2. User Journey.
  * 3. Coupons.
+ * 4. Entry Automation.
  */
 $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'wpforms_form_locker_email_verification' );
 $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'wpforms_user_journey' );
 $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'wpforms_coupons' );
 $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'wpforms_coupons_forms' );
+$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'wpforms_entry_automation_tasks' );
 
 // Delete Preview page.
 $preview_page = get_option( 'wpforms_preview_page', false );
@@ -97,10 +107,10 @@ if ( ! empty( $preview_page ) ) {
 	wp_delete_post( $preview_page, true );
 }
 
-// Delete wpforms and wpforms_log post type posts/post_meta.
+// Delete wpforms, wpforms-template and wpforms_log post type posts/post_meta.
 $wpforms_posts = get_posts(
 	[
-		'post_type'   => [ 'wpforms_log', 'wpforms' ],
+		'post_type'   => [ 'wpforms_log', 'wpforms', 'wpforms-template' ],
 		'post_status' => [ 'any', 'trash', 'auto-draft' ],
 		'numberposts' => -1,
 		'fields'      => 'ids',
@@ -156,6 +166,12 @@ if ( ! empty( $translations ) ) {
 
 // Remove plugin cron jobs.
 wp_clear_scheduled_hook( 'wpforms_email_summaries_cron' );
+
+// Check if the event is scheduled before attempting to clear it.
+// This event is only registered for the Lite edition of the plugin.
+if ( wp_next_scheduled( 'wpforms_weekly_entries_count_cron' ) ) {
+	wp_clear_scheduled_hook( 'wpforms_weekly_entries_count_cron' );
+}
 
 // Un-schedule all plugin ActionScheduler actions.
 // Don't use wpforms() because 'tasks' in core are registered on `init` hook,

@@ -3,7 +3,6 @@
 namespace WebpConverter\Settings\Option;
 
 use WebpConverter\Repository\TokenRepository;
-use WebpConverter\WebpConverterConstants;
 
 /**
  * {@inheritdoc}
@@ -32,7 +31,7 @@ class ImageResizeOption extends OptionAbstract {
 	 * {@inheritdoc}
 	 */
 	public function get_form_name(): string {
-		return OptionAbstract::FORM_TYPE_BASIC;
+		return OptionAbstract::FORM_TYPE_GENERAL;
 	}
 
 	/**
@@ -45,7 +44,7 @@ class ImageResizeOption extends OptionAbstract {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_label(): string {
+	public static function get_label(): string {
 		return __( 'Maximum image dimensions', 'webp-converter-for-media' );
 	}
 
@@ -62,7 +61,7 @@ class ImageResizeOption extends OptionAbstract {
 				sprintf(
 				/* translators: %1$s: open anchor tag, %2$s: close anchor tag */
 					__( 'available in %1$sthe PRO version%2$s', 'webp-converter-for-media' ),
-					'<a href="' . esc_url( sprintf( WebpConverterConstants::UPGRADE_PRO_PREFIX_URL, 'field-image-resize-upgrade' ) ) . '" target="_blank">',
+					'<a href="https://url.mattplugins.com/converter-field-image-resize-upgrade" target="_blank">',
 					'</a>'
 				)
 			);
@@ -73,12 +72,12 @@ class ImageResizeOption extends OptionAbstract {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_notice_lines() {
+	public function get_notice_lines(): ?array {
 		$size   = $this->get_max_image_size();
 		$notice = [
 			sprintf(
 			/* translators: %1$s: width value, %2$s: height value */
-				__( 'Reduce the weight of converted images that are larger than their largest image size (thumbnail size) used in your theme even more. The recommended value for you is %1$s x %2$s pixels.', 'webp-converter-for-media' ),
+				__( 'You can further decrease the size of converted images (and thus their weight) that exceed the maximum image size (thumbnail size) used in your theme. The recommended value for you is %1$s x %2$s pixels.', 'webp-converter-for-media' ),
 				$size['width'],
 				$size['height']
 			),
@@ -88,8 +87,8 @@ class ImageResizeOption extends OptionAbstract {
 			$notice[] = sprintf(
 			/* translators: %1$s: open anchor tag, %2$s: close anchor tag */
 				__( '%1$sUpgrade to PRO%2$s', 'webp-converter-for-media' ),
-				'<a href="' . esc_url( sprintf( WebpConverterConstants::UPGRADE_PRO_PREFIX_URL, 'field-image-resize-info' ) ) . '" target="_blank">',
-				' <span class="dashicons dashicons-arrow-right-alt"></span></a>'
+				'<a href="https://url.mattplugins.com/converter-field-image-resize-info" target="_blank">',
+				'</a>'
 			);
 		}
 		return $notice;
@@ -118,8 +117,17 @@ class ImageResizeOption extends OptionAbstract {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @return mixed[]
 	 */
-	public function get_valid_value( $current_value, array $available_values = null, array $disabled_values = null ) {
+	public function get_default_value(): array {
+		return [ '', '', '' ];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function validate_value( $current_value, ?array $available_values = null, ?array $disabled_values = null ) {
 		if ( ! is_array( $current_value ) ) {
 			return [ '', '', '' ];
 		}
@@ -136,32 +144,25 @@ class ImageResizeOption extends OptionAbstract {
 
 	/**
 	 * {@inheritdoc}
-	 *
-	 * @return mixed[]
 	 */
-	public function get_default_value( array $settings = null ): array {
-		$size = $this->get_max_image_size();
-		return [ '', $size['width'], $size['height'] ];
+	public function sanitize_value( $current_value ) {
+		return $this->validate_value( $current_value );
 	}
 
 	/**
 	 * @return int[]
 	 */
 	private function get_max_image_size(): array {
-		$sizes = wp_get_additional_image_sizes();
-		usort(
-			$sizes,
-			function ( $a, $b ) {
-				if ( $a['width'] === $a['height'] ) {
-					return $b['height'] - $a['height'];
-				}
-				return $b['width'] - $a['width'];
-			}
-		);
+		$sizes = ( function_exists( 'wp_get_registered_image_subsizes' ) )
+			? wp_get_registered_image_subsizes()
+			: wp_get_additional_image_sizes();
+
+		$column_width  = array_column( $sizes, 'width' );
+		$column_height = array_column( $sizes, 'height' );
 
 		return [
-			'width'  => $sizes[0]['width'] ?? 0,
-			'height' => $sizes[0]['height'] ?? 0,
+			'width'  => ( $column_width ) ? max( $column_width ) : 0,
+			'height' => ( $column_height ) ? max( $column_height ) : 0,
 		];
 	}
 }

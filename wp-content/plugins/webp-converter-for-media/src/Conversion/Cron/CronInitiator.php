@@ -3,10 +3,12 @@
 namespace WebpConverter\Conversion\Cron;
 
 use WebpConverter\Conversion\Endpoint\CronConversionEndpoint;
+use WebpConverter\Conversion\Format\FormatFactory;
 use WebpConverter\Conversion\PathsFinder;
 use WebpConverter\PluginData;
 use WebpConverter\Repository\TokenRepository;
 use WebpConverter\Settings\Option\ExtraFeaturesOption;
+use WebpConverter\Settings\Option\ServiceModeOption;
 
 /**
  * Manages automatic conversion of images.
@@ -17,11 +19,6 @@ class CronInitiator {
 	 * @var PluginData
 	 */
 	private $plugin_data;
-
-	/**
-	 * @var TokenRepository
-	 */
-	private $token_repository;
 
 	/**
 	 * @var CronStatusManager
@@ -36,13 +33,13 @@ class CronInitiator {
 	public function __construct(
 		PluginData $plugin_data,
 		TokenRepository $token_repository,
-		CronStatusManager $cron_status_manager = null,
-		PathsFinder $paths_finder = null
+		FormatFactory $format_factory,
+		?CronStatusManager $cron_status_manager = null,
+		?PathsFinder $paths_finder = null
 	) {
 		$this->plugin_data         = $plugin_data;
-		$this->token_repository    = $token_repository;
 		$this->cron_status_manager = $cron_status_manager ?: new CronStatusManager();
-		$this->paths_finder        = $paths_finder ?: new PathsFinder( $plugin_data, $token_repository );
+		$this->paths_finder        = $paths_finder ?: new PathsFinder( $plugin_data, $token_repository, $format_factory );
 	}
 
 	public function refresh_paths_to_conversion( bool $force_init = false ): bool {
@@ -67,13 +64,14 @@ class CronInitiator {
 	}
 
 	/**
-	 * @param string[] $new_paths .
+	 * @param string[] $new_paths              .
+	 * @param bool     $force_convert_modified .
 	 *
 	 * @return void
 	 */
-	public function add_paths_to_conversion( array $new_paths ) {
+	public function add_paths_to_conversion( array $new_paths, bool $force_convert_modified = false ) {
 		$paths           = $this->cron_status_manager->get_paths_to_conversion();
-		$valid_new_paths = $this->paths_finder->skip_converted_paths( $new_paths );
+		$valid_new_paths = $this->paths_finder->skip_converted_paths( $new_paths, null, $force_convert_modified );
 
 		$this->cron_status_manager->set_paths_to_conversion( array_merge( $valid_new_paths, $paths ) );
 	}
@@ -83,7 +81,7 @@ class CronInitiator {
 	 *
 	 * @return void
 	 */
-	public function init_conversion( string $request_id = null ) {
+	public function init_conversion( ?string $request_id = null ) {
 		$saved_request_id = $this->cron_status_manager->get_conversion_request_id();
 		if ( $this->cron_status_manager->is_conversion_locked()
 			|| ( ( $saved_request_id !== null ) && ( $request_id !== $saved_request_id ) ) ) {
@@ -103,17 +101,36 @@ class CronInitiator {
 	}
 
 	/**
+	 * @param bool $upload_request .
+	 *
 	 * @return void
 	 */
-	public function init_async_conversion() {
-		wp_remote_post(
-			( new CronConversionEndpoint( $this->plugin_data, $this->token_repository ) )->get_route_url(),
-			[
-				'timeout'   => 0.01,
-				'blocking'  => false,
-				'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
-			]
-		);
+	public function init_async_conversion( bool $upload_request = false ) {
+		$plugin_settings = $this->plugin_data->get_plugin_settings();
+		$service_mode    = ( $plugin_settings[ ServiceModeOption::OPTION_NAME ] === 'yes' );
+
+		$headers = [
+			CronConversionEndpoint::ROUTE_NONCE_HEADER => CronConversionEndpoint::get_route_nonce(),
+		];
+		if ( isset( $_SERVER['PHP_AUTH_USER'] ) && isset( $_SERVER['PHP_AUTH_PW'] ) ) {
+			$headers['Authorization'] = 'Basic ' . base64_encode( $_SERVER['PHP_AUTH_USER'] . ':' . $_SERVER['PHP_AUTH_PW'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		}
+
+		$args = [
+			'timeout'   => 0.01,
+			'blocking'  => false,
+			'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+			'headers'   => $headers,
+		];
+		if ( $service_mode && $upload_request ) {
+			unset( $args['timeout'] );
+			unset( $args['blocking'] );
+		}
+
+		$response = wp_remote_post( CronConversionEndpoint::get_route_url(), $args );
+		if ( $service_mode && $upload_request ) {
+			$this->cron_status_manager->set_conversion_request_response( $response );
+		}
 	}
 
 	/**

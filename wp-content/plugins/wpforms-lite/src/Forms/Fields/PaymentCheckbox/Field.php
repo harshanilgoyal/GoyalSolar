@@ -2,12 +2,14 @@
 
 namespace WPForms\Forms\Fields\PaymentCheckbox;
 
+use WPForms_Field;
+
 /**
  * Checkbox payment field.
  *
  * @since 1.8.2
  */
-class Field extends \WPForms_Field {
+class Field extends WPForms_Field {
 
 	/**
 	 * Primary class constructor.
@@ -50,6 +52,10 @@ class Field extends \WPForms_Field {
 			],
 		];
 
+		$this->default_settings = [
+			'choices' => $this->defaults,
+		];
+
 		$this->hooks();
 	}
 
@@ -62,6 +68,7 @@ class Field extends \WPForms_Field {
 
 		// Customize HTML field values.
 		add_filter( 'wpforms_html_field_value', [ $this, 'field_html_value' ], 10, 4 );
+		add_filter( "wpforms_{$this->type}_field_html_value_images", [ $this, 'field_html_value_images' ], 10, 3 );
 
 		// Define additional field properties.
 		add_filter( "wpforms_field_properties_{$this->type}", [ $this, 'field_properties' ], 5, 3 );
@@ -81,15 +88,15 @@ class Field extends \WPForms_Field {
 	 *
 	 * @return array
 	 */
-	public function field_properties( $properties, $field, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function field_properties( $properties, $field, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Define data.
 		$form_id  = absint( $form_data['id'] );
 		$field_id = absint( $field['id'] );
 		$choices  = $field['choices'];
 
-		// Remove primary input.
-		unset( $properties['inputs']['primary'] );
+		// Remove primary input, unset for attribute for label.
+		unset( $properties['inputs']['primary'], $properties['label']['attr']['for'] );
 
 		// Set input container (ul) properties.
 		$properties['input_container'] = [
@@ -99,11 +106,16 @@ class Field extends \WPForms_Field {
 			'id'    => "wpforms-{$form_id}-field_{$field_id}",
 		];
 
+		$is_choice_limit_set = ! empty( $field['choice_limit'] ) && (int) $field['choice_limit'] > 0;
+
+		if ( $is_choice_limit_set ) {
+			$properties['input_container']['data']['choice-limit'] = $field['choice_limit'];
+		}
+
 		// Set input properties.
 		foreach ( $choices as $key => $choice ) {
 
-			// Choice labels should not be left blank, but if they are we
-			// provide a basic value.
+			// Choice labels should not be left blank, but if they are, we provide a basic value.
 			$label = $choice['label'];
 
 			if ( $label === '' ) {
@@ -140,12 +152,17 @@ class Field extends \WPForms_Field {
 					'amount' => wpforms_format_amount( wpforms_sanitize_amount( $choice['value'] ) ),
 				],
 				'id'         => "wpforms-{$form_id}-field_{$field_id}_{$key}",
-				'icon'       => isset( $choice['icon'] ) ? $choice['icon'] : '',
-				'icon_style' => isset( $choice['icon_style'] ) ? $choice['icon_style'] : '',
-				'image'      => isset( $choice['image'] ) ? $choice['image'] : '',
+				'icon'       => $choice['icon'] ?? '',
+				'icon_style' => $choice['icon_style'] ?? '',
+				'image'      => $choice['image'] ?? '',
 				'required'   => ! empty( $field['required'] ) ? 'required' : '',
 				'default'    => isset( $choice['default'] ),
 			];
+
+			// Rule for validator only if needed.
+			if ( $is_choice_limit_set ) {
+				$properties['inputs'][ $key ]['data']['rule-check-limit'] = 'true';
+			}
 		}
 
 		// Required class for pagebreak validation.
@@ -167,7 +184,7 @@ class Field extends \WPForms_Field {
 				}
 			}
 		} elseif ( ! empty( $field['choices_icons'] ) ) {
-			$properties = wpforms()->get( 'icon_choices' )->field_properties( $properties, $field );
+			$properties = wpforms()->obj( 'icon_choices' )->field_properties( $properties, $field );
 		}
 
 		// Add selected class for choices with defaults.
@@ -194,7 +211,7 @@ class Field extends \WPForms_Field {
 	 */
 	protected function get_field_populated_single_property_value( $raw_value, $input, $properties, $field ) {
 		/*
-		 * When the form is submitted we get only choice values from the Fallback.
+		 * When the form is submitted, we get only choice values from the Fallback.
 		 * As payment-checkbox (checkboxes) field doesn't support 'show_values' option -
 		 * we should transform that into label to check against using general logic in parent method.
 		 */
@@ -266,7 +283,7 @@ class Field extends \WPForms_Field {
 			[
 				'slug'    => 'show_price_after_labels',
 				'value'   => isset( $field['show_price_after_labels'] ) ? '1' : '0',
-				'desc'    => esc_html__( 'Show price after item labels', 'wpforms-lite' ),
+				'desc'    => esc_html__( 'Show Price After Item Labels', 'wpforms-lite' ),
 				'tooltip' => esc_html__( 'Check this option to show price of the item after the label.', 'wpforms-lite' ),
 			],
 			false
@@ -281,7 +298,10 @@ class Field extends \WPForms_Field {
 		// Choices Images.
 		$this->field_option( 'choices_images', $field );
 
-		// Choices Images Style (theme).
+		// Hide Choices Images.
+		$this->field_option( 'choices_images_hide', $field );
+
+		// Choice Images Style (theme).
 		$this->field_option( 'choices_images_style', $field );
 
 		// Choices Icons.
@@ -327,6 +347,9 @@ class Field extends \WPForms_Field {
 		// Input columns.
 		$this->field_option( 'input_columns', $field );
 
+		// Choice Limit.
+		$this->field_option( 'choice_limit', $field );
+
 		// Custom CSS classes.
 		$this->field_option( 'css', $field );
 
@@ -370,8 +393,11 @@ class Field extends \WPForms_Field {
 	 * @param array $field      Field settings.
 	 * @param array $deprecated Deprecated array.
 	 * @param array $form_data  Form data and settings.
+	 *
+	 * @noinspection HtmlUnknownAttribute
+	 * @noinspection HtmlUnknownTarget
 	 */
-	public function field_display( $field, $deprecated, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function field_display( $field, $deprecated, $form_data ) {
 
 		// Define data.
 		$container = $field['properties']['input_container'];
@@ -384,10 +410,12 @@ class Field extends \WPForms_Field {
 
 			foreach ( $choices as $key => $choice ) {
 
-				$label = isset( $choice['label']['text'] ) ? $choice['label']['text'] : '';
+				$label = $choice['label']['text'] ?? '';
+
 				/* translators: %s - item number. */
-				$label  = $label !== '' ? $label : sprintf( esc_html__( 'Item %s', 'wpforms-lite' ), $key );
-				$label .= ! empty( $field['show_price_after_labels'] ) && isset( $choice['data']['amount'] ) ? ' - ' . wpforms_format_amount( wpforms_sanitize_amount( $choice['data']['amount'] ), true ) : '';
+				$label = $label !== '' ? $label : sprintf( esc_html__( 'Item %s', 'wpforms-lite' ), $key );
+
+				$label .= ! empty( $field['show_price_after_labels'] ) && isset( $choice['data']['amount'] ) ? $this->get_price_after_label( $choice['data']['amount'] ) : '';
 
 				printf(
 					'<li %s>',
@@ -431,9 +459,8 @@ class Field extends \WPForms_Field {
 						echo '</label>';
 
 					} elseif ( empty( $field['dynamic_choices'] ) && ! empty( $field['choices_icons'] ) ) {
-
 						// Icon Choices.
-						wpforms()->get( 'icon_choices' )->field_display( $field, $choice, 'checkbox', $label );
+						wpforms()->obj( 'icon_choices' )->field_display( $field, $choice, 'checkbox', $label );
 
 					} else {
 
@@ -459,17 +486,18 @@ class Field extends \WPForms_Field {
 	}
 
 	/**
-	 * Validate field on form submit.
+	 * Validate field on submitting the form.
 	 *
 	 * @since 1.8.2
 	 *
 	 * @param int   $field_id     Field ID.
-	 * @param array $field_submit Array of selected choice IDs.
+	 * @param array $field_submit Submitted field value (raw data).
 	 * @param array $form_data    Form data and settings.
 	 */
 	public function validate( $field_id, $field_submit, $form_data ) {
 
-		$error = '';
+		$field_id = (int) $field_id;
+		$error    = '';
 
 		// Basic required check - If field is marked as required, check for entry data.
 		if ( ! empty( $form_data['fields'][ $field_id ]['required'] ) && empty( $field_submit ) ) {
@@ -487,8 +515,12 @@ class Field extends \WPForms_Field {
 			}
 		}
 
+		$field_submit = (array) $field_submit;
+
+		$this->validate_field_choice_limit( $field_id, $field_submit, $form_data );
+
 		if ( ! empty( $error ) ) {
-			wpforms()->get( 'process' )->errors[ $form_data['id'] ][ $field_id ] = $error;
+			wpforms()->obj( 'process' )->errors[ $form_data['id'] ][ $field_id ] = $error;
 		}
 	}
 
@@ -522,7 +554,7 @@ class Field extends \WPForms_Field {
 
 					$value = (float) wpforms_sanitize_amount( $choice['value'] );
 
-					// Increase total amount.
+					// Increase the total amount.
 					$amount += $value;
 
 					$value        = wpforms_format_amount( $value, true );
@@ -546,7 +578,7 @@ class Field extends \WPForms_Field {
 			}
 		}
 
-		wpforms()->get( 'process' )->fields[ $field_id ] = [
+		wpforms()->obj( 'process' )->fields[ $field_id ] = [
 			'name'         => $name,
 			'value'        => implode( "\r\n", $choice_values ),
 			'value_choice' => implode( "\r\n", $choice_labels ),

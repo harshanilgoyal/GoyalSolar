@@ -4,6 +4,8 @@ namespace WebpConverter\Repository;
 
 use WebpConverter\Model\Token;
 use WebpConverter\Service\OptionsAccessManager;
+use WebpConverter\Settings\Option\AccessTokenOption;
+use WebpConverter\Settings\SettingsManager;
 
 /**
  * Manages the token for the PRO version.
@@ -16,18 +18,30 @@ class TokenRepository {
 	const TOKEN_VALUE_IMAGES_USAGE = 'images_usage';
 	const TOKEN_VALUE_IMAGES_LIMIT = 'images_limit';
 
-	public function get_token(): Token {
-		$values = OptionsAccessManager::get_option( self::TOKEN_OPTION, null );
-		if ( $values === null ) {
-			return new Token();
+	/**
+	 * @var Token|null
+	 */
+	private $token = null;
+
+	public function get_token( ?string $token_value = null ): Token {
+		if ( $this->token ) {
+			return $this->token;
 		}
 
-		return new Token(
-			$values[ self::TOKEN_VALUE_ACCESS_VALUE ] ?? null,
-			$values[ self::TOKEN_VALUE_VALID_STATUS ] ?? false,
-			$values[ self::TOKEN_VALUE_IMAGES_USAGE ] ?? 0,
-			$values[ self::TOKEN_VALUE_IMAGES_LIMIT ] ?? 0
-		);
+		$values   = OptionsAccessManager::get_option( self::TOKEN_OPTION, null );
+		$settings = OptionsAccessManager::get_option( SettingsManager::SETTINGS_OPTION, [] );
+		if ( ( $values === null ) || ( ! $token_value && ! ( $settings[ AccessTokenOption::OPTION_NAME ] ?? null ) ) ) {
+			$this->token = new Token();
+		} else {
+			$this->token = new Token(
+				$values[ self::TOKEN_VALUE_ACCESS_VALUE ] ?? null,
+				$values[ self::TOKEN_VALUE_VALID_STATUS ] ?? false,
+				$values[ self::TOKEN_VALUE_IMAGES_USAGE ] ?? 0,
+				$values[ self::TOKEN_VALUE_IMAGES_LIMIT ] ?? 0
+			);
+		}
+
+		return $this->token;
 	}
 
 	/**
@@ -35,7 +49,7 @@ class TokenRepository {
 	 *
 	 * @return void
 	 */
-	public function update_token( Token $token ) {
+	public function save_token( Token $token ) {
 		OptionsAccessManager::update_option(
 			self::TOKEN_OPTION,
 			[
@@ -50,7 +64,8 @@ class TokenRepository {
 	/**
 	 * @return void
 	 */
-	public function reset_token() {
-		$this->update_token( new Token() );
+	public function remove_token() {
+		$this->save_token( new Token() );
+		$this->token = null;
 	}
 }

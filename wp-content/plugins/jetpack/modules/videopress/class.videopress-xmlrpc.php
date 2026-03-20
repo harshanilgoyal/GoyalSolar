@@ -1,6 +1,11 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 use Automattic\Jetpack\VideoPress\XMLRPC;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 0 );
+}
+
 /**
  * VideoPress playback module markup generator.
  *
@@ -19,5 +24,4 @@ class VideoPress_XMLRPC {
 		_deprecated_function( __METHOD__, 'jetpack-11.2', 'Automattic\Jetpack\VideoPress\XMLRPC' );
 		return XMLRPC::init();
 	}
-
 }

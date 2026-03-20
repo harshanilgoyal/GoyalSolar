@@ -2,6 +2,7 @@
 
 namespace WPForms\Integrations\Divi;
 
+use WPForms\Integrations\Divi\Interfaces\LocalizedDataInterface;
 use WPForms_Field_Select;
 use WPForms\Integrations\IntegrationInterface;
 
@@ -13,24 +14,34 @@ use WPForms\Integrations\IntegrationInterface;
 class Divi implements IntegrationInterface {
 
 	/**
-	 * Indicate if current integration is allowed to load.
+	 * Instance of the legacy module.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @var WPFormsSelector|null
+	 */
+	private $legacy_module;
+
+	/**
+	 * Instance of the modern module.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @var WPFormsSelectorModern|null
+	 * @noinspection PhpPrivateFieldCanBeLocalVariableInspection
+	 */
+	private $modern_module;
+
+	/**
+	 * Indicate if the current integration is allowed to load.
 	 *
 	 * @since 1.6.3
 	 *
 	 * @return bool
 	 */
-	public function allow_load() {
+	public function allow_load(): bool {
 
-		if ( function_exists( 'et_divi_builder_init_plugin' ) ) {
-			return true;
-		}
-
-		$allow_themes = [ 'Divi', 'Extra' ];
-		$theme        = wp_get_theme();
-		$theme_name   = $theme->get_template();
-		$theme_parent = $theme->parent();
-
-		return (bool) array_intersect( [ $theme_name, $theme_parent ], $allow_themes );
+		return wpforms_is_divi_active();
 	}
 
 	/**
@@ -48,10 +59,13 @@ class Divi implements IntegrationInterface {
 	 *
 	 * @since 1.6.3
 	 */
-	public function hooks() {
+	public function hooks(): void {
 
 		add_action( 'et_builder_ready', [ $this, 'register_module' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'frontend_styles' ], 12 );
+
+		// Register module.
+		add_action( 'divi_module_library_modules_dependency_tree', [ $this, 'register_modern_selector' ] );
 
 		if ( wp_doing_ajax() ) {
 			add_action( 'wp_ajax_wpforms_divi_preview', [ $this, 'preview' ] );
@@ -70,20 +84,58 @@ class Divi implements IntegrationInterface {
 	}
 
 	/**
+	 * Register modern selector dependency.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @param object $dependency_tree Dependency tree object.
+	 */
+	public function register_modern_selector( object $dependency_tree ): void {
+
+		if ( ! $this->is_divi_5_or_higher() ) {
+			return;
+		}
+
+		$this->modern_module = new WPFormsSelectorModern();
+
+		if ( $this->is_divi_builder() ) {
+			$this->insert( $this->modern_module );
+		}
+
+		$dependency_tree->add_dependency( $this->modern_module );
+	}
+
+	/**
+	 * Check if Divi 5 or higher is active.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @return bool
+	 * @noinspection PhpUndefinedConstantInspection
+	 */
+	protected function is_divi_5_or_higher(): bool {
+
+		if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
+			return false;
+		}
+
+		return version_compare( ET_BUILDER_VERSION, '5.0.0', '>=' );
+	}
+
+	/**
 	 * Determine if a current page is opened in the Divi Builder.
 	 *
 	 * @since 1.6.3
 	 *
 	 * @return bool
 	 */
-	private function is_divi_builder() {
+	private function is_divi_builder(): bool {
 
 		return ! empty( $_GET['et_fb'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
-
 	/**
-	 * Get current style name.
+	 * Get the current style name.
 	 *
 	 * Overwrite styles for the Divi Builder.
 	 *
@@ -91,7 +143,7 @@ class Divi implements IntegrationInterface {
 	 *
 	 * @return string
 	 */
-	public function get_current_styles_name() {
+	public function get_current_styles_name(): string {
 
 		$disable_css = absint( wpforms_setting( 'disable-css', 1 ) );
 
@@ -99,7 +151,8 @@ class Divi implements IntegrationInterface {
 			return '';
 		}
 
-		$styles_name  = wpforms_get_render_engine() . '-';
+		$styles_name = wpforms_get_render_engine() . '-';
+
 		$styles_name .= $disable_css === 1 ? 'full' : 'base';
 
 		return $styles_name;
@@ -112,13 +165,13 @@ class Divi implements IntegrationInterface {
 	 *
 	 * @return bool
 	 */
-	protected function is_divi_plugin_loaded() {
+	protected function is_divi_plugin_loaded(): bool {
 
 		return self::is_divi_loaded();
 	}
 
 	/**
-	 * Helper method to check if Divi plugin is loaded.
+	 * Helper method to check if the Divi plugin is loaded.
 	 *
 	 * @since 1.8.5
 	 *
@@ -176,7 +229,9 @@ class Divi implements IntegrationInterface {
 			return;
 		}
 
-		$this->divi_frontend_styles();
+		if ( $this->allow_frontend_styles() ) {
+			$this->divi_frontend_styles();
+		}
 	}
 
 	/**
@@ -203,7 +258,11 @@ class Divi implements IntegrationInterface {
 	 *
 	 * @since 1.6.3
 	 */
-	public function builder_scripts() {
+	public function builder_scripts(): void {
+
+		if ( ! $this->legacy_module ) {
+			return;
+		}
 
 		$min = wpforms_get_min_suffix();
 
@@ -215,9 +274,25 @@ class Divi implements IntegrationInterface {
 			true
 		);
 
+		$this->insert( $this->legacy_module );
+
 		wp_localize_script(
 			'wpforms-divi',
 			'wpforms_divi_builder',
+			$this->legacy_module->get_localized_data()
+		);
+	}
+
+	/**
+	 * Injects localized data into the provided form selector to be used in the frontend.
+	 *
+	 * @since 1.9.9
+	 *
+	 * @param LocalizedDataInterface $form_selector Interface instance to set localized data for forms.
+	 */
+	private function insert( LocalizedDataInterface $form_selector ): void {
+
+		$form_selector->set_localized_data(
 			[
 				'ajax_url'         => admin_url( 'admin-ajax.php' ),
 				'nonce'            => wp_create_nonce( 'wpforms_divi_builder' ),
@@ -241,15 +316,17 @@ class Divi implements IntegrationInterface {
 	/**
 	 * Register module.
 	 *
-	 * @since 1.6.3
+	 * @since        1.6.3
 	 */
-	public function register_module() {
+	public function register_module(): void {
 
-		if ( ! class_exists( 'ET_Builder_Module' ) ) {
+		if ( ! class_exists( 'ET_Builder_Module' ) ||
+			( $this->is_divi_5_or_higher() && $this->is_divi_builder() )
+		) {
 			return;
 		}
 
-		new WPFormsSelector();
+		$this->legacy_module = new WPFormsSelector();
 	}
 
 	/**
@@ -257,17 +334,35 @@ class Divi implements IntegrationInterface {
 	 *
 	 * @since 1.6.3
 	 */
-	public function preview() {
+	public function preview(): void { // phpcs:ignore WPForms.PHP.HooksMethod.InvalidPlaceForAddingHooks
 
 		check_ajax_referer( 'wpforms_divi_builder', 'nonce' );
 
-		$form_id    = absint( filter_input( INPUT_POST, 'form_id', FILTER_SANITIZE_NUMBER_INT ) );
-		$show_title = 'on' === filter_input( INPUT_POST, 'show_title', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-		$show_desc  = 'on' === filter_input( INPUT_POST, 'show_desc', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$form_id = absint( filter_input( INPUT_POST, 'form_id', FILTER_SANITIZE_NUMBER_INT ) );
+
+		if ( $form_id ) {
+			$form_obj = wpforms()->obj( 'form' );
+			$form     = $form_obj ? $form_obj->get( $form_id ) : null;
+			$author   = $form ? (int) $form->post_author : 0;
+			$cap      = $author === get_current_user_id() ? 'wpforms_view_own_forms' : 'wpforms_view_others_forms';
+
+			$has_permission = wpforms_current_user_can( $cap, $form_id );
+		} else {
+			$has_permission = wpforms_current_user_can( [ 'wpforms_view_own_forms', 'wpforms_view_others_forms' ] );
+		}
+
+		if ( ! $has_permission ) {
+			wp_send_json_error(
+				esc_html__( 'You do not have permission to preview form.', 'wpforms-lite' )
+			);
+		}
+
+		// Disable Anti Spam v3 honeypot.
+		add_filter( 'wpforms_forms_anti_spam_v3_is_honeypot_enabled', '__return_false' );
 
 		add_filter(
 			'wpforms_frontend_container_class',
-			function( $classes ) {
+			static function ( $classes ) {
 
 				$classes[] = 'wpforms-gutenberg-form-selector';
 				$classes[] = 'wpforms-container-full';
@@ -278,7 +373,7 @@ class Divi implements IntegrationInterface {
 
 		add_action(
 			'wpforms_frontend_output',
-			function() {
+			static function () {
 
 				echo '<fieldset disabled>';
 			},
@@ -287,30 +382,87 @@ class Divi implements IntegrationInterface {
 
 		add_action(
 			'wpforms_frontend_output',
-			function() {
+			static function () {
 
 				echo '</fieldset>';
 
 				// This empty image is needed to execute JS code that triggers the custom event.
-				// Unfortunately, <script> tag doesn't work in the Divi Builder.
-				echo "<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
-					height='0'
-					width='0'
-					onLoad=\"jQuery( document ).trigger( 'wpformsDiviModuleDisplay' );\"
-				/>";
+				// Unfortunately, the < script > tag doesn't work in the Divi Builder.
+				echo '<img
+					src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+					alt="Empty"
+					height="0"
+					width="0"
+					onLoad="jQuery( document ).trigger( \'wpformsDiviModuleDisplay\' );"
+				/>';
 			},
 			30
+		);
+
+		/**
+		 * Allows showing/hiding form title and description.
+		 *
+		 * @since 1.6.3.1
+		 *
+		 * @param bool $show_title Show form title.
+		 * @param int  $form_id    Form ID.
+		 */
+		$show_title = (bool) apply_filters( // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+			'wpforms_divi_builder_form_title',
+			'on' === filter_input( INPUT_POST, 'show_title', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+			$form_id
+		);
+
+		/**
+		 * Allows showing/hiding form description.
+		 *
+		 * @since 1.6.3.1
+		 *
+		 * @param bool $show_desc Show form description.
+		 * @param int  $form_id   Form ID.
+		 */
+		$show_desc = (bool) apply_filters( // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+			'wpforms_divi_builder_form_desc',
+			'on' === filter_input( INPUT_POST, 'show_desc', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+			$form_id
 		);
 
 		wp_send_json_success(
 			do_shortcode(
 				sprintf(
-					'[wpforms id="%1$s" title="%2$s" description="%3$s"]',
-					absint( $form_id ),
-					(bool) apply_filters( 'wpforms_divi_builder_form_title', $show_title, $form_id ),
-					(bool) apply_filters( 'wpforms_divi_builder_form_desc', $show_desc, $form_id )
+					'[wpforms id="%1$d" title="%2$s" description="%3$s"]',
+					$form_id,
+					$show_title,
+					$show_desc
 				)
 			)
+		);
+	}
+
+	/**
+	 * Allow frontend styles.
+	 *
+	 * @since 1.9.8.6
+	 *
+	 * @return bool
+	 */
+	protected function allow_frontend_styles(): bool {
+
+		$frontend_obj = wpforms()->obj( 'frontend' );
+
+		if ( ! $frontend_obj ) {
+			return false;
+		}
+
+		global $post;
+
+		$content = $post->post_content ?? '';
+
+		return (
+			$frontend_obj->assets_global() ||
+			has_shortcode( $content, 'wpforms' ) ||
+			has_shortcode( $content, 'wpforms_selector' ) ||
+			( function_exists( 'has_block' ) && has_block( 'wpforms/form-selector' ) )
 		);
 	}
 }

@@ -1,5 +1,9 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 0 );
+}
+
 require JETPACK__PLUGIN_DIR . '/modules/module-info.php';
 
 /**
@@ -153,7 +157,7 @@ abstract class Jetpack_JSON_API_Endpoint extends WPCOM_JSON_API_Endpoint {
 			$passed = 0;
 			foreach ( $capabilities as $cap ) {
 				if ( current_user_can( $cap ) ) {
-					$passed ++;
+					++$passed;
 				} else {
 					$failed[] = $cap;
 				}
@@ -167,14 +171,11 @@ abstract class Jetpack_JSON_API_Endpoint extends WPCOM_JSON_API_Endpoint {
 					403
 				);
 			}
-		} else {
-			if ( ! current_user_can( $capability ) ) {
-				// Translators: the capability that the user is not authorized for.
-				return new WP_Error( 'unauthorized', sprintf( __( 'This user is not authorized to %s on this blog.', 'jetpack' ), $capability ), 403 );
-			}
+		} elseif ( ! current_user_can( $capability ) ) {
+			// Translators: the capability that the user is not authorized for.
+			return new WP_Error( 'unauthorized', sprintf( __( 'This user is not authorized to %s on this blog.', 'jetpack' ), $capability ), 403 );
 		}
 
 		return true;
 	}
-
 }

@@ -2,10 +2,14 @@
 
 namespace WebpConverter\Error\Notice;
 
+use WebpConverter\Settings\Option\LoaderTypeOption;
+use WebpConverter\Settings\Page\AdvancedSettingsPage;
+use WebpConverter\Settings\Page\PageIntegrator;
+
 /**
  * {@inheritdoc}
  */
-class BypassingApacheNotice implements ErrorNotice {
+class BypassingApacheNotice implements NoticeInterface {
 
 	const ERROR_KEY = 'bypassing_apache';
 
@@ -21,44 +25,57 @@ class BypassingApacheNotice implements ErrorNotice {
 	 */
 	public function get_message(): array {
 		return [
-			sprintf(
-			/* translators: %1$s: open strong tag, %2$s: close strong tag */
-				__( 'Requests to images are processed by Nginx server bypassing Apache. Please log in to your hosting control panel, go to management of this website and try to find one of the following settings %1$sand disable it if it is active%2$s:', 'webp-converter-for-media' ),
-				'<strong>',
-				'</strong>'
-			),
+			__( 'It appears that the requests for images on your website are being processed by the Nginx server, bypassing Apache.', 'webp-converter-for-media' ),
 			implode(
-				'<br>',
+				' ',
 				[
 					sprintf(
-					/* translators: %1$s: button label, %2$s: tab name, %3$s: tab name, %4$s: section name */
-						__( '- for SiteGround hosting click %1$s button on the websites list -> click %2$s and %3$s tab -> find %4$s section', 'webp-converter-for-media' ),
-						'"Site Tools"',
-						'"Speed"',
-						'"Caching"',
-						'"Nginx Direct Delivery"'
+					/* translators: %1$s: open anchor tag, %2$s: close anchor tag */
+						'<strong>' . __( 'Please check %1$sour instruction%2$s which should help you solve your problem. This will allow the plugin to function properly.', 'webp-converter-for-media' ) . '</strong>',
+						'<a href="https://url.mattplugins.com/converter-error-bypassing-apache-instruction" target="_blank">',
+						'</a>'
 					),
-					sprintf(
-					/* translators: %1$s: setting name, %2$s: setting name */
-						__( '- %1$s, %2$s or similar in the section related to Speed or Caching', 'webp-converter-for-media' ),
-						'"Nginx Direct Delivery"',
-						'"Nginx Caching"'
-					),
-					sprintf(
-					/* translators: %s: setting name */
-						__( '- %s or similar in the section related to Apache and Nginx configuration', 'webp-converter-for-media' ),
-						'"Smart static files processing", "Serve static files directly by Nginx"'
-					),
+					__( 'If you have trouble solving this problem, please, contact your hosting\'s technical support and provide them with the following message:', 'webp-converter-for-media' ),
+				]
+			),
+			implode(
+				'',
+				[
+					'<em>' . implode(
+						' ',
+						[
+							sprintf(
+							/* translators: %1$s: setting name, %2$s: setting name, %3$s: home URL */
+								__( 'I would like to disable %1$s (or %2$s) for static content files like .jpg, .jpeg, .png, .gif and .webp on my website - %3$s. These files should have been handled by the Apache server instead of Nginx.', 'webp-converter-for-media' ),
+								'Nginx Caching / Nginx Reverse Proxy',
+								'Nginx Direct Delivery',
+								get_home_url()
+							),
+							sprintf(
+							/* translators: %s: anchor tag */
+								__( 'You can find more information in the instruction: %s', 'webp-converter-for-media' ),
+								'<a href="https://url.mattplugins.com/converter-error-bypassing-apache-message" target="_blank">https://url.mattplugins.com/converter-error-bypassing-apache-message</a>'
+							),
+						]
+					) . '</em>',
 				]
 			),
 			sprintf(
-			/* translators: %1$s: open strong tag, %2$s: close strong tag, %3$s: break line tag, %4$s: setting name, %5$s: setting name */
-				__( 'In case of problems with finding such settings, %1$splease contact your hosting support and send them the following message%2$s: %3$s"I would like to disable %4$s (or %5$s) for static content files like .jpg, .jpeg, .png, .gif and .webp. These files should have been handled by Apache server instead of Nginx. I need help on this matter."', 'webp-converter-for-media' ),
+			/* translators: %1$s: open strong tag, %2$s: close strong tag */
+				__( '%1$sPlease, copy the above message and send it to the technical support of your hosting.%2$s They should help you in this matter.', 'webp-converter-for-media' ),
 				'<strong>',
-				'</strong>',
-				'<br>',
-				'Nginx Caching',
-				'Nginx Direct Delivery'
+				'</strong>'
+			),
+			sprintf(
+			/* translators: %1$s: open strong tag, %2$s: close strong tag, %3$s: field value, %4$s: field label, %5$s: open anchor tag, %6$s: settings tab label, %7$s: close anchor tag */
+				__( '%1$sThe alternative solution to avoid this problem%2$s may be to set the %3$s option for the %4$s field in %5$sthe %6$s tab%7$s.', 'webp-converter-for-media' ),
+				'<span id="bypassing-notice">',
+				'</span>',
+				'"' . __( 'Bypassing Nginx', 'webp-converter-for-media' ) . '"',
+				'"' . LoaderTypeOption::get_label() . '"',
+				'<a href="' . esc_attr( PageIntegrator::get_settings_page_url( AdvancedSettingsPage::PAGE_SLUG ) ) . '#bypassing-notice">',
+				AdvancedSettingsPage::get_label(),
+				'</a>'
 			),
 		];
 	}

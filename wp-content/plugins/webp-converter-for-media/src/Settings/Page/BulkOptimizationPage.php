@@ -8,35 +8,37 @@ namespace WebpConverter\Settings\Page;
  */
 class BulkOptimizationPage extends GeneralSettingsPage {
 
+	const PAGE_SLUG = null;
+
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_slug() {
-		return null;
+	public function get_slug(): ?string {
+		return self::PAGE_SLUG;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function get_menu_parent(): string {
-		return PageIntegration::UPLOAD_MENU_PAGE;
+		return PageIntegrator::UPLOAD_MENU_PAGE;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_menu_url() {
-		if ( ( $_GET['page'] ?? '' ) !== PageIntegration::UPLOAD_MENU_PAGE ) { // phpcs:ignore WordPress.Security
+	public function get_menu_url(): ?string {
+		if ( ( $_GET['page'] ?? '' ) !== PageIntegrator::UPLOAD_MENU_PAGE ) { // phpcs:ignore WordPress.Security
 			return null;
 		}
 
-		return admin_url( 'upload.php?page=' . PageIntegration::UPLOAD_MENU_PAGE );
+		return admin_url( 'upload.php?page=' . PageIntegrator::UPLOAD_MENU_PAGE );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_label(): string {
+	public static function get_label(): string {
 		return __( 'Bulk Optimization', 'webp-converter-for-media' );
 	}
 

@@ -2,14 +2,15 @@
 
 namespace WebpConverter\Conversion;
 
-use WebpConverter\Conversion\Format\AvifFormat;
-use WebpConverter\Conversion\Format\WebpFormat;
+use WebpConverter\Conversion\Format\FormatFactory;
 use WebpConverter\Conversion\Method\RemoteMethod;
 use WebpConverter\PluginData;
 use WebpConverter\Repository\TokenRepository;
 use WebpConverter\Service\StatsManager;
 use WebpConverter\Settings\Option\ConversionMethodOption;
+use WebpConverter\Settings\Option\ExtraFeaturesOption;
 use WebpConverter\Settings\Option\OutputFormatsOption;
+use WebpConverter\Settings\Option\ServiceModeOption;
 use WebpConverter\Settings\Option\SupportedDirectoriesOption;
 
 /**
@@ -18,10 +19,9 @@ use WebpConverter\Settings\Option\SupportedDirectoriesOption;
 class PathsFinder {
 
 	const PATHS_PER_REQUEST_LOCAL         = 10;
-	const PATHS_PER_REQUEST_REMOTE_SMALL  = 1;
-	const PATHS_PER_REQUEST_REMOTE_MEDIUM = 2;
-	const PATHS_PER_REQUEST_REMOTE_LARGE  = 3;
-	const PATHS_PER_REQUEST_REMOTE_MAX    = 5;
+	const PATHS_PER_REQUEST_REMOTE_SMALL  = 3;
+	const PATHS_PER_REQUEST_REMOTE_MEDIUM = 5;
+	const PATHS_PER_REQUEST_REMOTE_LARGE  = 10;
 
 	/**
 	 * @var PluginData
@@ -39,20 +39,27 @@ class PathsFinder {
 	private $stats_manager;
 
 	/**
-	 * @var OutputPath
+	 * @var OutputPathGenerator
 	 */
 	private $output_path;
+
+	/**
+	 * @var DirectoryFilesFinder
+	 */
+	private $files_finder;
 
 	public function __construct(
 		PluginData $plugin_data,
 		TokenRepository $token_repository,
-		StatsManager $stats_manager = null,
-		OutputPath $output_path = null
+		FormatFactory $format_factory,
+		?StatsManager $stats_manager = null,
+		?OutputPathGenerator $output_path = null
 	) {
 		$this->plugin_data      = $plugin_data;
 		$this->token_repository = $token_repository;
 		$this->stats_manager    = $stats_manager ?: new StatsManager();
-		$this->output_path      = $output_path ?: new OutputPath();
+		$this->output_path      = $output_path ?: new OutputPathGenerator( $format_factory );
+		$this->files_finder     = new DirectoryFilesFinder( $plugin_data );
 	}
 
 	/**
@@ -61,18 +68,31 @@ class PathsFinder {
 	 * @param bool          $skip_converted         Skip converted images?
 	 * @param string[]|null $allowed_output_formats List of extensions or use selected in plugin settings.
 	 *
-	 * @return string[][] Array of arrays with server paths.
+	 * @return mixed[] {
+	 * @type string         $path                   Directory path.
+	 * @type string[]       $files                  Files paths.
+	 *                                              }
 	 */
-	public function get_paths_by_chunks( bool $skip_converted = false, array $allowed_output_formats = null ): array {
+	public function get_paths_by_chunks( bool $skip_converted = false, ?array $allowed_output_formats = null ): array {
 		$allowed_output_formats = $allowed_output_formats
 			?: $this->plugin_data->get_plugin_settings()[ OutputFormatsOption::OPTION_NAME ];
 
-		$paths       = $this->get_paths( $skip_converted, $allowed_output_formats );
-		$paths_count = count( $paths );
+		$paths_chunks = $this->find_source_paths();
+		$paths_chunks = $this->skip_converted_paths_chunks( $paths_chunks, $skip_converted, $allowed_output_formats );
 
-		$this->stats_manager->set_regeneration_images( $paths_count );
+		$count = 0;
+		foreach ( $paths_chunks as $dir_data ) {
+			$count += count( $dir_data['files'] );
+		}
 
-		return array_chunk( $paths, $this->get_paths_chunk_size( $paths_count ) );
+		$chunk_size = $this->get_paths_chunk_size( $count );
+		foreach ( $paths_chunks as $dir_name => $dir_data ) {
+			$paths_chunks[ $dir_name ]['files'] = array_chunk( $dir_data['files'], $chunk_size );
+		}
+
+		$this->stats_manager->set_regeneration_images( $count );
+
+		return $paths_chunks;
 	}
 
 	/**
@@ -81,66 +101,45 @@ class PathsFinder {
 	 *
 	 * @return string[] Server paths of source images to be converted.
 	 */
-	public function get_paths( bool $skip_converted = false, array $allowed_output_formats = null ): array {
+	public function get_paths( bool $skip_converted = false, ?array $allowed_output_formats = null ): array {
 		$allowed_output_formats = $allowed_output_formats
 			?: $this->plugin_data->get_plugin_settings()[ OutputFormatsOption::OPTION_NAME ];
 
-		$paths = $this->find_source_paths( true );
-		if ( ! $skip_converted ) {
-			return $paths;
-		}
+		$paths_chunks = $this->find_source_paths();
+		$paths_chunks = $this->skip_converted_paths_chunks( $paths_chunks, $skip_converted, $allowed_output_formats );
 
-		return $this->skip_converted_paths( $paths, $allowed_output_formats );
-	}
-
-	/**
-	 * @param string[] $allowed_output_formats List of extensions.
-	 *
-	 * @return int[] Number of images to be converted to given output formats.
-	 */
-	public function get_paths_count( array $allowed_output_formats ): array {
-		$paths  = $this->find_source_paths( true );
-		$values = [];
-		foreach ( $allowed_output_formats as $output_format ) {
-			$values[ $output_format ]          = 0;
-			$values[ 'all_' . $output_format ] = 0;
-			foreach ( $paths as $path ) {
-				$output_path = $this->output_path->get_path( $path, false, $output_format );
-				if ( $output_path === null ) {
-					continue;
-				}
-
-				$values[ 'all_' . $output_format ]++;
-				if ( ! $this->is_converted_file( $output_path ) ) {
-					$values[ $output_format ]++;
-				}
+		$paths = [];
+		foreach ( $paths_chunks as $dir_data ) {
+			foreach ( $dir_data['files'] as $source_path ) {
+				$paths[] = $dir_data['path'] . '/' . $source_path;
 			}
 		}
 
-		$this->stats_manager->set_images_webp_all( $values[ 'all_' . WebpFormat::FORMAT_EXTENSION ] ?? 0 );
-		$this->stats_manager->set_images_webp_unconverted( $values[ WebpFormat::FORMAT_EXTENSION ] ?? 0 );
-		$this->stats_manager->set_images_avif_all( $values[ 'all_' . AvifFormat::FORMAT_EXTENSION ] ?? 0 );
-		$this->stats_manager->set_images_avif_unconverted( $values[ AvifFormat::FORMAT_EXTENSION ] ?? 0 );
-
-		return $values;
+		return $paths;
 	}
 
 	/**
 	 * @param string[]      $source_paths           Server paths of source images.
 	 * @param string[]|null $allowed_output_formats List of extensions or use selected in plugin settings.
+	 * @param bool          $force_convert_modified Force re-conversion of images modified after previous conversion.
 	 *
 	 * @return string[] Server paths of source images.
 	 */
-	public function skip_converted_paths( array $source_paths, array $allowed_output_formats = null ): array {
-		$allowed_output_formats = $allowed_output_formats
-			?: $this->plugin_data->get_plugin_settings()[ OutputFormatsOption::OPTION_NAME ];
+	public function skip_converted_paths(
+		array $source_paths,
+		?array $allowed_output_formats = null,
+		bool $force_convert_modified = false
+	): array {
+		$plugin_settings        = $this->plugin_data->get_plugin_settings();
+		$allowed_output_formats = $allowed_output_formats ?: $plugin_settings[ OutputFormatsOption::OPTION_NAME ];
+		$force_convert_deleted  = ( ! in_array( ExtraFeaturesOption::OPTION_VALUE_ONLY_SMALLER, $plugin_settings[ ExtraFeaturesOption::OPTION_NAME ] ) );
 
-		foreach ( $source_paths as $path_index => $path ) {
+		foreach ( $source_paths as $path_index => $source_path ) {
 			$is_converted = true;
 			foreach ( $allowed_output_formats as $output_format ) {
-				$output_path = $this->output_path->get_path( $path, false, $output_format );
+				$output_path = $this->output_path->get_path( $source_path, false, $output_format );
 
-				if ( $output_path && ! $this->is_converted_file( $output_path ) ) {
+				if ( $output_path && ! $this->is_converted_file( $source_path, $output_path, $force_convert_deleted, false, $force_convert_modified ) ) {
 					$is_converted = false;
 					break;
 				}
@@ -154,42 +153,108 @@ class PathsFinder {
 	}
 
 	/**
-	 * Returns list of server paths of source images to be converted.
+	 * @param mixed[]       $source_dirs            Server paths of source images.
+	 * @param bool          $skip_converted         Skip converted images?
+	 * @param string[]|null $allowed_output_formats List of extensions or use selected in plugin settings.
 	 *
-	 * @param bool $skip_converted Skip converted images?
-	 *
-	 * @return string[] Server paths of source images.
+	 * @return mixed[] Server paths of source images.
 	 */
-	private function find_source_paths( bool $skip_converted = false ): array {
-		$settings = $this->plugin_data->get_plugin_settings();
-		$dirs     = array_filter(
-			array_map(
-				function ( $dir_name ) {
-					return apply_filters( 'webpc_dir_path', '', $dir_name );
-				},
-				$settings[ SupportedDirectoriesOption::OPTION_NAME ]
-			)
-		);
+	private function skip_converted_paths_chunks(
+		array $source_dirs,
+		bool $skip_converted,
+		?array $allowed_output_formats = null
+	): array {
+		$plugin_settings        = $this->plugin_data->get_plugin_settings();
+		$allowed_output_formats = $allowed_output_formats ?: $plugin_settings[ OutputFormatsOption::OPTION_NAME ];
+		$force_convert_deleted  = ( ! in_array( ExtraFeaturesOption::OPTION_VALUE_ONLY_SMALLER, $plugin_settings[ ExtraFeaturesOption::OPTION_NAME ] ) );
+		$force_convert_crashed  = ( $plugin_settings[ ServiceModeOption::OPTION_NAME ] === 'yes' );
 
-		$list = [];
-		foreach ( $dirs as $dir_path ) {
-			$paths = apply_filters( 'webpc_dir_files', [], $dir_path, $skip_converted );
-			$list  = array_merge( $list, $paths );
+		foreach ( $source_dirs as $dir_name => $dir_data ) {
+			foreach ( $dir_data['files'] as $path_index => $source_file ) {
+				$source_path  = $dir_data['path'] . '/' . $source_file;
+				$is_converted = true;
+				foreach ( $allowed_output_formats as $output_format ) {
+					$output_path = $this->output_path->get_path( $source_path, false, $output_format );
+
+					if ( $output_path && ( ! $skip_converted || ! $this->is_converted_file( $source_path, $output_path, $force_convert_deleted, $force_convert_crashed ) ) ) {
+						$is_converted = false;
+						break;
+					}
+				}
+				if ( $is_converted ) {
+					unset( $source_dirs[ $dir_name ]['files'][ $path_index ] );
+				}
+			}
 		}
 
-		rsort( $list );
+		return $source_dirs;
+	}
+
+	/**
+	 * Returns list of server paths of source images to be converted.
+	 *
+	 * @return mixed[] {
+	 * @type string   $path  Directory path.
+	 * @type string[] $files Files paths.
+	 *                       }
+	 */
+	private function find_source_paths(): array {
+		$settings = $this->plugin_data->get_plugin_settings();
+
+		$source_dirs = [];
+		foreach ( $settings[ SupportedDirectoriesOption::OPTION_NAME ] as $dir_name ) {
+			$source_dirs[ $dir_name ] = apply_filters( 'webpc_dir_path', '', $dir_name );
+		}
+
+		$list = [];
+		foreach ( $source_dirs as $dir_name => $dir_path ) {
+			$list[ $dir_name ] = [
+				'path'  => $dir_path,
+				'files' => $this->files_finder->get_files_by_directory( $dir_path ),
+			];
+		}
+
 		return $list;
 	}
 
-	private function is_converted_file( string $output_path ): bool {
-		return ( file_exists( $output_path )
-			|| file_exists( $output_path . '.' . SkipLarger::DELETED_FILE_EXTENSION )
-			|| file_exists( $output_path . '.' . SkipCrashed::CRASHED_FILE_EXTENSION )
-		);
+	/**
+	 * @param string $source_path            .
+	 * @param string $output_path            .
+	 * @param bool   $force_convert_deleted  Skip .deleted files.
+	 * @param bool   $force_convert_crashed  Skip .crashed files.
+	 * @param bool   $force_convert_modified .
+	 *
+	 * @return bool
+	 */
+	private function is_converted_file(
+		string $source_path,
+		string $output_path,
+		bool $force_convert_deleted,
+		bool $force_convert_crashed,
+		bool $force_convert_modified = false
+	): bool {
+		if ( file_exists( $output_path ) ) {
+			return ( $force_convert_modified ) ? ( filemtime( $source_path ) <= filemtime( $output_path ) ) : true;
+		} elseif ( ! $force_convert_deleted && file_exists( $output_path . '.' . LargerFilesOperator::DELETED_FILE_EXTENSION ) ) {
+			return true;
+		} elseif ( ! $force_convert_crashed && file_exists( $output_path . '.' . CrashedFilesOperator::CRASHED_FILE_EXTENSION ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
+	/**
+	 * @param int $paths_count .
+	 *
+	 * @return int<1, max>
+	 */
 	private function get_paths_chunk_size( int $paths_count ): int {
 		$settings = $this->plugin_data->get_plugin_settings();
+		if ( $settings[ ServiceModeOption::OPTION_NAME ] === 'yes' ) {
+			return ( self::PATHS_PER_REQUEST_REMOTE_LARGE * 2 );
+		}
+
 		if ( $settings[ ConversionMethodOption::OPTION_NAME ] !== RemoteMethod::METHOD_NAME ) {
 			return self::PATHS_PER_REQUEST_LOCAL;
 		}
@@ -201,12 +266,10 @@ class PathsFinder {
 
 		if ( $images_to_conversion <= 10000 ) {
 			return self::PATHS_PER_REQUEST_REMOTE_SMALL;
-		} elseif ( $images_to_conversion <= 25000 ) {
-			return self::PATHS_PER_REQUEST_REMOTE_MEDIUM;
 		} elseif ( $images_to_conversion <= 120000 ) {
-			return self::PATHS_PER_REQUEST_REMOTE_LARGE;
+			return self::PATHS_PER_REQUEST_REMOTE_MEDIUM;
 		} else {
-			return self::PATHS_PER_REQUEST_REMOTE_MAX;
+			return self::PATHS_PER_REQUEST_REMOTE_LARGE;
 		}
 	}
 }

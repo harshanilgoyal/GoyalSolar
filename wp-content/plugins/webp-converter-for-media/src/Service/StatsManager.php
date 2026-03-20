@@ -32,7 +32,7 @@ class StatsManager {
 	/**
 	 * @return int|null
 	 */
-	public function get_plugin_usage_time() {
+	public function get_plugin_usage_time(): ?int {
 		$installation_date = OptionsAccessManager::get_option( self::STATS_INSTALLATION_DATE_OPTION );
 		if ( $installation_date === null ) {
 			return null;
@@ -58,9 +58,9 @@ class StatsManager {
 	}
 
 	/**
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function get_plugin_first_version() {
+	public function get_plugin_first_version(): ?string {
 		return OptionsAccessManager::get_option( self::STATS_FIRST_VERSION_OPTION, null );
 	}
 
@@ -80,7 +80,7 @@ class StatsManager {
 	/**
 	 * @return int|null
 	 */
-	public function get_regeneration_images() {
+	public function get_regeneration_images(): ?int {
 		return OptionsAccessManager::get_option( self::STATS_REGENERATION_IMAGES_OPTION, null );
 	}
 
@@ -96,24 +96,26 @@ class StatsManager {
 	/**
 	 * @return int|null
 	 */
-	public function get_images_webp_all() {
-		return OptionsAccessManager::get_option( self::STATS_IMAGES_WEBP_ALL_OPTION, null );
+	public function get_images_webp_all(): ?int {
+		$value = OptionsAccessManager::get_option( self::STATS_IMAGES_WEBP_ALL_OPTION, null );
+		return ( $value === null ) ? null : (int) $value;
 	}
 
 	/**
-	 * @param int $value .
+	 * @param int|null $value .
 	 *
 	 * @return void
 	 */
-	public function set_images_webp_unconverted( int $value ) {
+	public function set_images_webp_unconverted( ?int $value = null ) {
 		OptionsAccessManager::update_option( self::STATS_IMAGES_WEBP_UNCONVERTED_OPTION, $value );
 	}
 
 	/**
 	 * @return int|null
 	 */
-	public function get_images_webp_unconverted() {
-		return OptionsAccessManager::get_option( self::STATS_IMAGES_WEBP_UNCONVERTED_OPTION, null );
+	public function get_images_webp_unconverted(): ?int {
+		$value = OptionsAccessManager::get_option( self::STATS_IMAGES_WEBP_UNCONVERTED_OPTION, null );
+		return ( $value === null ) ? null : (int) $value;
 	}
 
 	/**
@@ -128,23 +130,25 @@ class StatsManager {
 	/**
 	 * @return int|null
 	 */
-	public function get_images_avif_all() {
-		return OptionsAccessManager::get_option( self::STATS_IMAGES_AVIF_ALL_OPTION, null );
+	public function get_images_avif_all(): ?int {
+		$value = OptionsAccessManager::get_option( self::STATS_IMAGES_AVIF_ALL_OPTION, null );
+		return ( $value === null ) ? null : (int) $value;
 	}
 
 	/**
-	 * @param int $value .
+	 * @param int|null $value .
 	 *
 	 * @return void
 	 */
-	public function set_images_avif_unconverted( int $value ) {
+	public function set_images_avif_unconverted( ?int $value = null ) {
 		OptionsAccessManager::update_option( self::STATS_IMAGES_AVIF_UNCONVERTED_OPTION, $value );
 	}
 
 	/**
 	 * @return int|null
 	 */
-	public function get_images_avif_unconverted() {
-		return OptionsAccessManager::get_option( self::STATS_IMAGES_AVIF_UNCONVERTED_OPTION, null );
+	public function get_images_avif_unconverted(): ?int {
+		$value = OptionsAccessManager::get_option( self::STATS_IMAGES_AVIF_UNCONVERTED_OPTION, null );
+		return ( $value === null ) ? null : (int) $value;
 	}
 }

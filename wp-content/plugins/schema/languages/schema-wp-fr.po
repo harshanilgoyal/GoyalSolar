@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Schema package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2019-12-18 23:21+0000\n"
+"PO-Revision-Date: 2025-06-11 17:32+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,6 +21,8 @@ msgid ""
 " <a class=\"button button-large\" target=\"_blank\" href=\"https://schema."
 "press/downloads/schema-premium/\">Get Schema Premium</a>"
 msgstr ""
+" <a class=\"button button-large\" target=\"_blank\" href=\"https://schema."
+"press/downloads/schema-premium/\">Obtenez Schema Premium</a>"
 
 #: includes/json/category.php:108
 msgid " Category"
@@ -512,6 +514,9 @@ msgid ""
 "Social Profiles</li><li>Corporate Contacts\n"
 "</li><li>Breadcrumb</li><li>Sitelink Search Box</li></ol>"
 msgstr ""
+"Fonctionnalités qui seront désactivées :<br \\/><ol><li>"
+"Organisation/Personne</li><li>Profils sociaux</li><li>Contacts d'entreprise\n"
+"</li><li>Fil d'Ariane</li><li>Boîte de recherche Sitelink</li></ol>"
 
 #: includes/admin/meta.php:224
 msgid "Field description"
@@ -578,7 +583,7 @@ msgstr "Général"
 
 #: includes/admin/extensions.php:124
 msgid "Get Schema Premium"
-msgstr ""
+msgstr "Obtenir le schéma Premium"
 
 #: includes/admin/class-welcome.php:197
 msgid "Get started quickly with the Schema configuration wizard!"
@@ -598,7 +603,7 @@ msgstr "Débuter avec Schema"
 
 #: includes/admin/meta.php:269
 msgid "Go Premium"
-msgstr ""
+msgstr "Passer à Premium"
 
 #: includes/admin/class-welcome.php:264 includes/admin/class-welcome.php:353
 msgid "Go To Schema Settings"
@@ -637,7 +642,7 @@ msgstr ""
 "Ici, nous allons énumérer quelques-uns des visages qui ont aidé à construire "
 "Schema."
 
-#. Author of the plugin/theme
+#. Author of the plugin
 msgid "Hesham"
 msgstr "Hesham"
 
@@ -649,11 +654,11 @@ msgstr "Dollar de Hong Kong"
 msgid "How do you like Schema?"
 msgstr "Comment aimez-vous Schema ?"
 
-#. Author URI of the plugin/theme
+#. Author URI of the plugin
 msgid "http://zebida.com"
 msgstr "http://zebida.com"
 
-#. Plugin URI of the plugin/theme
+#. URI of the plugin
 msgid "https://schema.press"
 msgstr "https://schema.press"
 
@@ -803,7 +808,7 @@ msgstr "Logo"
 msgid "Logo guidelines"
 msgstr "Directives pour logo"
 
-#. translators: Publish box date format, see http://php.net/date
+#. Publish box date format, see http://php.net/date
 #: includes/admin/post-type/schema-post-type.php:103
 msgid "M j, Y @ G:i"
 msgstr "j M Y @ G:i"
@@ -1091,7 +1096,7 @@ msgstr "Livres sterling"
 
 #: includes/admin/class-menu.php:90 includes/admin/extensions.php:31
 msgid "Premium"
-msgstr ""
+msgstr "Premium"
 
 #: includes/admin/extensions.php:53
 #, php-format
@@ -1100,6 +1105,10 @@ msgid ""
 "license. If you already have one of these licenses, simply <a href=\"%s\">"
 "log in to your account</a> to download any of these extensions."
 msgstr ""
+"Les extensions Premium ne sont disponibles qu'avec une licence "
+"Professionnelle ou Ultime. Si vous avez déjà l'une de ces licences, il vous "
+"suffit de <a href=\"%s\">vous connecter à votre compte</a> pour télécharger "
+"l'une de ces extensions."
 
 #: includes/admin/post-type/schema-post-type.php:118
 msgid "Preview schema"
@@ -1192,9 +1201,10 @@ msgstr "pareil que "
 #, php-format
 msgid "Save 15% off your purchase? Use discount code: <b>SPFREE15</b>"
 msgstr ""
+"Économisez 15 % sur votre achat ? Utilisez le code de réduction : <b>"
+"SPFREE15</b>"
 
-#. #-#-#-#-#  schema-code.pot (Schema 1.7)  #-#-#-#-#
-#. Plugin Name of the plugin/theme
+#. Name of the plugin
 #: includes/admin/class-feedback.php:293 includes/admin/meta.php:128
 #: includes/admin/class-menu.php:30 includes/admin/class-menu.php:31
 #: includes/admin/meta-tax.php:25
@@ -1270,12 +1280,15 @@ msgid ""
 "Check this box if you would like to disable Schema markup and use Yoast SEO "
 "output instead."
 msgstr ""
+"Le plugin Schema remplacera la sortie de Yoast SEO pour éviter la "
+"duplication de balisage. Cochez cette case si vous souhaitez désactiver le "
+"balisage Schema et utiliser la sortie de Yoast SEO à la place."
 
 #: includes/admin/class-welcome.php:295
 msgid "Schema Post Type"
 msgstr "Type de publication Schema"
 
-#. translators: %s: date and time of the revision
+#. %s: date and time of the revision
 #: includes/admin/post-type/schema-post-type.php:96
 #, php-format
 msgid "Schema restored to revision from %s"
@@ -1297,11 +1310,11 @@ msgstr "Réglages Schema"
 
 #: includes/admin/class-setup-wizard.php:105
 msgid "Schema Setup"
-msgstr ""
+msgstr "Configuration du schéma"
 
 #: includes/admin/class-setup-wizard.php:105
 msgid "Schema Setup Wizard"
-msgstr ""
+msgstr "Assistant de configuration du schéma"
 
 #: includes/admin/post-type/schema-columns.php:27
 msgid "Schema Type"
@@ -1573,7 +1586,7 @@ msgstr ""
 msgid "Thank you for updating to the latest version!"
 msgstr "Merci d’avoir mis à jour la dernière version !"
 
-#. Description of the plugin/theme
+#. Description of the plugin
 msgid "The next generation of Structured Data."
 msgstr "La prochaine génération de données structurées."
 
@@ -1849,7 +1862,7 @@ msgstr ""
 
 #: includes/admin/meta.php:249
 msgid "Want to enable new features?"
-msgstr ""
+msgstr "Vous souhaitez activer de nouvelles fonctionnalités ?"
 
 #: includes/admin/scripts.php:25 includes/admin/class-setup-wizard.php:83
 msgid ""
@@ -1930,7 +1943,7 @@ msgstr "Vous pouvez modifier les réglages de"
 
 #: schema.php:124 schema.php:136
 msgid "You don’t have permission to do this"
-msgstr ""
+msgstr "Vous n'avez pas la permission de faire cela"
 
 #: includes/admin/class-feedback.php:234
 #, php-format
@@ -1977,7 +1990,7 @@ msgstr ""
 
 #: includes/admin/post-type/schema-wp-ajax.php:95
 msgid "You must select at least one post type!"
-msgstr ""
+msgstr "Vous devez sélectionner au moins un type de publication !"
 
 #: includes/admin/class-setup-wizard.php:688
 msgid "You've done it!"

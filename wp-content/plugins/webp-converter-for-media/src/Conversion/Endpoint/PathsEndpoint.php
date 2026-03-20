@@ -3,6 +3,7 @@
 namespace WebpConverter\Conversion\Endpoint;
 
 use WebpConverter\Conversion\Cron\CronStatusManager;
+use WebpConverter\Conversion\Format\FormatFactory;
 use WebpConverter\Conversion\PathsFinder;
 use WebpConverter\PluginData;
 use WebpConverter\Repository\TokenRepository;
@@ -23,6 +24,11 @@ class PathsEndpoint extends EndpointAbstract {
 	private $token_repository;
 
 	/**
+	 * @var FormatFactory
+	 */
+	private $format_factory;
+
+	/**
 	 * @var CronStatusManager
 	 */
 	private $cron_status_manager;
@@ -30,18 +36,27 @@ class PathsEndpoint extends EndpointAbstract {
 	public function __construct(
 		PluginData $plugin_data,
 		TokenRepository $token_repository,
-		CronStatusManager $cron_status_manager = null
+		FormatFactory $format_factory,
+		?CronStatusManager $cron_status_manager = null
 	) {
 		$this->plugin_data         = $plugin_data;
 		$this->token_repository    = $token_repository;
+		$this->format_factory      = $format_factory;
 		$this->cron_status_manager = $cron_status_manager ?: new CronStatusManager();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_route_name(): string {
+	public static function get_route_name(): string {
 		return 'paths';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_http_methods(): string {
+		return \WP_REST_Server::CREATABLE;
 	}
 
 	/**
@@ -68,10 +83,12 @@ class PathsEndpoint extends EndpointAbstract {
 	 */
 	public function get_route_response( \WP_REST_Request $request ) {
 		$this->cron_status_manager->set_conversion_status_locked( true, true );
+		$this->cron_status_manager->set_paths_to_conversion( [] );
+		$this->cron_status_manager->set_paths_skipped( [] );
 
 		$params         = $request->get_params();
 		$skip_converted = ( $params['regenerate_force'] !== true );
-		$paths          = ( new PathsFinder( $this->plugin_data, $this->token_repository ) )
+		$paths          = ( new PathsFinder( $this->plugin_data, $this->token_repository, $this->format_factory ) )
 			->get_paths_by_chunks( $skip_converted );
 
 		if ( ! $paths ) {

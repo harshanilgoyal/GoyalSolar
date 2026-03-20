@@ -2,8 +2,18 @@
 
 namespace WebpConverter\Loader;
 
+use WebpConverter\Service\CloudflareConfigurator;
+use WebpConverter\Service\EnvDetector;
+use WebpConverter\Service\OptionsAccessManager;
 use WebpConverter\Service\PathsGenerator;
-use WebpConverter\Settings\Option\LoaderTypeOption;
+use WebpConverter\Settings\Option\CloudflareApiTokenOption;
+use WebpConverter\Settings\Option\CloudflareZoneIdOption;
+use WebpConverter\Settings\Option\ExtraFeaturesOption;
+use WebpConverter\Settings\Option\HtaccessRewriteOutputOption;
+use WebpConverter\Settings\Option\HtaccessRewriteParentOption;
+use WebpConverter\Settings\Option\HtaccessRewritePathOption;
+use WebpConverter\Settings\Option\HtaccessRewriteRootOption;
+use WebpConverter\Settings\Option\RewriteInheritanceOption;
 use WebpConverter\Settings\Option\SupportedExtensionsOption;
 
 /**
@@ -16,23 +26,32 @@ class HtaccessLoader extends LoaderAbstract {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function init_hooks() {
-		add_action( 'webpc_htaccess_rewrite_root', [ $this, 'modify_document_root_path' ] );
+	public function get_type(): string {
+		return self::LOADER_TYPE;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function is_active_loader(): bool {
-		$settings = $this->plugin_data->get_plugin_settings();
-		return ( ( $settings[ LoaderTypeOption::OPTION_NAME ] ?? '' ) === self::LOADER_TYPE );
+	public function init_admin_hooks() {
+		add_filter( 'webpc_htaccess_rewrite_root', [ $this, 'overwrite_htaccess_rewrite_root' ], 0 );
+		add_filter( 'webpc_htaccess_rewrite_path', [ $this, 'overwrite_htaccess_rewrite_path' ], 0 );
+		add_filter( 'webpc_htaccess_rewrite_parent', [ $this, 'overwrite_htaccess_rewrite_parent' ], 0 );
+		add_filter( 'webpc_htaccess_rewrite_output', [ $this, 'overwrite_htaccess_rewrite_output' ], 0, 2 );
+		add_filter( 'webpc_debug_image_url', [ $this, 'update_image_urls_to_bunny_cdn' ] );
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function init_front_end_hooks() {
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function activate_loader( bool $is_debug = false ) {
-		$settings = ( ! $is_debug ) ? $this->plugin_data->get_plugin_settings() : $this->plugin_data->get_debug_settings();
+		$settings = ( ! $is_debug ) ? $this->plugin_data->get_plugin_settings() : $this->plugin_data->get_plugin_settings_debug();
 
 		$this->deactivate_loader();
 
@@ -53,17 +72,87 @@ class HtaccessLoader extends LoaderAbstract {
 	}
 
 	/**
-	 * @param string $original_path .
+	 * @param string $path .
 	 *
 	 * @return string
 	 * @internal
 	 */
-	public function modify_document_root_path( string $original_path ): string {
-		if ( isset( $_SERVER['SERVER_ADMIN'] ) && strpos( $_SERVER['SERVER_ADMIN'], '.home.pl' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-			return '%{DOCUMENT_ROOT}' . ABSPATH;
+	public function overwrite_htaccess_rewrite_root( string $path ): string {
+		$settings = $this->plugin_data->get_plugin_settings();
+		if ( $settings[ HtaccessRewriteRootOption::OPTION_NAME ] !== '' ) {
+			return str_replace( 'ABSPATH', ABSPATH, $settings[ HtaccessRewriteRootOption::OPTION_NAME ] );
 		}
 
-		return $original_path;
+		if ( isset( $_SERVER['SERVER_ADMIN'] ) && strpos( $_SERVER['SERVER_ADMIN'], '.home.pl' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			return '%{DOCUMENT_ROOT}' . str_replace( '//', '/', ABSPATH );
+		}
+
+		return $path;
+	}
+
+	/**
+	 * @param string $path .
+	 *
+	 * @return string
+	 * @internal
+	 */
+	public function overwrite_htaccess_rewrite_path( string $path ): string {
+		$settings = $this->plugin_data->get_plugin_settings();
+		if ( $settings[ HtaccessRewritePathOption::OPTION_NAME ] !== '' ) {
+			return str_replace( 'ABSPATH', ABSPATH, $settings[ HtaccessRewritePathOption::OPTION_NAME ] );
+		}
+
+		return $path;
+	}
+
+	/**
+	 * @param string $path .
+	 *
+	 * @return string
+	 * @internal
+	 */
+	public function overwrite_htaccess_rewrite_parent( string $path ): string {
+		$settings = $this->plugin_data->get_plugin_settings();
+		if ( $settings[ HtaccessRewriteParentOption::OPTION_NAME ] !== '' ) {
+			return $settings[ HtaccessRewriteParentOption::OPTION_NAME ];
+		}
+
+		return $path;
+	}
+
+	/**
+	 * @param string $output_path .
+	 * @param string $root_path   .
+	 *
+	 * @return string
+	 * @internal
+	 */
+	public function overwrite_htaccess_rewrite_output( string $output_path, string $root_path ): string {
+		$settings = $this->plugin_data->get_plugin_settings();
+		if ( $settings[ HtaccessRewriteOutputOption::OPTION_NAME ] !== '' ) {
+			return $settings[ HtaccessRewriteOutputOption::OPTION_NAME ];
+		}
+
+		if ( $output_path === $root_path ) {
+			return '/';
+		}
+
+		return $output_path;
+	}
+
+	/**
+	 * @param string $url .
+	 *
+	 * @return string
+	 * @internal
+	 */
+	public function update_image_urls_to_bunny_cdn( string $url ): string {
+		if ( ! class_exists( '\BunnyCDN' ) || ! EnvDetector::is_cdn_bunny() ) {
+			return $url;
+		}
+		$options = \BunnyCDN::getOptions();
+
+		return str_replace( $options['site_url'], ( is_ssl() ? 'https://' : 'http://' ) . $options['cdn_domain_name'], $url );
 	}
 
 	/**
@@ -81,15 +170,22 @@ class HtaccessLoader extends LoaderAbstract {
 			return;
 		}
 
-		$content = $this->add_comments_to_rules(
-			[
-				$this->get_mod_rewrite_rules( $settings ),
-				$this->get_mod_headers_rules( $settings ),
-			]
-		);
+		$content = $this->add_comments_to_rules( $this->get_rules_to_wp_content( $settings ) );
 
 		$content = apply_filters( 'webpc_htaccess_rules', $content, $path . '/.htaccess' );
 		$this->save_rewrites_in_htaccesss( $path, $content );
+	}
+
+	/**
+	 * @param mixed[] $settings Plugin settings.
+	 *
+	 * @return string[]
+	 */
+	protected function get_rules_to_wp_content( array $settings ): array {
+		return [
+			$this->get_mod_rewrite_rules( $settings ),
+			$this->get_mod_headers_rules( $settings ),
+		];
 	}
 
 	/**
@@ -152,42 +248,62 @@ class HtaccessLoader extends LoaderAbstract {
 	 *
 	 * @return string Rules for .htaccess file.
 	 */
-	private function get_mod_rewrite_rules( array $settings, string $output_path_suffix = null ): string {
+	protected function get_mod_rewrite_rules( array $settings, ?string $output_path_suffix = null ): string {
 		$content = '';
 		if ( ! $settings[ SupportedExtensionsOption::OPTION_NAME ] ) {
 			return $content;
 		}
 
-		$document_root = PathsGenerator::get_rewrite_root();
-		$root_suffix   = PathsGenerator::get_rewrite_path();
-		$output_path   = apply_filters( 'webpc_dir_name', '', 'webp' );
+		$document_root      = PathsGenerator::get_rewrite_root();
+		$root_suffix        = PathsGenerator::get_rewrite_path();
+		$root_suffix_output = apply_filters( 'webpc_htaccess_rewrite_output', $root_suffix, $document_root );
+		$output_path        = apply_filters( 'webpc_dir_name', '', 'webp' );
+		$output_parent      = apply_filters( 'webpc_htaccess_rewrite_parent', '' );
 		if ( $output_path_suffix !== null ) {
 			$output_path .= '/' . $output_path_suffix;
 		}
 
-		foreach ( $this->format_factory->get_mime_types() as $format => $mime_type ) {
-			$content .= '<IfModule mod_rewrite.c>' . PHP_EOL;
-			$content .= '  RewriteEngine On' . PHP_EOL;
-			if ( apply_filters( 'webpc_htaccess_mod_rewrite_inherit', true ) === true ) {
-				$content .= '  RewriteOptions Inherit' . PHP_EOL;
-			}
+		$content .= '<IfModule mod_rewrite.c>' . PHP_EOL;
+		$content .= '  RewriteEngine On' . PHP_EOL;
+		if ( apply_filters( 'webpc_htaccess_mod_rewrite_inherit', ! $settings[ RewriteInheritanceOption::OPTION_NAME ] ) === true ) {
+			$content .= '  RewriteOptions Inherit' . PHP_EOL;
+		}
 
+		$content .= PHP_EOL;
+		$content .= '  ' . apply_filters( 'webpc_htaccess_original_cond', 'RewriteCond %{QUERY_STRING} original$' ) . PHP_EOL;
+		$content .= '  RewriteCond %{REQUEST_FILENAME} -f' . PHP_EOL;
+		$content .= '  RewriteRule . - [L]' . PHP_EOL;
+
+		foreach ( $this->format_factory->get_mime_types() as $format => $mime_type ) {
+			$content .= PHP_EOL;
 			foreach ( $settings[ SupportedExtensionsOption::OPTION_NAME ] as $ext ) {
-				$content .= "  RewriteCond %{HTTP_ACCEPT} ${mime_type}" . PHP_EOL;
-				$content .= "  RewriteCond %{REQUEST_FILENAME} -f" . PHP_EOL;
-				if ( strpos( $document_root, '%{DOCUMENT_ROOT}' ) !== false ) {
-					$content .= "  RewriteCond ${document_root}${output_path}/$1.${ext}.${format} -f" . PHP_EOL;
-				} else {
-					$content .= "  RewriteCond ${document_root}${output_path}/$1.${ext}.${format} -f [OR]" . PHP_EOL;
-					$content .= "  RewriteCond %{DOCUMENT_ROOT}${root_suffix}${output_path}/$1.${ext}.${format} -f" . PHP_EOL;
+				if ( $format === $ext ) {
+					continue;
 				}
+
+				$content .= "  RewriteCond %{HTTP_ACCEPT} {$mime_type}" . PHP_EOL;
+				if ( in_array( ExtraFeaturesOption::OPTION_VALUE_ONLY_SMALLER, $settings[ ExtraFeaturesOption::OPTION_NAME ] ) ) {
+					$content .= "  RewriteCond %{REQUEST_FILENAME} -f" . PHP_EOL;
+				}
+
+				if ( $document_root === '%{DOCUMENT_ROOT}/' ) {
+					$content .= "  RewriteCond %{DOCUMENT_ROOT}/{$output_path}/$1.{$ext}.{$format} -f" . PHP_EOL;
+				} elseif ( strpos( $document_root, '%{DOCUMENT_ROOT}' ) !== false ) {
+					$content .= "  RewriteCond {$document_root}{$output_path}/$1.{$ext}.{$format} -f [OR]" . PHP_EOL;
+					$content .= "  RewriteCond %{DOCUMENT_ROOT}/{$output_path}/$1.{$ext}.{$format} -f" . PHP_EOL;
+				} else {
+					$content .= "  RewriteCond {$document_root}{$output_path}/$1.{$ext}.{$format} -f [OR]" . PHP_EOL;
+					$content .= "  RewriteCond %{DOCUMENT_ROOT}{$root_suffix}{$output_path}/$1.{$ext}.{$format} -f" . PHP_EOL;
+				}
+
 				if ( apply_filters( 'webpc_htaccess_mod_rewrite_referer', false ) === true ) {
 					$content .= "  RewriteCond %{HTTP_HOST}@@%{HTTP_REFERER} ^([^@]*)@@https?://\\1/.*" . PHP_EOL;
 				}
-				$content .= "  RewriteRule (.+)\.${ext}$ ${root_suffix}${output_path}/$1.${ext}.${format} [NC,T=${mime_type},L]" . PHP_EOL;
+				$content .= "  RewriteRule {$output_parent}(.+)\.{$ext}$ {$root_suffix_output}{$output_path}/$1.{$ext}.{$format} [NC,T={$mime_type},L]" . PHP_EOL;
 			}
-			$content .= '</IfModule>' . PHP_EOL;
 		}
+
+		$content .= '</IfModule>' . PHP_EOL;
 
 		return apply_filters( 'webpc_htaccess_mod_rewrite', trim( $content ), $output_path );
 	}
@@ -199,20 +315,25 @@ class HtaccessLoader extends LoaderAbstract {
 	 *
 	 * @return string Rules for .htaccess file.
 	 */
-	private function get_mod_headers_rules( array $settings ): string {
-		$content       = '';
-		$extensions    = implode( '|', $settings[ SupportedExtensionsOption::OPTION_NAME ] );
-		$cache_control = apply_filters(
-			'webpc_htaccess_cache_control_private',
-			( ( ( $_SERVER['X-LSCACHE'] ?? '' ) !== 'on' ) || isset( $_SERVER['HTTP_CDN_LOOP'] ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		);
+	protected function get_mod_headers_rules( array $settings ): string {
+		$content    = '';
+		$extensions = implode( '|', $settings[ SupportedExtensionsOption::OPTION_NAME ] );
+
+		$cache_control = true;
+		if ( $settings[ CloudflareZoneIdOption::OPTION_NAME ] && $settings[ CloudflareApiTokenOption::OPTION_NAME ]
+			&& OptionsAccessManager::get_option( CloudflareConfigurator::REQUEST_CACHE_CONFIG_OPTION ) === 'yes' ) {
+			$cache_control = false;
+		} elseif ( EnvDetector::is_cdn_bunny() ) {
+			$cache_control = false;
+		}
 
 		$content .= '<IfModule mod_headers.c>' . PHP_EOL;
 		if ( $extensions ) {
 			$content .= '  <FilesMatch "(?i)\.(' . $extensions . ')(\.(webp|avif))?$">' . PHP_EOL;
 		}
-		if ( $cache_control ) {
+		if ( apply_filters( 'webpc_htaccess_cache_control_private', $cache_control ) ) {
 			$content .= '    Header always set Cache-Control "private"' . PHP_EOL;
+			$content .= '    Header always set X-LiteSpeed-Cache-Control "no-cache"' . PHP_EOL;
 		}
 		$content .= '    Header append Vary "Accept"' . PHP_EOL;
 		if ( $extensions ) {
@@ -234,7 +355,7 @@ class HtaccessLoader extends LoaderAbstract {
 		$content .= '<IfModule mod_expires.c>' . PHP_EOL;
 		$content .= '  ExpiresActive On' . PHP_EOL;
 		foreach ( $this->format_factory->get_mime_types() as $format => $mime_type ) {
-			$content .= "  ExpiresByType ${mime_type} \"access plus 1 year\"" . PHP_EOL;
+			$content .= "  ExpiresByType {$mime_type} \"access plus 1 year\"" . PHP_EOL;
 		}
 		$content .= '</IfModule>';
 
@@ -256,7 +377,7 @@ class HtaccessLoader extends LoaderAbstract {
 
 		$content .= '<IfModule mod_mime.c>' . PHP_EOL;
 		foreach ( $this->format_factory->get_mime_types() as $format => $mime_type ) {
-			$content .= "  AddType ${mime_type} .${format}" . PHP_EOL;
+			$content .= "  AddType {$mime_type} .{$format}" . PHP_EOL;
 		}
 		$content .= '</IfModule>';
 

@@ -5,6 +5,12 @@
  * @package automattic/jetpack
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 0 );
+}
+
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed -- TODO: Move classes to appropriately-named class files.
+
 /**
  * Register the widget.
  */
@@ -159,7 +165,7 @@ class Jetpack_RSS_Links_Widget extends WP_Widget {
 			'text-image' => __( 'Text & Image Links', 'jetpack' ),
 		);
 		echo '<p><label for="' . esc_attr( $this->get_field_id( 'format' ) ) . '">' . esc_html_x( 'Format:', 'Noun', 'jetpack' ) . '
-		<select class="widefat" id="' . esc_attr( $this->get_field_id( 'format' ) ) . '" name="' . esc_attr( $this->get_field_name( 'format' ) ) . '" onchange="if ( this.value == \'text\' ) jQuery( \'#' . esc_js( $this->get_field_id( 'image-settings' ) ) . '\' ).fadeOut(); else jQuery( \'#' . esc_js( $this->get_field_id( 'image-settings' ) ) . '\' ).fadeIn();">';
+		<select class="widefat" id="' . esc_attr( $this->get_field_id( 'format' ) ) . '" name="' . esc_attr( $this->get_field_name( 'format' ) ) . '" onchange="if ( this.value == \'text\' ) jQuery( ' . esc_attr( wp_json_encode( '#' . $this->get_field_id( 'image-settings' ), JSON_UNESCAPED_SLASHES | JSON_HEX_AMP ) ) . ' ).fadeOut(); else jQuery( ' . esc_attr( wp_json_encode( '#' . $this->get_field_id( 'image-settings' ), JSON_UNESCAPED_SLASHES | JSON_HEX_AMP ) ) . ' ).fadeIn();">';
 		foreach ( $formats as $format_option => $label ) {
 			echo '<option value="' . esc_attr( $format_option ) . '"';
 			if ( $format_option === $format ) {
@@ -219,6 +225,10 @@ class Jetpack_RSS_Links_Widget extends WP_Widget {
 	 * @param array  $args Widget arguments.
 	 */
 	private function rss_link( $type, $args ) {
+		$link_text    = null;
+		$rss_type     = null;
+		$subscribe_to = null;
+
 		if ( 'posts' === $type ) {
 			$subscribe_to = esc_html__( 'Subscribe to posts', 'jetpack' );
 			$link_text    = esc_html__( 'RSS - Posts', 'jetpack' );
@@ -244,7 +254,8 @@ class Jetpack_RSS_Links_Widget extends WP_Widget {
 			$link_target = '_self';
 		}
 
-		$format = $args['format'];
+		$link_contents = null;
+		$format        = $args['format'];
 		if ( 'image' === $format ) {
 			$link_contents = $this->get_image_tag( $args );
 		} elseif ( 'text-image' === $format ) {

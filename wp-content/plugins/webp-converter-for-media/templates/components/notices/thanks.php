@@ -8,6 +8,10 @@
  * @package Converter for Media
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 <div class="notice notice-success is-dismissible"
 	data-notice="webp-converter-for-media"
@@ -16,26 +20,34 @@
 >
 	<div class="webpcContent webpcContent--notice">
 		<h4>
-			<?php echo esc_html( __( 'Thank you for using our plugin Converter for Media!', 'webp-converter-for-media' ) ); ?>
+			<?php
+			echo esc_html(
+				sprintf(
+				/* translators: %s: plugin name */
+					__( 'Thank you for using our %s plugin!', 'webp-converter-for-media' ),
+					'Converter for Media'
+				)
+			);
+			?>
 		</h4>
 		<p>
 			<?php
 			echo wp_kses_post(
-				__( 'We are glad that you are using our plugin and we hope you are satisfied with it. If you want, you can support us in the development of the plugin by adding a plugin review. This is very important and gives us the opportunity to create even better tools for you. Thank you to everyone.', 'webp-converter-for-media' )
+				__( 'We are glad that you are using our plugin and we hope you are satisfied with it. If you want, you can support us in the development of the plugin by adding a plugin review. This is very important and gives us the opportunity to create even better tools for you. Thank you!', 'webp-converter-for-media' )
 			);
 			?>
 		</p>
 		<div class="webpcContent__buttons">
-			<a href="https://wordpress.org/support/plugin/webp-converter-for-media/reviews/?rate=5#new-post"
+			<a href="https://url.mattplugins.com/converter-notice-thanks-button-review"
 				target="_blank"
 				class="webpcContent__button webpcButton webpcButton--blue webpcButton--bg"
 			>
-				<?php echo esc_html( __( 'Add plugin review', 'webp-converter-for-media' ) ); ?>
+				<?php echo esc_html( __( 'Add a plugin review', 'webp-converter-for-media' ) ); ?>
 			</a>
 			<button type="button" data-permanently
 				class="webpcContent__button webpcButton webpcButton--gray webpcButton--bg"
 			>
-				<?php echo esc_html( __( 'Hide, do not show again', 'webp-converter-for-media' ) ); ?>
+				<?php echo esc_html( __( 'Hide and do not show again', 'webp-converter-for-media' ) ); ?>
 			</button>
 		</div>
 	</div>

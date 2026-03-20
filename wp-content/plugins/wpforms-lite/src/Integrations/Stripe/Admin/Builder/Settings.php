@@ -129,7 +129,7 @@ class Settings {
 	public function builder_output() {
 		?>
 		<div class="wpforms-panel-content-section wpforms-panel-content-section-<?php echo esc_attr( $this->slug ); ?>"
-			id="<?php echo esc_attr( $this->slug ); ?>-provider" data-provider="<?php echo esc_attr( $this->slug ); ?>">
+			id="<?php echo esc_attr( $this->slug ); ?>-provider" data-provider="<?php echo esc_attr( $this->slug ); ?>" data-provider-name="<?php echo esc_attr( $this->name ); ?>">
 
 			<div class="wpforms-panel-content-section-title">
 				<?php echo esc_html( $this->name ); ?>
@@ -164,9 +164,11 @@ class Settings {
 	 *
 	 * @return bool
 	 */
-	private function is_payments_enabled() {
+	private function is_payments_enabled(): bool {
 
-		return ! empty( $this->form_data['payments'][ $this->slug ]['enable'] );
+		return ! empty( $this->form_data['payments'][ $this->slug ]['enable'] ) ||
+			! empty( $this->form_data['payments'][ $this->slug ]['enable_one_time'] ) ||
+			! empty( $this->form_data['payments'][ $this->slug ]['enable_recurring'] );
 	}
 
 	/**
@@ -185,7 +187,7 @@ class Settings {
 			return [];
 		}
 
-		$form_data = wpforms()->get( 'form' )->get(
+		$form_data = wpforms()->obj( 'form' )->get(
 			$form_id,
 			[
 				'content_only' => true,
@@ -262,7 +264,7 @@ class Settings {
 	 */
 	private function get_conditional_logic_section_data() {
 
-		$addon = wpforms()->get( 'addons' )->get_addon( 'stripe' );
+		$addon = wpforms()->obj( 'addons' )->get_addon( 'stripe' );
 
 		if (
 			empty( $addon ) ||

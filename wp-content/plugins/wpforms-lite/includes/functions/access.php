@@ -14,7 +14,7 @@
  *
  * @return bool
  */
-function wpforms_can_install( $type ) {
+function wpforms_can_install( $type ): bool {
 
 	return wpforms_can_do( 'install', $type );
 }
@@ -28,7 +28,7 @@ function wpforms_can_install( $type ) {
  *
  * @return bool
  */
-function wpforms_can_activate( $type ) {
+function wpforms_can_activate( $type ): bool {
 
 	return wpforms_can_do( 'activate', $type );
 }
@@ -45,7 +45,7 @@ function wpforms_can_activate( $type ) {
  *
  * @return bool
  */
-function wpforms_can_do( $what, $type ) {
+function wpforms_can_do( $what, $type ): bool {
 
 	if ( ! in_array( $what, [ 'install', 'activate' ], true ) ) {
 		return false;
@@ -74,7 +74,7 @@ function wpforms_can_do( $what, $type ) {
 	// Addons require additional license checks.
 	$license = get_option( 'wpforms_license', [] );
 
-	// Allow addons installation if license is not expired, enabled and valid.
+	// Allow addons installation if the license is not expired, enabled and valid.
 	return empty( $license['is_expired'] ) && empty( $license['is_disabled'] ) && empty( $license['is_invalid'] );
 }
 
@@ -89,7 +89,7 @@ function wpforms_get_license_type() {
 
 	$type = wpforms_setting( 'type', '', 'wpforms_license' );
 
-	if ( empty( $type ) || ! wpforms()->is_pro() ) {
+	if ( empty( $type ) || ! wpforms_is_pro() ) {
 		return false;
 	}
 
@@ -100,18 +100,18 @@ function wpforms_get_license_type() {
  * Get the current installation license key.
  *
  * @since 1.6.2.3
- * @since 1.8.0 WPFORMS_LICENSE_KEY constant has higher priority than the DB option.
+ * @since 1.8.0 The WPFORMS_LICENSE_KEY constant has higher priority than the DB option.
  *
  * @return string
  */
-function wpforms_get_license_key() {
+function wpforms_get_license_key(): string {
 
 	// Allow wp-config constant to pass key.
 	if ( defined( 'WPFORMS_LICENSE_KEY' ) && WPFORMS_LICENSE_KEY ) {
 		return WPFORMS_LICENSE_KEY;
 	}
 
-	return wpforms_setting( 'key', '', 'wpforms_license' );
+	return (string) wpforms_setting( 'key', '', 'wpforms_license' );
 }
 
 /**
@@ -119,7 +119,7 @@ function wpforms_get_license_key() {
  *
  * @since 1.6.0
  *
- * @param string $type Specific install type to check for.
+ * @param string $type Specific installation type to check for.
  *
  * @return int|false Unix timestamp. False on failure.
  */
@@ -131,7 +131,7 @@ function wpforms_get_activated_timestamp( $type = '' ) {
 		return false;
 	}
 
-	// When a passed install type is empty, then get it from a DB.
+	// When a passed installation type is empty, then get it from a DB.
 	// If it is installed/activated first, it is saved first.
 	$type = empty( $type ) ? (string) array_keys( $activated )[0] : $type;
 
@@ -183,42 +183,72 @@ function wpforms_get_upgraded_timestamp( $version ) {
  *
  * @return string
  */
-function wpforms_get_capability_manage_options() {
+function wpforms_get_capability_manage_options(): string {
 
-	return apply_filters( 'wpforms_manage_cap', 'manage_options' );
+	/**
+	 * Filters the default capability to manage everything for WPForms.
+	 * By default, it is 'manage_options'.
+	 *
+	 * @since 1.4.4
+	 *
+	 * @param string $capability Default capability to manage everything for WPForms.
+	 */
+	return (string) apply_filters( 'wpforms_manage_cap', 'manage_options' );
 }
 
 /**
- * Check WPForms permissions for currently logged in user.
- * Both short (e.g. 'view_own_forms') or long (e.g. 'wpforms_view_own_forms') capability name can be used.
+ * Check WPForms permissions for currently logged-in user.
+ * Both short (e.g. 'view_own_forms') or long (e.g. 'wpforms_view_own_forms') capability names can be used.
  * Only WPForms capabilities get processed.
  *
  * @since 1.4.4
  *
  * @param array|string $caps Capability name(s).
- * @param int          $id   ID of the specific object to check against if capability is a "meta" cap. "Meta"
- *                           capabilities, e.g. 'edit_post', 'edit_user', etc., are capabilities used by
- *                           map_meta_cap() to map to other "primitive" capabilities, e.g. 'edit_posts',
- *                           edit_others_posts', etc. Accessed via func_get_args() and passed to
- *                           WP_User::has_cap(), then map_meta_cap().
+ * @param int|mixed    $id   ID of the specific object to check against if capability is a "meta" cap.
+ *                           "Meta" capabilities, e.g. 'edit_post', 'edit_user', etc.,
+ *                           are capabilities used by map_meta_cap() to map to other "primitive" capabilities,
+ *                           e.g. 'edit_posts', 'edit_others_posts', etc.
+ *                           Accessed via func_get_args() and passed to WP_User::has_cap(), then map_meta_cap().
  *
  * @return bool
  */
-function wpforms_current_user_can( $caps = [], $id = 0 ) {
+function wpforms_current_user_can( $caps = [], $id = 0 ): bool {
 
-	$access = wpforms()->get( 'access' );
+	static $results;
 
-	if ( ! method_exists( $access, 'current_user_can' ) ) {
+	$id       = (int) $id;
+	$caps_str = is_array( $caps ) ? implode( ' ', $caps ) : (string) $caps;
+	$hash     = md5( $caps_str . $id );
+
+	// Return a cached result.
+	if ( isset( $results[ $hash ] ) ) {
+		return $results[ $hash ];
+	}
+
+	$access = wpforms()->obj( 'access' );
+
+	if ( ! $access || ! method_exists( $access, 'current_user_can' ) ) {
 		return false;
 	}
 
-	$user_can = $access->current_user_can( $caps , $id );
+	$user_can = $access->current_user_can( $caps, $id );
 
-	return apply_filters( 'wpforms_current_user_can', $user_can, $caps, $id );
+	/**
+	 * Filters the result of the WPForms permissions check for the currently logged-in user.
+	 *
+	 * @since 1.4.4
+	 *
+	 * @param bool         $user_can Whether the current user has the capability.
+	 * @param array|string $caps     Capability name(s).
+	 * @param int          $id       ID of the specific object to check against if capability is a "meta" cap.
+	 */
+	$results[ $hash ] = apply_filters( 'wpforms_current_user_can', $user_can, $caps, $id );
+
+	return $results[ $hash ];
 }
 
 /**
- * Search for posts editable by user.
+ * Search for posts editable by the user.
  *
  * @since 1.7.9
  *
@@ -235,7 +265,7 @@ function wpforms_current_user_can( $caps = [], $id = 0 ) {
  * @noinspection PhpTernaryExpressionCanBeReducedToShortVersionInspection
  * @noinspection ElvisOperatorCanBeUsedInspection
  */
-function wpforms_search_posts( $search_term = '', $args = [] ) {
+function wpforms_search_posts( $search_term = '', $args = [] ): array {
 
 	global $wpdb;
 
@@ -251,10 +281,10 @@ function wpforms_search_posts( $search_term = '', $args = [] ) {
 	$args['post_status'] = array_diff( $args['post_status'], [ 'trash' ] );
 
 	$user      = wp_get_current_user();
-	$user_id   = $user ? $user->ID : 0;
+	$user_id   = $user->ID ?? 0;
 	$post_type = get_post_type_object( $args['post_type'] );
 
-	if ( ! $user_id || ! $post_type || $args['count'] <= 0 ) {
+	if ( ! $user || ! $user_id || ! $post_type || $args['count'] <= 0 ) {
 		return [];
 	}
 
@@ -263,7 +293,7 @@ function wpforms_search_posts( $search_term = '', $args = [] ) {
 	$cache_posts  = wp_cache_get( $key, '', false, $found );
 
 	if ( $found ) {
-		return $cache_posts;
+		return (array) $cache_posts;
 	}
 
 	$post_title_where = $search_term ? $wpdb->prepare(
@@ -281,7 +311,7 @@ function wpforms_search_posts( $search_term = '', $args = [] ) {
 	$can_delete_private_posts   = (int) $user->has_cap( $post_type->cap->delete_private_posts );
 	$can_edit_policy            = (int) $user->has_cap( map_meta_cap( 'manage_privacy_options', $user_id )[0] );
 
-	// For the case when user is post author.
+	// For the case when the user is post author.
 	$capability_author_where = "post_author = $user_id AND
 		( ( post_status IN ( 'publish', 'future' ) AND $can_delete_published_posts ) OR
 		( ( post_status NOT IN ( 'publish', 'future', 'trash' ) ) AND $can_delete_posts )
@@ -303,7 +333,7 @@ function wpforms_search_posts( $search_term = '', $args = [] ) {
 		'(' . $capability_policy_where . ')' .
 		' )';
 
-	// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	$posts = $wpdb->get_results(
 		$wpdb->prepare(
 			"SELECT ID, post_title, post_author
@@ -347,7 +377,7 @@ function wpforms_search_posts( $search_term = '', $args = [] ) {
  *
  * @return array
  */
-function wpforms_search_pages_for_dropdown( $search_term, $args = [] ) {
+function wpforms_search_pages_for_dropdown( $search_term, $args = [] ): array {
 
 	$search_results = wpforms_search_posts( $search_term, $args );
 	$result_pages   = [];

@@ -5,6 +5,10 @@
  * @package Converter for Media
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 <h4>PHP</h4>
 <table>
@@ -25,6 +29,18 @@
 		<td class="e">max_execution_time</td>
 		<td class="v">
 			<?php echo esc_html( ini_get( 'max_execution_time' ) ?: '-' ); ?>
+		</td>
+	</tr>
+	<tr>
+		<td class="e">disable_functions</td>
+		<td class="v">
+			<?php echo esc_html( ini_get( 'disable_functions' ) ?: '-' ); ?>
+		</td>
+	</tr>
+	<tr>
+		<td class="e">SERVER_SOFTWARE</td>
+		<td class="v">
+			<?php echo esc_html( $_SERVER['SERVER_SOFTWARE'] ?? '-' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput ?>
 		</td>
 	</tr>
 	</tbody>

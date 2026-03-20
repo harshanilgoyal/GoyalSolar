@@ -217,32 +217,6 @@ class Locator {
 	}
 
 	/**
-	 * Add locations' column to the view.
-	 *
-	 * @since 1.7.4
-	 * @deprecated 1.8.6
-	 *
-	 * @param array $columns Columns.
-	 *
-	 * @return array
-	 */
-	public function add_column( $columns ) {
-
-		// Deprecate this method since the Locations column data should be added via the `wpforms_admin_forms_table_facades_columns_data` filter.
-		_deprecated_function( __METHOD__, '1.8.6 of the WPForms plugin', __CLASS__ . '::add_column_data()' );
-
-		$columns[ self::COLUMN_NAME ] =
-			sprintf(
-				'<span class="wpforms-locations-column-title">%1$s</span>' .
-				'<span class="wpforms-locations-column-icon" title="%2$s"></span>',
-				esc_html__( 'Locations', 'wpforms-lite' ),
-				esc_html__( 'Form locations', 'wpforms-lite' )
-			);
-
-		return $columns;
-	}
-
-	/**
 	 * Add locations' column to the table columns data.
 	 *
 	 * @since 1.8.6
@@ -323,7 +297,7 @@ class Locator {
 	 *
 	 * @return array
 	 */
-	public function row_actions_all( $row_actions, $form ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function row_actions_all( $row_actions, $form ) {
 
 		$form_locations = get_post_meta( $form->ID, self::LOCATIONS_META, true );
 
@@ -670,7 +644,7 @@ class Locator {
 		// Escaped above.
 		return sprintf(
 			'<span class="wpforms-locations-list-item">%s</span>',
-			$location_edit_link . $location_link
+			$location_edit_link . wp_kses_post( urldecode( $location_link ) )
 		);
 	}
 
@@ -1069,14 +1043,14 @@ class Locator {
 		 *
 		 * @since 1.7.4
 		 */
-		do_action( FormsLocatorScanTask::DELETE_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+		do_action( FormsLocatorScanTask::DELETE_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 
 		/**
 		 * Run Forms Locator scan action.
 		 *
 		 * @since 1.7.4
 		 */
-		do_action( FormsLocatorScanTask::RESCAN_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName
+		do_action( FormsLocatorScanTask::RESCAN_ACTION ); // phpcs:ignore WPForms.PHP.ValidateHooks.InvalidHookName, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 	}
 
 	/**
@@ -1264,7 +1238,7 @@ class Locator {
 	 *
 	 * @return bool
 	 */
-	private function is_post_visible( $location ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function is_post_visible( $location ) {
 
 		$edit_cap = 'edit_post';
 		$read_cap = 'read_post';
@@ -1320,28 +1294,50 @@ class Locator {
 			return [];
 		}
 
+		// Form templates should not have any locations.
+		if ( get_post_type( $form_id ) === 'wpforms-template' ) {
+			return [];
+		}
+
 		foreach ( self::STANDALONE_LOCATION_TYPES as $location_type ) {
 			if ( empty( $form_data['settings'][ "{$location_type}_enable" ] ) ) {
 				continue;
 			}
 
-			$title_key = "{$location_type}_title";
-			$slug_key  = "{$location_type}_page_slug";
-			$title     = $form_data['settings'][ $title_key ] ?? '';
-			$slug      = $form_data['settings'][ $slug_key ] ?? '';
-
-			// Return the location array.
-			return [
-				'type'    => $location_type,
-				'title'   => $title,
-				'form_id' => (int) $form_data['id'],
-				'id'      => $form_id,
-				'status'  => $status,
-				'url'     => '/' . $slug . '/',
-			];
+			return $this->build_standalone_location_type( $location_type, $form_id, $form_data, $status );
 		}
 
 		return [];
+	}
+
+	/**
+	 * Build a standalone location.
+	 *
+	 * @since 1.8.8
+	 *
+	 * @param string $location_type Standalone location type.
+	 * @param int    $form_id       The form ID.
+	 * @param array  $form_data     Form data.
+	 * @param string $status        Form status.
+	 *
+	 * @return array Location.
+	 */
+	private function build_standalone_location_type( string $location_type, int $form_id, array $form_data, string $status ): array {
+
+		$title_key = "{$location_type}_title";
+		$slug_key  = "{$location_type}_page_slug";
+		$title     = $form_data['settings'][ $title_key ] ?? '';
+		$slug      = $form_data['settings'][ $slug_key ] ?? '';
+
+		// Return the location array.
+		return [
+			'type'    => $location_type,
+			'title'   => $title,
+			'form_id' => (int) $form_data['id'],
+			'id'      => $form_id,
+			'status'  => $status,
+			'url'     => '/' . $slug . '/',
+		];
 	}
 
 	/**

@@ -2,6 +2,7 @@
 
 namespace WPForms\Integrations\Stripe\Admin;
 
+use WPForms\Integrations\Stripe\Api\PaymentIntents;
 use WPForms\Integrations\Stripe\Helpers;
 use WPForms\Admin\Notice;
 
@@ -85,14 +86,39 @@ class Settings {
 	 */
 	public function not_supported_currency_notice() {
 
+		if ( ! Helpers::has_stripe_keys() ) {
+			return;
+		}
+
 		$account = $this->connect->get_connected_account();
 
-		if ( ! isset( $account->currencies_supported ) || in_array( strtolower( wpforms_get_currency() ), $account->currencies_supported, true ) ) {
+		if ( is_null( $account ) ) {
+			return;
+		}
+
+		$selected_currency = strtolower( wpforms_get_currency() );
+
+		if ( $selected_currency === $account->default_currency ) {
+			return;
+		}
+
+		$country_specs = ( new PaymentIntents() )->get_country_specs( $account->country );
+
+		if ( ! $country_specs || in_array( $selected_currency, $country_specs->supported_payment_currencies, true ) ) {
 			return;
 		}
 
 		Notice::error(
-			esc_html__( 'The connected Stripe account does not support the selected currency. Please connect a different account or change the currency.', 'wpforms-lite' )
+			sprintf(
+				wp_kses( /* translators: %1$s - Selected currency on the WPForms Settings admin page. */
+					__( '<strong>Payments Cannot Be Processed</strong><br>The currency you have set (%1$s) is not supported by Stripe. Please choose a different currency.', 'wpforms-lite' ),
+					[
+						'strong' => [],
+						'br'     => [],
+					]
+				),
+				esc_html( wpforms_get_currency() )
+			)
 		);
 	}
 
@@ -115,7 +141,7 @@ class Settings {
 		wp_enqueue_script(
 			'wpforms-admin-settings-stripe',
 			WPFORMS_PLUGIN_URL . "assets/js/integrations/stripe/admin-settings-stripe{$min}.js",
-			[ 'jquery' ],
+			[ 'jquery', 'wpforms-admin-utils' ],
 			WPFORMS_VERSION,
 			true
 		);
@@ -306,11 +332,13 @@ class Settings {
 	 *
 	 * @return string
 	 */
-	private function get_connected_status_content( $mode = '' ) {
+	private function get_connected_status_content( string $mode = '' ): string {
 
-		$output           = '';
-		$account_name     = $this->connect->get_connected_account_name( $mode );
-		$connect_url      = $this->connect->get_connect_with_stripe_url( $mode );
+		$output         = '';
+		$account_name   = $this->connect->get_connected_account_name( $mode );
+		$connect_url    = $this->connect->get_connect_with_stripe_url( $mode );
+		$disconnect_url = $this->connect->get_disconnect_stripe_url( $mode );
+
 		$connected_status = sprintf(
 			wp_kses( /* translators: %1$s - Stripe account name connected, %2$s - Stripe mode connected (live or test). */
 				__( 'Connected to Stripe as <em>%1$s</em> in <strong>%2$s Mode</strong>.', 'wpforms-lite' ),
@@ -324,17 +352,30 @@ class Settings {
 		);
 
 		$output .= sprintf( '<div class="wpforms-connected"><p>%s</p></div>', $connected_status );
-
 		$output .= '<p>' . sprintf(
 			wp_kses( /* translators: %s - Stripe connect URL. */
-				__( '<a href="%s">Switch Accounts</a>', 'wpforms-lite' ),
+				__( '<a href="%s" class="wpforms-btn wpforms-btn-md wpforms-btn-light-grey" style="margin-right: 10px;">Switch Accounts</a>', 'wpforms-lite' ),
 				[
 					'a' => [
-						'href' => [],
+						'href'  => [],
+						'class' => [],
+						'style' => [],
 					],
 				]
 			),
 			esc_url( $connect_url )
+		);
+		$output .= sprintf(
+			wp_kses( /* translators: %s - Stripe disconnect URL. */
+				__( '<a href="%s" class="wpforms-btn wpforms-btn-md wpforms-btn-light-grey">Disconnect</a>', 'wpforms-lite' ),
+				[
+					'a' => [
+						'href'  => [],
+						'class' => [],
+					],
+				]
+			),
+			esc_url( $disconnect_url )
 		) . '</p>';
 
 		return $output;

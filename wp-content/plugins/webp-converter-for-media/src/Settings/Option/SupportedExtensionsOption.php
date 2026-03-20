@@ -33,15 +33,15 @@ class SupportedExtensionsOption extends OptionAbstract {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_label(): string {
-		return __( 'List of supported files extensions', 'webp-converter-for-media' );
+	public static function get_label(): string {
+		return __( 'Supported files extensions', 'webp-converter-for-media' );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function get_info(): string {
-		return __( 'Files from supported directories that will be converted to output formats.', 'webp-converter-for-media' );
+		return __( 'Files from supported directories that will be converted to next-gen formats.', 'webp-converter-for-media' );
 	}
 
 	/**
@@ -64,9 +64,22 @@ class SupportedExtensionsOption extends OptionAbstract {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @return string[]
 	 */
-	public function get_valid_value( $current_value, array $available_values = null, array $disabled_values = null ) {
+	public function get_default_value(): array {
+		return [ 'jpg', 'jpeg', 'png', 'webp' ];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function validate_value( $current_value, ?array $available_values = null, ?array $disabled_values = null ) {
 		$valid_values = [];
+		if ( ! $current_value ) {
+			return $valid_values;
+		}
+
 		foreach ( $current_value as $option_value ) {
 			if ( array_key_exists( $option_value, $available_values ?: [] )
 				&& ! in_array( $option_value, $disabled_values ?: [] ) ) {
@@ -77,16 +90,19 @@ class SupportedExtensionsOption extends OptionAbstract {
 			$valid_values[] = 'jpeg';
 		}
 
-		return $valid_values;
+		return array_unique( $valid_values );
 	}
 
 	/**
 	 * {@inheritdoc}
-	 *
-	 * @return string[]
 	 */
-	public function get_default_value( array $settings = null ): array {
-		return [ 'jpg', 'png', 'webp' ];
+	public function sanitize_value( $current_value ) {
+		$values = [ 'jpg', 'jpeg', 'png', 'gif', 'webp', 'png2' ];
+
+		return $this->validate_value(
+			$current_value,
+			array_combine( $values, $values )
+		);
 	}
 
 	/**

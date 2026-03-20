@@ -46,7 +46,7 @@ class Modern extends Classic {
 	public function noscript( $msg ) {
 
 		printf(
-			'<noscript class="wpforms-error-noscript">%1$s</noscript><div class="wpforms-hidden" id="wpforms-error-noscript">%1$s</div>',
+			'<noscript class="wpforms-error-noscript">%1$s</noscript><div id="wpforms-error-noscript" style="display: none;">%1$s</div>',
 			esc_html( $msg )
 		);
 	}
@@ -67,6 +67,45 @@ class Modern extends Classic {
 				printf(
 					'<div id="wpforms-%1$s-%2$s-error" class="wpforms-error-container" role="alert">
 						<span class="wpforms-hidden" aria-hidden="false">%3$s</span>%4$s
+					</div>',
+					esc_attr( $this->form_data['id'] ?? 0 ),
+					esc_attr( $type ),
+					esc_html__( 'Form error message', 'wpforms-lite' ),
+					wpautop( wpforms_sanitize_error( $error ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				);
+				break;
+
+			case 'header_styled':
+			case 'footer_styled':
+				printf(
+					'<div id="wpforms-%1$s-%2$s-error" class="wpforms-error-container wpforms-error-styled-container" role="alert">
+						<div class="wpforms-error"><span class="wpforms-hidden" aria-hidden="false">%3$s</span>%4$s</div>
+					</div>',
+					esc_attr( $this->form_data['id'] ),
+					esc_attr( $type ),
+					esc_html__( 'Form error message', 'wpforms-lite' ),
+					wpautop( wpforms_sanitize_error( $error ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				);
+				break;
+
+			case 'header_styled':
+			case 'footer_styled':
+				printf(
+					'<div id="wpforms-%1$s-%2$s-error" class="wpforms-error-container wpforms-error-styled-container" role="alert">
+						<div class="wpforms-error"><span class="wpforms-hidden" aria-hidden="false">%3$s</span>%4$s</div>
+					</div>',
+					esc_attr( $this->form_data['id'] ),
+					esc_attr( $type ),
+					esc_html__( 'Form error message', 'wpforms-lite' ),
+					wpautop( wpforms_sanitize_error( $error ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				);
+				break;
+
+			case 'header_styled':
+			case 'footer_styled':
+				printf(
+					'<div id="wpforms-%1$s-%2$s-error" class="wpforms-error-container wpforms-error-styled-container" role="alert">
+						<div class="wpforms-error"><span class="wpforms-hidden" aria-hidden="false">%3$s</span>%4$s</div>
 					</div>',
 					esc_attr( $this->form_data['id'] ),
 					esc_attr( $type ),
@@ -234,8 +273,8 @@ class Modern extends Classic {
 
 		foreach ( $properties['inputs'] as $input => $input_data ) {
 
-			// Add `aria-errormessage` to inputs.
-			if ( ! empty( $input_data['id'] ) ) {
+			// Add `aria-errormessage` to inputs (except hidden according to W3C requirements).
+			if ( ! empty( $input_data['id'] ) && $field['type'] !== 'hidden' ) {
 				$properties['inputs'][ $input ]['attr']['aria-errormessage'] = "{$input_data['id']}-error";
 			}
 

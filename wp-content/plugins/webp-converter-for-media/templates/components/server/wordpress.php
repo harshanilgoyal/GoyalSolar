@@ -5,6 +5,10 @@
  * @package Converter for Media
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 <h4>WordPress</h4>
 <table>
@@ -25,6 +29,24 @@
 		<td class="e">DOCUMENT_ROOT <em>(realpath)</em></td>
 		<td class="v">
 			<?php echo esc_html( realpath( $_SERVER['DOCUMENT_ROOT'] ?? '-' ) ?: '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput ?>
+		</td>
+	</tr>
+	<tr>
+		<td class="e">WP_CONTENT_DIR</td>
+		<td class="v">
+			<?php echo esc_html( WP_CONTENT_DIR ); ?>
+		</td>
+	</tr>
+	<tr>
+		<td class="e">UPLOADS</td>
+		<td class="v">
+			<?php echo esc_html( defined( 'UPLOADS' ) ? UPLOADS : '-' ); ?>
+		</td>
+	</tr>
+	<tr>
+		<td class="e">get_option <em>(upload_path)</em></td>
+		<td class="v">
+			<?php echo esc_html( get_option( 'upload_path' ) ?: '-' ); ?>
 		</td>
 	</tr>
 	<tr>

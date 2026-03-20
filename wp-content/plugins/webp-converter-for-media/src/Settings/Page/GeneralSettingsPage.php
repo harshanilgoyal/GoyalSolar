@@ -3,24 +3,26 @@
 
 namespace WebpConverter\Settings\Page;
 
-use WebpConverter\Conversion\Endpoint\ImagesCounterEndpoint;
+use WebpConverter\Conversion\Cron\CronEventGenerator;
+use WebpConverter\Conversion\Endpoint\FilesStatsEndpoint;
 use WebpConverter\Conversion\Endpoint\PathsEndpoint;
 use WebpConverter\Conversion\Endpoint\RegenerateEndpoint;
+use WebpConverter\Conversion\Format\FormatFactory;
 use WebpConverter\Loader\LoaderAbstract;
+use WebpConverter\Notice\NoticeIntegrator;
+use WebpConverter\Notice\WelcomeNotice;
 use WebpConverter\PluginData;
 use WebpConverter\PluginInfo;
 use WebpConverter\Repository\TokenRepository;
-use WebpConverter\Service\NonceManager;
 use WebpConverter\Settings\Option\OptionAbstract;
-use WebpConverter\Settings\PluginOptions;
-use WebpConverter\Settings\SettingsSave;
-use WebpConverter\WebpConverterConstants;
+use WebpConverter\Settings\SettingsManager;
 
 /**
  * {@inheritdoc}
  */
 class GeneralSettingsPage extends PageAbstract {
 
+	const PAGE_SLUG      = null;
 	const PAGE_VIEW_PATH = 'views/settings.php';
 
 	/**
@@ -31,34 +33,41 @@ class GeneralSettingsPage extends PageAbstract {
 	/**
 	 * @var PluginData
 	 */
-	private $plugin_data;
+	protected $plugin_data;
 
 	/**
 	 * @var TokenRepository
 	 */
 	private $token_repository;
 
+	/**
+	 * @var FormatFactory
+	 */
+	private $format_factory;
+
 	public function __construct(
 		PluginInfo $plugin_info,
 		PluginData $plugin_data,
-		TokenRepository $token_repository
+		TokenRepository $token_repository,
+		FormatFactory $format_factory
 	) {
 		$this->plugin_info      = $plugin_info;
 		$this->plugin_data      = $plugin_data;
 		$this->token_repository = $token_repository;
+		$this->format_factory   = $format_factory;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_slug() {
-		return null;
+	public function get_slug(): ?string {
+		return self::PAGE_SLUG;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_label(): string {
+	public static function get_label(): string {
 		return __( 'General Settings', 'webp-converter-for-media' );
 	}
 
@@ -73,47 +82,66 @@ class GeneralSettingsPage extends PageAbstract {
 	 * {@inheritdoc}
 	 */
 	public function get_template_vars(): array {
-		( new SettingsSave( $this->plugin_data ) )->save_settings();
+		$token = $this->token_repository->get_token();
 
-		$token_status = $this->token_repository->get_token()->get_valid_status();
-		$data         = [
+		return [
 			'logo_url'                 => $this->plugin_info->get_plugin_directory_url() . 'assets/img/logo-headline.png',
-			'errors_messages'          => apply_filters( 'webpc_server_errors_messages', [] ),
-			'errors_codes'             => apply_filters( 'webpc_server_errors', [] ),
-			'form_options'             => ( new PluginOptions() )->get_options( OptionAbstract::FORM_TYPE_BASIC ),
-			'form_sidebar_options'     => ( new PluginOptions() )->get_options( OptionAbstract::FORM_TYPE_SIDEBAR ),
-			'form_input_name'          => SettingsSave::FORM_TYPE_PARAM_KEY,
-			'form_input_value'         => OptionAbstract::FORM_TYPE_BASIC,
+			'author_image_url'         => $this->plugin_info->get_plugin_directory_url() . 'assets/img/author.png',
+			'form_options'             => $this->plugin_data->get_settings_fields( OptionAbstract::FORM_TYPE_GENERAL ),
+			'form_sidebar_options'     => $this->plugin_data->get_settings_fields( OptionAbstract::FORM_TYPE_SIDEBAR ),
+			'form_input_name'          => SettingsManager::FORM_TYPE_PARAM_KEY,
+			'form_input_value'         => OptionAbstract::FORM_TYPE_GENERAL,
 			'form_sidebar_input_value' => OptionAbstract::FORM_TYPE_SIDEBAR,
-			'nonce_input_name'         => SettingsSave::NONCE_PARAM_KEY,
-			'nonce_input_value'        => ( new NonceManager() )->generate_nonce( SettingsSave::NONCE_PARAM_VALUE ),
-			'token_valid_status'       => $token_status,
-			'api_calculate_url'        => ( new ImagesCounterEndpoint( $this->plugin_data, $this->token_repository ) )->get_route_url(),
-			'api_paths_url'            => ( new PathsEndpoint( $this->plugin_data, $this->token_repository ) )->get_route_url(),
-			'api_regenerate_url'       => ( new RegenerateEndpoint( $this->plugin_data ) )->get_route_url(),
-			'url_debug_page'           => PageIntegration::get_settings_page_url( DebugPage::PAGE_SLUG ),
+			'nonce_input_name'         => SettingsManager::NONCE_PARAM_KEY,
+			'nonce_input_value'        => wp_create_nonce( SettingsManager::NONCE_PARAM_VALUE ),
+			'token_valid_status'       => $token->get_valid_status(),
+			'token_active_status'      => $token->is_active(),
+			'api_paths_url'            => PathsEndpoint::get_route_url(),
+			'api_paths_nonce'          => PathsEndpoint::get_route_nonce(),
+			'api_regenerate_url'       => RegenerateEndpoint::get_route_url(),
+			'api_regenerate_nonce'     => RegenerateEndpoint::get_route_nonce(),
+			'api_stats_url'            => FilesStatsEndpoint::get_route_url(),
+			'api_stats_nonce'          => FilesStatsEndpoint::get_route_nonce(),
+			'url_debug_page'           => PageIntegrator::get_settings_page_url( DebugPage::PAGE_SLUG ),
 			'output_formats'           => [
 				'webp' => [
 					'label' => 'WebP',
-					'desc'  => ( ! $token_status )
+					'desc'  => ( ! $token->get_valid_status() )
 						? __( 'available in the free version', 'webp-converter-for-media' )
 						: null,
 				],
 				'avif' => [
 					'label' => 'AVIF',
-					'desc'  => ( ! $token_status )
+					'desc'  => ( ! $token->get_valid_status() )
 						? sprintf(
 						/* translators: %1$s: open anchor tag, %2$s: close anchor tag */
 							__( 'available in %1$sthe PRO version%2$s', 'webp-converter-for-media' ),
-							'<a href="' . esc_url( sprintf( WebpConverterConstants::UPGRADE_PRO_PREFIX_URL, 'regeneration-widget-avif-upgrade' ) ) . '" target="_blank">',
+							'<a href="https://url.mattplugins.com/converter-regeneration-widget-avif-upgrade" target="_blank">',
 							'</a>'
 						)
 						: null,
 				],
 			],
+			'errors_messages'          => apply_filters( 'webpc_server_errors_messages', [] ),
+			'errors_codes'             => apply_filters( 'webpc_server_errors', [] ),
 		];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function do_action_before_load() {
+		( new SettingsManager( $this->plugin_data, $this->token_repository, $this->format_factory ) )->save_settings();
+		( new NoticeIntegrator( $this->plugin_info, new WelcomeNotice() ) )->set_disable_value();
 
 		do_action( LoaderAbstract::ACTION_NAME, true );
-		return $data;
+		wp_clear_scheduled_hook( CronEventGenerator::CRON_PATHS_ACTION );
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function do_action_after_load() {
+		do_action( LoaderAbstract::ACTION_NAME, true );
 	}
 }

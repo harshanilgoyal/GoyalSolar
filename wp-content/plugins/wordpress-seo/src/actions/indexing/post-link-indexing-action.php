@@ -15,14 +15,14 @@ class Post_Link_Indexing_Action extends Abstract_Link_Indexing_Action {
 	 *
 	 * @var string
 	 */
-	const UNINDEXED_COUNT_TRANSIENT = 'wpseo_unindexed_post_link_count';
+	public const UNINDEXED_COUNT_TRANSIENT = 'wpseo_unindexed_post_link_count';
 
 	/**
 	 * The transient cache key for limited counts.
 	 *
 	 * @var string
 	 */
-	const UNINDEXED_LIMITED_COUNT_TRANSIENT = self::UNINDEXED_COUNT_TRANSIENT . '_limited';
+	public const UNINDEXED_LIMITED_COUNT_TRANSIENT = self::UNINDEXED_COUNT_TRANSIENT . '_limited';
 
 	/**
 	 * The post type helper.
@@ -63,7 +63,7 @@ class Post_Link_Indexing_Action extends Abstract_Link_Indexing_Action {
 					'content' => $post->post_content,
 				];
 			},
-			$posts
+			$posts,
 		);
 	}
 
@@ -73,7 +73,7 @@ class Post_Link_Indexing_Action extends Abstract_Link_Indexing_Action {
 	 * @return string The prepared query string.
 	 */
 	protected function get_count_query() {
-		$public_post_types = $this->post_type_helper->get_accessible_post_types();
+		$public_post_types = $this->post_type_helper->get_indexable_post_types();
 		$indexable_table   = Model::get_table_name( 'Indexable' );
 		$links_table       = Model::get_table_name( 'SEO_Links' );
 
@@ -94,7 +94,7 @@ class Post_Link_Indexing_Action extends Abstract_Link_Indexing_Action {
 			WHERE ( I.object_id IS NULL OR L.post_id IS NOT NULL )
 				AND P.post_status = 'publish'
 				AND P.post_type IN (" . \implode( ', ', \array_fill( 0, \count( $public_post_types ), '%s' ) ) . ')',
-			$public_post_types
+			$public_post_types,
 		);
 	}
 
@@ -106,7 +106,7 @@ class Post_Link_Indexing_Action extends Abstract_Link_Indexing_Action {
 	 * @return string The prepared query string.
 	 */
 	protected function get_select_query( $limit = false ) {
-		$public_post_types = $this->post_type_helper->get_accessible_post_types();
+		$public_post_types = $this->post_type_helper->get_indexable_post_types();
 		$indexable_table   = Model::get_table_name( 'Indexable' );
 		$links_table       = Model::get_table_name( 'SEO_Links' );
 		$replacements      = $public_post_types;
@@ -136,7 +136,7 @@ class Post_Link_Indexing_Action extends Abstract_Link_Indexing_Action {
 				AND P.post_status = 'publish'
 				AND P.post_type IN (" . \implode( ', ', \array_fill( 0, \count( $public_post_types ), '%s' ) ) . ")
 			$limit_query",
-			$replacements
+			$replacements,
 		);
 	}
 }

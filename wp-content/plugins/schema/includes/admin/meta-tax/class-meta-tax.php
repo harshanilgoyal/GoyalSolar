@@ -369,14 +369,14 @@ class Schema_Custom_Add_Meta_Tax {
            }else{
              echo 'http://i.imgur.com/ka0E2.png';
            }
-           echo '" alt="Edit" title="Edit"/></span> 
+           echo '" alt="'.__('Edit', 'schema-wp').'" title="'.__('Edit', 'schema-wp').'"/></span> 
         <img src="';
         if ($this->_Local_images){
           echo $plugin_path.'/images/remove.png';
         }else{
           echo 'http://i.imgur.com/g8Duj.png';
         }
-        echo '" alt="'.__('Remove','tax-meta').'" title="'.__('Remove','tax-meta').'" id="remove-'.$field['id'].'"></div>';
+        echo '" alt="'.__('Remove','schema-wp').'" title="'.__('Remove','schema-wp').'" id="remove-'.$field['id'].'"></div>';
         $c = $c + 1;
         
         }
@@ -389,7 +389,7 @@ class Schema_Custom_Add_Meta_Tax {
     }else{
       echo 'http://i.imgur.com/w5Tuc.png';
     }
-    echo '" alt="'.__('Add','tax-meta').'" title="'.__('Add','tax-meta').'" id="add-'.$field['id'].'"><br/></div>';
+    echo '" alt="'.__('Add','schema-wp').'" title="'.__('Add','schema-wp').'" id="add-'.$field['id'].'"><br/></div>';
     
     //create all fields once more for js function and catch with object buffer
     ob_start();
@@ -423,7 +423,7 @@ class Schema_Custom_Add_Meta_Tax {
     }else{
       echo 'http://i.imgur.com/g8Duj.png';
     }
-    echo '" alt="'.__('Remove','tax-meta').'" title="'.__('Remove','tax-meta').'" id="remove-'.$field['id'].'"></div>';
+    echo '" alt="'.__('Remove','schema-wp').'" title="'.__('Remove','schema-wp').'" id="remove-'.$field['id'].'"></div>';
     $counter = 'countadd_'.$field['id'];
     $js_code = ob_get_clean ();
     $js_code = str_replace("\n","",$js_code);
@@ -722,9 +722,9 @@ class Schema_Custom_Add_Meta_Tax {
     echo "<input type='hidden' name='{$name}[id]' value='{$value['id']}'/>";
     echo "<input type='hidden' name='{$name}[url]' value='{$value['url']}'/>";
     if ($has_image)
-    echo "<input class='{$multiple} button  simplePanelimageUploadclear' id='{$id}' value='".__('Remove Image')."' type='button'/>";
+    echo "<input class='{$multiple} button  simplePanelimageUploadclear' id='{$id}' value='".__('Remove Image', 'schema-wp')."' type='button'/>";
     else
-    echo "<input class='{$multiple} button simplePanelimageUpload' id='{$id}' value='".__('Upload Image')."' type='button'/>";
+    echo "<input class='{$multiple} button simplePanelimageUpload' id='{$id}' value='".__('Upload Image', 'schema-wp')."' type='button'/>";
     $this->show_field_end( $field, $meta );
   }
   

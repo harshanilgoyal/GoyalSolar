@@ -3,6 +3,7 @@
 namespace WPForms\Integrations\Stripe\Api;
 
 use Exception;
+use WPForms\Integrations\Stripe\Api\Webhooks\Exceptions\AmountMismatchException;
 use WPForms\Vendor\Stripe\Webhook;
 use RuntimeException;
 use BadMethodCallException;
@@ -186,6 +187,12 @@ class WebhookRoute extends Common {
 			$this->response_code = $processed ? 200 : 202;
 
 			$this->respond();
+		} catch ( AmountMismatchException $e ) {
+
+			$this->response_code = 202;
+			$this->response      = $e->getMessage();
+
+			$this->respond();
 		} catch ( SignatureVerificationException $e ) {
 
 			WebhooksHealthCheck::save_status( WebhooksHealthCheck::SIGNATURE_OPTION, WebhooksHealthCheck::STATUS_ERROR );
@@ -278,6 +285,7 @@ class WebhookRoute extends Common {
 
 		return [
 			'charge.refunded'               => Webhooks\ChargeRefunded::class,
+			'charge.refund.updated'         => Webhooks\ChargeRefundUpdated::class,
 			'invoice.payment_succeeded'     => Webhooks\InvoicePaymentSucceeded::class,
 			'invoice.created'               => Webhooks\InvoiceCreated::class,
 			'charge.succeeded'              => Webhooks\ChargeSucceeded::class,

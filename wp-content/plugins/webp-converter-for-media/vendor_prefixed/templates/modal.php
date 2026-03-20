@@ -33,6 +33,7 @@ echo esc_url($form_template->get_api_url());
 echo wp_kses_post($form_template->get_form_title());
 ?>
 			</div>
+
 			<div class="mattDeactivationModal__desc">
 				<?php 
 echo wp_kses_post($form_template->get_form_desc());
@@ -110,6 +111,18 @@ foreach ($form_options->get_options() as $option) {
 }
 ?>
 			</ul>
+
+			<?php 
+if ($form_template->get_notice_message() !== null) {
+    ?>
+				<div class="mattDeactivationModal__notice">
+					<?php 
+    echo wp_kses_post($form_template->get_notice_message());
+    ?>
+				</div>
+			<?php 
+}
+?>
 
 			<ul class="mattDeactivationModal__buttons">
 				<li class="mattDeactivationModal__button">

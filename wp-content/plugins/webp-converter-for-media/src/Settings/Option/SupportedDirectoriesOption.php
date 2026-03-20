@@ -12,6 +12,15 @@ class SupportedDirectoriesOption extends OptionAbstract {
 	const OPTION_NAME = 'dirs';
 
 	/**
+	 * @var DirectoryFactory
+	 */
+	private $directory_factory;
+
+	public function __construct( DirectoryFactory $directory_factory ) {
+		$this->directory_factory = $directory_factory;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function get_name(): string {
@@ -22,7 +31,7 @@ class SupportedDirectoriesOption extends OptionAbstract {
 	 * {@inheritdoc}
 	 */
 	public function get_form_name(): string {
-		return OptionAbstract::FORM_TYPE_BASIC;
+		return OptionAbstract::FORM_TYPE_GENERAL;
 	}
 
 	/**
@@ -35,15 +44,15 @@ class SupportedDirectoriesOption extends OptionAbstract {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_label(): string {
-		return __( 'List of supported directories', 'webp-converter-for-media' );
+	public static function get_label(): string {
+		return __( 'Supported directories', 'webp-converter-for-media' );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function get_info(): string {
-		return __( 'Files from these directories will be converted to output formats.', 'webp-converter-for-media' );
+		return __( 'Files from these directories will be converted to next-gen formats.', 'webp-converter-for-media' );
 	}
 
 	/**
@@ -52,14 +61,27 @@ class SupportedDirectoriesOption extends OptionAbstract {
 	 * @return string[]
 	 */
 	public function get_available_values( array $settings ): array {
-		return ( new DirectoryFactory() )->get_directories();
+		return $this->directory_factory->get_directories();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return string[]
+	 */
+	public function get_default_value(): array {
+		return [ 'uploads' ];
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_valid_value( $current_value, array $available_values = null, array $disabled_values = null ) {
+	public function validate_value( $current_value, ?array $available_values = null, ?array $disabled_values = null ) {
 		$valid_values = [];
+		if ( ! $current_value ) {
+			return $valid_values;
+		}
+
 		foreach ( $current_value as $option_value ) {
 			if ( array_key_exists( $option_value, $available_values ?: [] )
 				&& ! in_array( $option_value, $disabled_values ?: [] ) ) {
@@ -72,11 +94,12 @@ class SupportedDirectoriesOption extends OptionAbstract {
 
 	/**
 	 * {@inheritdoc}
-	 *
-	 * @return string[]
 	 */
-	public function get_default_value( array $settings = null ): array {
-		return [ 'uploads' ];
+	public function sanitize_value( $current_value ) {
+		return $this->validate_value(
+			$current_value,
+			$this->get_available_values( [] )
+		);
 	}
 
 	/**

@@ -7,6 +7,10 @@
 
 use Automattic\Jetpack\VideoPress\Options as Package_Options;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit( 0 );
+}
+
 /**
  * VideoPress Options class.
  *
@@ -58,5 +62,4 @@ class VideoPress_Options {
 		_deprecated_function( __METHOD__, 'jetpack-11.2' );
 		return Package_Options::delete_options();
 	}
-
 }

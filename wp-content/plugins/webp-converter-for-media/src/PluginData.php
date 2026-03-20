@@ -2,7 +2,11 @@
 
 namespace WebpConverter;
 
-use WebpConverter\Settings\PluginOptions;
+use WebpConverter\Conversion\Directory\DirectoryFactory;
+use WebpConverter\Conversion\Format\FormatFactory;
+use WebpConverter\Conversion\Method\MethodFactory;
+use WebpConverter\Repository\TokenRepository;
+use WebpConverter\Settings\OptionsManager;
 
 /**
  * Manages plugin values.
@@ -12,7 +16,7 @@ class PluginData {
 	/**
 	 * Handler of class with plugin settings.
 	 *
-	 * @var PluginOptions
+	 * @var OptionsManager
 	 */
 	private $settings_object;
 
@@ -37,13 +41,16 @@ class PluginData {
 	 */
 	private $debug_settings = null;
 
-	public function __construct() {
-		$this->settings_object = new PluginOptions();
+	public function __construct(
+		TokenRepository $token_repository,
+		MethodFactory $method_factory,
+		FormatFactory $format_factory,
+		DirectoryFactory $directory_factory
+	) {
+		$this->settings_object = new OptionsManager( $token_repository, $method_factory, $format_factory, $directory_factory );
 	}
 
 	/**
-	 * Returns settings of plugin.
-	 *
 	 * @return mixed[]
 	 */
 	public function get_plugin_settings(): array {
@@ -58,7 +65,7 @@ class PluginData {
 	 *
 	 * @return mixed[]
 	 */
-	public function get_public_settings(): array {
+	public function get_plugin_settings_public(): array {
 		if ( $this->plugin_public_settings === null ) {
 			$this->plugin_public_settings = $this->settings_object->get_public_values();
 		}
@@ -70,11 +77,20 @@ class PluginData {
 	 *
 	 * @return mixed[]
 	 */
-	public function get_debug_settings(): array {
+	public function get_plugin_settings_debug(): array {
 		if ( $this->debug_settings === null ) {
-			$this->debug_settings = $this->settings_object->get_values( null, true );
+			$this->debug_settings = $this->settings_object->get_values( true );
 		}
 		return $this->debug_settings;
+	}
+
+	/**
+	 * @param string|null $form_name .
+	 *
+	 * @return mixed[]
+	 */
+	public function get_settings_fields( ?string $form_name = null ): array {
+		return $this->settings_object->get_fields( $form_name );
 	}
 
 	/**
@@ -86,5 +102,25 @@ class PluginData {
 		$this->plugin_settings        = null;
 		$this->plugin_public_settings = null;
 		$this->debug_settings         = null;
+	}
+
+	/**
+	 * Retrieves and validates plugin settings submitted via POST.
+	 *
+	 * @return mixed[]|null Validated plugin settings values. Returns null if form submission has not been verified.
+	 */
+	public function get_validated_posted_data(): ?array {
+		return $this->settings_object->get_validated_posted_values();
+	}
+
+	/**
+	 * Validates provided plugin settings data.
+	 *
+	 * @param mixed[] $form_data Plugin settings data to validate.
+	 *
+	 * @return mixed[] Validated plugin settings values.
+	 */
+	public function get_validated_form_data( array $form_data ): array {
+		return $this->settings_object->get_validated_form_values( $form_data );
 	}
 }
