@@ -1,0 +1,65 @@
+# Translation of Plugins - Extra Charges To Payment Gateway For WooCommerce (Standard) - Development (trunk) in Hindi
+# This file is distributed under the same license as the Plugins - Extra Charges To Payment Gateway For WooCommerce (Standard) - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2019-11-12 18:17:30+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/3.0.0-alpha.2\n"
+"Language: hi_IN\n"
+"Project-Id-Version: Plugins - Extra Charges To Payment Gateway For WooCommerce (Standard) - Development (trunk)\n"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:245
+msgid "Percentage post Threshold"
+msgstr "प्रतिशत थ्रेसहोल्ड के बाद"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:236
+msgid "Fixed amount upto Threshold"
+msgstr "थ्रेशोल्ड तक की निश्चित राशि"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:229
+msgid "Threshold amount (Post which there will be percentage based extracharge)"
+msgstr "थ्रेसहोल्ड राशि (पोस्ट जिसमें प्रतिशत आधारित अतिरिक्त शुल्क होगा)"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:183
+msgid "Maximum Extracharge"
+msgstr "अधिकतम अतिरिक्त शुल्क"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:390
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:403
+msgid "Fixed"
+msgstr "स्थिर"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:219
+msgid "Total Custom % Add"
+msgstr "कुल कस्टम% जोड़ें"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:211
+msgid "Total Custom Fixed"
+msgstr "कुल कस्टम फिक्स्ड"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:192
+msgid "Include Tax"
+msgstr "टैक्स शामिल करें"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:173
+msgid "Threshold amount after which no extra charge is levied. (Set 0 to make extracharge applicable for all amounts)"
+msgstr "थ्रेसहोल्ड राशि जिसके बाद कोई अतिरिक्त शुल्क नहीं लगाया जाता है। (सभी राशियों के लिए अतिरिक्त शुल्क लागू करने के लिए 0 सेट करें)"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:164
+msgid "Custom label for Extra Charges (optional)"
+msgstr "अतिरिक्त शुल्क के लिए कस्टम लेबल (वैकल्पिक)"
+
+#. Author of the plugin
+msgid "hemsingh1"
+msgstr "hemsingh1"
+
+#. Description of the plugin
+msgid "You can add extra fee for any payment gateways"
+msgstr "आप किसी भी भुगतान गेटवे के लिए अतिरिक्त शुल्क जोड़ सकते हैं"
+
+#: woocommerce-extra-charges-option-to-payment-gateways-std.php:463
+msgid "Extra Charges"
+msgstr "अतिरिक्त शुल्क"

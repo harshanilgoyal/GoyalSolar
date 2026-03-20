@@ -1,0 +1,16 @@
+.yith_magnifier_gallery li{
+    width: auto!important;
+    margin-right: 20px;
+}
+
+.ywcfav_variation_content{
+    transition:all 1s ease-in;
+    overflow:hidden;
+    height: 0;
+    background-color: #eeeeee;
+}
+
+.ywcfav_variation_content:not(:empty){
+    height:auto;
+    background-color:initial;
+}

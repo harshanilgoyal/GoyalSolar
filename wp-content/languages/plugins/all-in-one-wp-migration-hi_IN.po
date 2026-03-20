@@ -1,0 +1,976 @@
+# Translation of Plugins - All-in-One WP Migration - Stable (latest release) in Hindi
+# This file is distributed under the same license as the Plugins - All-in-One WP Migration - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2022-04-23 04:13:20+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.0-alpha.1\n"
+"Language: hi_IN\n"
+"Project-Id-Version: Plugins - All-in-One WP Migration - Stable (latest release)\n"
+
+#: lib/view/backups/backups-list.php:93
+msgid "More"
+msgstr "अधिक"
+
+#: lib/controller/class-ai1wm-main-controller.php:795
+#: lib/controller/class-ai1wm-main-controller.php:1116
+msgid "You have %d backups"
+msgstr "आपके पास %d बैकअप हैं"
+
+#: lib/model/import/class-ai1wm-import-confirm.php:83
+msgid "<i class=\"ai1wm-import-info\">Your backup is from a PHP 7 but the site that you are importing to is PHP 8. This could cause the import to fail. <a href=\"https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/\" target=\"_blank\">Technical details</a></i>"
+msgstr "<i class=\"ai1wm-import-info\">आपका बैकअप PHP 7 से है लेकिन जिस साइट पर आप आयात कर रहे हैं वह PHP 8 है। इससे आयात विफल हो सकता है। <a href=\"https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/\" target=\"_blank\">तकनीकी जानकारी</a></i>"
+
+#: lib/model/import/class-ai1wm-import-confirm.php:78
+msgid "Your backup is from a PHP 7 but the site that you are importing to is PHP 8. This could cause the import to fail. Technical details: https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/"
+msgstr "आपका बैकअप PHP 7 से है लेकिन जिस साइट पर आप आयात कर रहे हैं वह PHP 8 है। इससे आयात विफल हो सकता है। तकनीकी जानकारी: https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/"
+
+#: lib/model/import/class-ai1wm-import-confirm.php:65
+msgid "Your backup is from a PHP 5 but the site that you are importing to is PHP 8. This could cause the import to fail. Technical details: https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/"
+msgstr "आपका बैकअप PHP 5 से है लेकिन जिस साइट पर आप आयात कर रहे हैं वह PHP 8 है। इससे आयात विफल हो सकता है। तकनीकी जानकारी: https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/"
+
+#: lib/model/import/class-ai1wm-import-confirm.php:70
+msgid "<i class=\"ai1wm-import-info\">Your backup is from a PHP 5 but the site that you are importing to is PHP 8. This could cause the import to fail. <a href=\"https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/\" target=\"_blank\">Technical details</a></i>"
+msgstr "<i class=\"ai1wm-import-info\">आपका बैकअप PHP 5 से है लेकिन जिस साइट पर आप आयात कर रहे हैं वह PHP 8 है। इससे आयात विफल हो सकता है। <a href=\"https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/\" target=\"_blank\">तकनीकी जानकारी</a></i>"
+
+#: lib/controller/class-ai1wm-main-controller.php:794
+#: lib/controller/class-ai1wm-main-controller.php:1115
+#: lib/view/main/backups.php:31
+msgid "You have %d backup"
+msgid_plural "You have %d backups"
+msgstr[0] "आपके पास %d बैकअप है"
+msgstr[1] "आपके पास %d बैकअप हैं"
+
+#: lib/view/updater/error.php:31
+msgid "Error: %s"
+msgstr "त्रुटि: %s"
+
+#: lib/model/export/class-ai1wm-export-enumerate-themes.php:106
+msgid "Done retrieving a list of WordPress theme files."
+msgstr "वर्डप्रेस थीम फाइलों की सूची प्राप्त करने का काम पूरा हो गया।"
+
+#: lib/model/export/class-ai1wm-export-enumerate-themes.php:51
+msgid "Retrieving a list of WordPress theme files..."
+msgstr "वर्डप्रेस थीम फाइलों की सूची प्राप्त कर रहा है..."
+
+#: lib/model/export/class-ai1wm-export-themes.php:80
+#: lib/model/export/class-ai1wm-export-themes.php:119
+msgid "Archiving %d theme files...<br />%d%% complete"
+msgstr "%d थीम फ़ाइलें संग्रहित की जा रही हैं...<br />%d%% पूर्ण"
+
+#: lib/model/import/class-ai1wm-import-options.php:36
+msgid "Preparing options..."
+msgstr "विकल्प तैयार किए जा रहे हैं..."
+
+#: lib/model/export/class-ai1wm-export-enumerate-plugins.php:100
+msgid "Done retrieving a list of WordPress plugin files."
+msgstr "वर्डप्रेस प्लगइन फाइलों की एक सूची प्राप्त करने का काम हो गया।"
+
+#: lib/model/export/class-ai1wm-export-enumerate-plugins.php:51
+msgid "Retrieving a list of WordPress plugin files..."
+msgstr "वर्डप्रेस प्लगइन फाइलों की सूची प्राप्त कर रहा है..."
+
+#: lib/view/main/contact-support.php:31
+msgid "Contact Support"
+msgstr "समर्थन से संपर्क करें"
+
+#: lib/model/import/class-ai1wm-import-validate.php:48
+msgid "The file type that you have tried to import is not compatible with this plugin. Please ensure that your file is a <strong>.wpress</strong> file that was created with the All-in-One WP migration plugin. <a href=\"https://help.servmask.com/knowledgebase/invalid-backup-file/\" target=\"_blank\">Technical details</a>"
+msgstr "फ़ाइल प्रकार जिसे आपने आयात करने का प्रयास किया है वह इस प्लगइन के अनुकूल नहीं है। कृपया सुनिश्चित करें कि आपकी फ़ाइल एक <strong>.wpress</strong> फ़ाइल है जो ऑल-इन-वन डब्लूपी माइग्रेशन प्लगइन के साथ बनाई गई थी। <a href=\"https://help.servmask.com/knowledgebase/invalid-backup-file/\" target=\"_blank\">तकनीकी जानकारी</a>"
+
+#: lib/controller/class-ai1wm-export-controller.php:77
+msgid "Unable to export. Error code: %s. %s"
+msgstr "निर्यात करने में असमर्थ। त्रुटि कोड: %s. %s"
+
+#: lib/model/import/class-ai1wm-import-permalinks.php:42
+msgid "Done getting WordPress permalinks settings."
+msgstr "हो गया वर्डप्रेस पर्मालिंक सेटिंग।"
+
+#: lib/model/import/class-ai1wm-import-permalinks.php:36
+msgid "Getting WordPress permalinks settings..."
+msgstr "वर्डप्रेस पर्मालिंक सेटिंग प्राप्त करना..."
+
+#: lib/view/import/avada.php:41
+msgid "» <a class=\"ai1wm-no-underline\" href=\"https://wordpress.org/support/view/plugin-reviews/all-in-one-wp-migration?rate=5#postform\" target=\"_blank\">Optionally, review the plugin</a>. (opens a new window)"
+msgstr "» <a class=\"ai1wm-no-underline\" href=\"https://wordpress.org/support/view/plugin-reviews/all-in-one-wp-migration?rate=5#postform\" target=\"_blank\">वैकल्पिक रूप से, प्लगइन की समीक्षा करें</a>. (नई विंडो खोलता है)"
+
+#: lib/view/import/avada.php:40
+msgid "» <a class=\"ai1wm-no-underline\" href=\"https://theme-fusion.com/documentation/avada/installation-maintenance/important-update-information/#clear-caches\" target=\"_blank\">Reset Avada Fusion Builder cache</a>. (opens a new window)<br />"
+msgstr "» <a class=\"ai1wm-no-underline\" href=\"https://theme-fusion.com/documentation/avada/installation-maintenance/important-update-information/#clear-caches\" target=\"_blank\">अवाड़ा फ्यूजन बिल्डर कैश को रीसेट करें</a>. (एक नई विंडो खोलता है) <br />"
+
+#: lib/view/import/avada.php:37
+msgid "» <a class=\"ai1wm-no-underline\" href=\"https://oxygenbuilder.com/documentation/other/importing-exporting/#resigning\" target=\"_blank\">Re-sign Oxygen Builder shortcodes</a>. (opens a new window)<br />"
+msgstr "» <a class=\"ai1wm-no-underline\" href=\"https://oxygenbuilder.com/documentation/other/importing-exporting/#resigning\" target=\"_blank\">ऑक्सीजन बिल्डर शॉर्टकोड पर फिर से हस्ताक्षर करें</a>. (एक नई विंडो खोलता है) <br />"
+
+#: lib/view/import/avada.php:31
+msgid "» Permalinks are set to default. <a class=\"ai1wm-no-underline\" href=\"https://help.servmask.com/knowledgebase/permalinks-are-set-to-default/\" target=\"_blank\">Why?</a> (opens a new window)<br />"
+msgstr "» Permalinks are set to default. <a class=\"ai1wm-no-underline\" href=\"https://help.servmask.com/knowledgebase/permalinks-are-set-to-default/\" target=\"_blank\">क्यों?</a> (एक नई विंडो खोलता है) <br />"
+
+#: lib/view/import/avada.php:33
+msgid "» <a class=\"ai1wm-no-underline\" href=\"%s\" target=\"_blank\">Save permalinks structure</a>. (opens a new window)<br />"
+msgstr "» <a class=\"ai1wm-no-underline\" href=\"%s\" target=\"_blank\">पर्मलिंक संरचना को बचाएं</a>. (एक नई विंडो खोलता है) <br />"
+
+#: lib/model/export/class-ai1wm-export-enumerate-tables.php:84
+msgid "Done retrieving a list of WordPress database tables."
+msgstr "वर्डप्रेस डेटाबेस तालिकाओं की एक सूची को पुनः प्राप्त किया।"
+
+#: lib/model/export/class-ai1wm-export-enumerate-tables.php:48
+msgid "Retrieving a list of WordPress database tables..."
+msgstr "वर्डप्रेस डेटाबेस तालिकाओं की सूची प्राप्त करना..."
+
+#: lib/view/main/translate.php:31
+msgid "Translate"
+msgstr "अनुवाद करना"
+
+#: lib/view/import/done.php:31
+msgid "» Permalinks are set to default. <a class=\"ai1wm-no-underline\" href=\"https://help.servmask.com/knowledgebase/permalinks-are-set-to-default/\" target=\"_blank\">Why?</a> (opens a new window)<br />» <a class=\"ai1wm-no-underline\" href=\"https://wordpress.org/support/view/plugin-reviews/all-in-one-wp-migration?rate=5#postform\" target=\"_blank\">Optionally, review the plugin</a>. (opens a new window)"
+msgstr "» पर्मालिंक्स डिफ़ॉल्ट पर सेट हैं।<a class=\"ai1wm-no-underline\" href=\"https://help.servmask.com/knowledgebase/permalinks-are-set-to-default/\" target=\"_blank\">क्यों?</a> (एक नई विंडो खोलता है)<br />» <a class=\"ai1wm-no-underline\" href=\"https://wordpress.org/support/view/plugin-reviews/all-in-one-wp-migration?rate=5#postform\" target=\"_blank\">वैकल्पिक रूप से, प्लगइन की समीक्षा करें</a>. (एक नई विंडो खोलता है)"
+
+#: lib/view/import/oxygen.php:31
+msgid "» Permalinks are set to default. <a class=\"ai1wm-no-underline\" href=\"https://help.servmask.com/knowledgebase/permalinks-are-set-to-default/\" target=\"_blank\">Why?</a> (opens a new window)<br />» <a class=\"ai1wm-no-underline\" href=\"https://oxygenbuilder.com/documentation/other/importing-exporting/#resigning\" target=\"_blank\">Re-sign Oxygen Builder shortcodes</a>. (opens a new window)<br />» <a class=\"ai1wm-no-underline\" href=\"https://wordpress.org/support/view/plugin-reviews/all-in-one-wp-migration?rate=5#postform\" target=\"_blank\">Optionally, review the plugin</a>. (opens a new window)"
+msgstr "» पर्मालिंक्स डिफ़ॉल्ट पर सेट हैं। <a class=\"ai1wm-no-underline\" href=\"https://help.servmask.com/knowledgebase/permalinks-are-set-to-default/\" target=\"_blank\">क्यों?</a> (एक नई विंडो खोलता है)<br />» <a class=\"ai1wm-no-underline\" href=\"https://oxygenbuilder.com/documentation/other/importing-exporting/#resigning\" target=\"_blank\">पुनः साइन ऑक्सीजन बिल्डर शॉर्टकोड</a>. (एक नई विंडो खोलता है)<br />» <a class=\"ai1wm-no-underline\" href=\"https://wordpress.org/support/view/plugin-reviews/all-in-one-wp-migration?rate=5#postform\" target=\"_blank\">वैकल्पिक रूप से, प्लगइन की समीक्षा करें</a>. (एक नई विंडो खोलता है)"
+
+#: lib/view/import/oxygen.php:39
+msgid "» <a class=\"ai1wm-no-underline\" href=\"%s\" target=\"_blank\">Save permalinks structure</a>. (opens a new window)<br />» <a class=\"ai1wm-no-underline\" href=\"https://oxygenbuilder.com/documentation/other/importing-exporting/#resigning\" target=\"_blank\">Re-sign Oxygen Builder shortcodes</a>. (opens a new window)<br />» <a class=\"ai1wm-no-underline\" href=\"https://wordpress.org/support/view/plugin-reviews/all-in-one-wp-migration?rate=5#postform\" target=\"_blank\">Optionally, review the plugin</a>. (opens a new window)"
+msgstr "» <a class=\"ai1wm-no-underline\" href=\"%s\" target=\"_blank\">पर्मालिंक संरचना सहेजें</a>. (एक नई विंडो खोलता है)<br />» <a class=\"ai1wm-no-underline\" href=\"https://oxygenbuilder.com/documentation/other/importing-exporting/#resigning\" target=\"_blank\">पुनः साइन ऑक्सीजन बिल्डर शॉर्टकोड</a>. (एक नई विंडो खोलता है)<br />» <a class=\"ai1wm-no-underline\" href=\"https://wordpress.org/support/view/plugin-reviews/all-in-one-wp-migration?rate=5#postform\" target=\"_blank\">वैकल्पिक रूप से, प्लगइन की समीक्षा करें</a>. (एक नई विंडो खोलता है)"
+
+#: lib/model/export/class-ai1wm-export-media.php:80
+#: lib/model/export/class-ai1wm-export-media.php:119
+msgid "Archiving %d media files...<br />%d%% complete"
+msgstr "%d मीडिया फ़ाइलों को संग्रहित कर रहा है...<br />%d%% पूर्ण"
+
+#: lib/model/export/class-ai1wm-export-content.php:80
+#: lib/model/export/class-ai1wm-export-content.php:119
+msgid "Archiving %d content files...<br />%d%% complete"
+msgstr "%d सामग्री फ़ाइलों को संग्रहित कर रहा है...<br />%d%% पूर्ण"
+
+#: lib/model/export/class-ai1wm-export-enumerate-content.php:106
+msgid "Done retrieving a list of WordPress content files."
+msgstr "वर्डप्रेस सामग्री फ़ाइलों की एक सूची को पुनः प्राप्त किया।"
+
+#: lib/model/export/class-ai1wm-export-enumerate-content.php:51
+msgid "Retrieving a list of WordPress content files..."
+msgstr "वर्डप्रेस सामग्री फ़ाइलों की सूची प्राप्त करना ..."
+
+#: lib/model/export/class-ai1wm-export-enumerate-media.php:93
+msgid "Done retrieving a list of WordPress media files."
+msgstr "वर्डप्रेस मीडिया फ़ाइलों की एक सूची को पुनः प्राप्त किया।"
+
+#: lib/model/export/class-ai1wm-export-enumerate-media.php:51
+msgid "Retrieving a list of WordPress media files..."
+msgstr "वर्डप्रेस मीडिया फ़ाइलों की सूची प्राप्त करना..."
+
+#: lib/controller/class-ai1wm-main-controller.php:951
+#: lib/controller/class-ai1wm-main-controller.php:1110
+msgid "There is not enough space available on the disk.<br />Free up %s of disk space."
+msgstr "डिस्क पर पर्याप्त स्थान उपलब्ध नहीं है। <br /> डिस्क स्थान का %s मुक्त होना।"
+
+#: lib/controller/class-ai1wm-main-controller.php:908
+#: lib/controller/class-ai1wm-main-controller.php:1100
+msgid "I have enough disk space"
+msgstr "मेरे पास पर्याप्त डिस्क स्थान है"
+
+#: lib/model/import/class-ai1wm-import-options.php:81
+msgid "Done preparing options."
+msgstr "विकल्पों की तैयारी पूरी कर ली है।"
+
+#: lib/model/class-ai1wm-compatibility.php:50
+msgid "%s is not the latest version. You must update the plugin before you can use it. "
+msgstr "%s नवीनतम संस्करण नहीं है। उपयोग करने से पहले आपको प्लगइन को अपडेट करना होगा।"
+
+#: lib/model/import/class-ai1wm-import-confirm.php:91
+msgid "Your backup is from a PHP 5 but the site that you are importing to is PHP 7. This could cause the import to fail. Technical details: https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/"
+msgstr ""
+"आपका बैकअप PHP 5 से है लेकिन आप जिस साइट पर आयात कर रहे हैं वह PHP 7 है। इससे आयात विफल हो सकता है। तकनीकी जानकारी:\n"
+"https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/"
+
+#: lib/view/backups/backups-list.php:46 lib/view/backups/index.php:49
+msgid "Refreshing backup list..."
+msgstr "बैकअप सूची रिफ्रेश कर रहा है..."
+
+#: lib/view/import/import-permissions.php:34
+msgid "<h3>Site could not be imported</h3><p>Please make sure that storage directory <strong>%s</strong> has read and write permissions.</p><p><a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">Technical details</a></p>"
+msgstr "<h3>साइट आयात नहीं की जा सकी</h3><p>कृपया सुनिश्चित करें कि संग्रहण निर्देशिका <strong>%s</strong> ने अनुमतियों को पढ़ा और लिखा है।</p><p><a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">तकनीकी विवरण</a></p>"
+
+#: lib/view/export/export-permissions.php:34
+msgid "<h3>Site could not be exported</h3><p>Please make sure that storage directory <strong>%s</strong> has read and write permissions.</p><p><a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">Technical details</a></p>"
+msgstr "<h3>साइट को निर्यात नहीं किया जा सका</h3><p>कृपया सुनिश्चित करें कि संग्रहण निर्देशिका <strong>%s</strong> ने अनुमतियाँ पढ़ और लिख ली हैं।</p><p><a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">तकनीकी विवरण</a></p>"
+
+#: lib/view/backups/backups-permissions.php:34
+msgid "<h3>Site could not be restored</h3><p>Please make sure that storage directory <strong>%s</strong> has read and write permissions.</p><p><a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">Technical details</a></p>"
+msgstr "<h3>साइट को पुनर्स्थापित नहीं किया जा सका</h3><p>कृपया सुनिश्चित करें कि संग्रहण निर्देशिका <strong>%s</strong> ने अनुमतियाँ पढ़ और लिख ली हैं।</p><p><a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">तकनीकी विवरण</a></p>"
+
+#: lib/view/main/missing-role-capability-notice.php:34
+msgid "All-in-One WP Migration: Your current profile role does not have Export/Import capabilities enabled. <a href=\"https://help.servmask.com/knowledgebase/how-to-add-import-and-export-capabilities-to-wordpress-users/\" target=\"_blank\">Technical details</a>"
+msgstr "ऑल-इन-वन डब्ल्यूपी माइग्रेशन: आपकी वर्तमान प्रोफ़ाइल भूमिका में निर्यात / आयात क्षमताएं सक्षम नहीं हैं। <a href=\"https://help.servmask.com/knowledgebase/how-to-add-import-and-export-capabilities-to-wordpress-users/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: lib/view/import/button-file.php:31
+msgid "To choose a file please go inside the link and click on the browse button."
+msgstr "फ़ाइल चुनने के लिए कृपया लिंक के अंदर जाएं और ब्राउज़ बटन पर क्लिक करें।"
+
+#: lib/view/import/done.php:38
+msgid "» <a class=\"ai1wm-no-underline\" href=\"%s\" target=\"_blank\">Save permalinks structure</a>. (opens a new window)<br />» <a class=\"ai1wm-no-underline\" href=\"https://wordpress.org/support/view/plugin-reviews/all-in-one-wp-migration?rate=5#postform\" target=\"_blank\">Optionally, review the plugin</a>. (opens a new window)"
+msgstr "» <a class=\"ai1wm-no-underline\" href=\"%s\" target=\"_blank\">पर्मालिंक संरचना सहेजें</a>. (एक नई विंडो खोलता है)<br />» <a class=\"ai1wm-no-underline\" href=\"https://wordpress.org/support/view/plugin-reviews/all-in-one-wp-migration?rate=5#postform\" target=\"_blank\">वैकल्पिक रूप से, प्लगइन की समीक्षा करें</a>. (एक नई विंडो खोलता है)"
+
+#: lib/controller/class-ai1wm-main-controller.php:905
+#: lib/controller/class-ai1wm-main-controller.php:1096
+msgid "Finish"
+msgstr "समाप्त"
+
+#: lib/controller/class-ai1wm-main-controller.php:1109
+msgid "\"Restore\" functionality is available in a <a href=\"https://servmask.com/products/unlimited-extension\" target=\"_blank\">paid extension</a>.<br />You could also download the backup and then use \"Import from file\"."
+msgstr "\"पुनर्स्थापना\" कार्यक्षमता <a href=\"https://servmask.com/products/unlimited-extension\" target=\"_blank\">भुगतान किए गए एक्सटेंशन</a> में उपलब्ध है। <br /> आप बैकअप भी डाउनलोड कर सकते हैं। और फिर \"फ़ाइल से आयात करें\" का उपयोग करें।"
+
+#: lib/view/backups/backups-list.php:64
+msgid "Click to set a label for this backup"
+msgstr "इस बैकअप के लिए एक लेबल सेट करने के लिए क्लिक करें"
+
+#: lib/model/export/class-ai1wm-export-download.php:64
+msgid "<a href=\"%s\" class=\"ai1wm-button-green ai1wm-emphasize ai1wm-button-download\" title=\"%s\" download=\"%s\"><span>Download %s</span><em>Size: %s</em></a>"
+msgstr "<a href=\"%s\" class=\"ai1wm-button-green ai1wm-emphasize ai1wm-button-download\" title=\"%s\" download=\"%s\"><span>डाउनलोड %s</span><em>आकार: %s</em></a>"
+
+#: lib/controller/class-ai1wm-import-controller.php:94
+msgid "Unable to import: %s"
+msgstr "आयात करने में असमर्थ: %s"
+
+#: lib/controller/class-ai1wm-export-controller.php:86
+msgid "Unable to export: %s"
+msgstr "निर्यात करने में असमर्थ: %s"
+
+#: lib/controller/class-ai1wm-import-controller.php:77
+#: lib/controller/class-ai1wm-import-controller.php:85
+msgid "Unable to import. Error code: %s. %s"
+msgstr "आयात करने में असमर्थ। त्रुटि कोड: %s %s"
+
+#: lib/model/import/class-ai1wm-import-confirm.php:48
+msgid "The import process will overwrite your website including the database, media, plugins, and themes. Are you sure to proceed?"
+msgstr "आयात प्रक्रिया डेटाबेस, मीडिया, प्लगइन्स और थीम सहित आपकी वेबसाइट को अधिलेखित कर देगी। क्या आप आगे बढ़ना चाहते हैं?"
+
+#: lib/model/import/class-ai1wm-import-validate.php:115
+msgid "Please make sure that your file was exported using <strong>All-in-One WP Migration</strong> plugin. <a href=\"https://help.servmask.com/knowledgebase/invalid-backup-file/\" target=\"_blank\">Technical details</a>"
+msgstr "कृपया सुनिश्चित करें कि आपकी फ़ाइल <strong>ऑल-इन-वन डब्ल्यूपी माइग्रेशन</strong> प्लगइन का उपयोग करके निर्यात की गई थी। <a href=\"https://help.servmask.com/knowledgebase/invalid-backup-file/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: lib/model/import/class-ai1wm-import-validate.php:92
+msgid "The archive file is corrupted. Follow <a href=\"https://help.servmask.com/knowledgebase/corrupted-archive/\" target=\"_blank\">this article</a> to resolve the problem."
+msgstr "संग्रह फ़ाइल दूषित है। समस्या को हल करने के लिए <a href=\"https://help.servmask.com/knowledgebase/corrupted-archive/\" target=\"_blank\">यह लेख</a> का पालन करें।"
+
+#: lib/model/import/class-ai1wm-import-validate.php:37
+msgid "Your PHP is 32-bit. In order to import your file, please change your PHP version to 64-bit and try again. <a href=\"https://help.servmask.com/knowledgebase/php-32bit/\" target=\"_blank\">Technical details</a>"
+msgstr "आपका पीएचपी 32-बिट है। अपनी फ़ाइल आयात करने के लिए, कृपया अपना पीएचपी संस्करण 64-बिट में बदलें और पुनः प्रयास करें। <a href=\"https://help.servmask.com/knowledgebase/php-32bit/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: lib/model/import/class-ai1wm-import-confirm.php:54
+msgid "The import process will overwrite your website including the database, media, plugins, and themes. Please ensure that you have a backup of your data before proceeding to the next step."
+msgstr "आयात प्रक्रिया डेटाबेस, मीडिया, प्लगइन्स और थीम सहित आपकी वेबसाइट को ओवरराइट कर देगी। कृपया सुनिश्चित करें कि अगले चरण में जाने से पहले आपके डेटा का बैकअप लें।"
+
+#: lib/model/import/class-ai1wm-import-confirm.php:96
+msgid "<i class=\"ai1wm-import-info\">Your backup is from a PHP 5 but the site that you are importing to is PHP 7. This could cause the import to fail. <a href=\"https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/\" target=\"_blank\">Technical details</a></i>"
+msgstr "<i class=\"ai1wm-import-info\"> आपका बैकअप पीएचपी 5 से है लेकिन जिस साइट पर आप आयात कर रहे हैं वह पीएचपी 7 है। इससे आयात विफल हो सकता है। <a href=\"https://help.servmask.com/knowledgebase/migrate-wordpress-from-php-5-to-php-7/\" target=\"_blank\"> तकनीकी विवरण </a></i>"
+
+#: lib/model/class-ai1wm-compatibility.php:52
+msgid "<strong>%s</strong> is not the latest version. You must <a href=\"%s\">update the plugin</a> before you can use it. <br />"
+msgstr "<strong>%s</strong> नवीनतम संस्करण नहीं है। इससे पहले कि आप इसका उपयोग कर सकें, आपको <a href=\"%s\"> प्लगइन अपडेट करना होगा </a>। <br />"
+
+#: lib/controller/class-ai1wm-main-controller.php:943
+msgid "The file that you are trying to import is over the maximum upload file size limit of <strong>%s</strong>.<br />You can remove this restriction by purchasing our <a href=\"https://servmask.com/products/unlimited-extension\" target=\"_blank\">Unlimited Extension</a>."
+msgstr "जिस फ़ाइल को आप आयात करने का प्रयास कर रहे हैं वह <strong>%s</strong> की अधिकतम अपलोड फ़ाइल आकार सीमा से अधिक है। <br /> आप हमारे <a href=\"https://servmask.com/products/unlimited-extension\" target=\"_blank\">असीमित एक्सटेंशन</a> को खरीदकर इस प्रतिबंध को हटा सकते हैं।"
+
+#: lib/controller/class-ai1wm-main-controller.php:936
+#: lib/model/import/class-ai1wm-import-upload.php:55
+msgid "The file type that you have tried to upload is not compatible with this plugin. Please ensure that your file is a <strong>.wpress</strong> file that was created with the All-in-One WP migration plugin. <a href=\"https://help.servmask.com/knowledgebase/invalid-backup-file/\" target=\"_blank\">Technical details</a>"
+msgstr "फ़ाइल प्रकार जिसे आपने अपलोड करने का प्रयास किया है, इस प्लगइन के साथ संगत नहीं है। कृपया सुनिश्चित करें कि आपकी फ़ाइल एक <strong>.wpress</strong> फ़ाइल है जो ऑल-इन-वन डब्ल्यूपी माइग्रेशन प्लगइन के साथ बनाई गई थी। <a href=\"https://help.servmask.com/knowledgebase/invalid-backup-file/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: lib/view/main/multisite-notice.php:34
+msgid "WordPress Multisite is supported via our All-in-One WP Migration Multisite Extension. You can get a copy of it here"
+msgstr "वर्डप्रेस मल्टीसाइट हमारे ऑल-इन-वन डब्ल्यूपी माइग्रेशन मल्टीसाइट एक्सटेंशन के माध्यम से समर्थित है। आप इसकी एक प्रति यहां प्राप्त कर सकते हैं"
+
+#: lib/view/main/backups-htaccess-notice.php:35
+#: lib/view/main/backups-index-html-notice.php:35
+#: lib/view/main/backups-index-php-notice.php:35
+#: lib/view/main/backups-robots-txt-notice.php:35
+#: lib/view/main/backups-webconfig-notice.php:35
+#: lib/view/main/storage-index-html-notice.php:35
+#: lib/view/main/storage-index-php-notice.php:35
+#: lib/view/main/wordpress-htaccess-notice.php:35
+msgid "All-in-One WP Migration is not able to create <strong>%s</strong> file. Try to change permissions of the parent folder or send us an email at <a href=\"mailto:support@servmask.com\">support@servmask.com</a> for assistance."
+msgstr "ऑल-इन-वन डब्ल्यूपी माइग्रेशन <strong>%s </strong> फ़ाइल बनाने में सक्षम नहीं है। मूल फ़ोल्डर की अनुमतियाँ बदलने का प्रयास करें या सहायता के लिए हमें <a href=\"mailto:support@servmask.com\">support@servmask.com</a> पर एक ईमेल भेजें।"
+
+#: lib/view/main/backups-path-notice.php:35
+#: lib/view/main/storage-path-notice.php:35
+msgid "All-in-One WP Migration is not able to create <strong>%s</strong> folder. You will need to create this folder and grant it read/write/execute permissions (0777) for the All-in-One WP Migration plugin to function properly."
+msgstr "ऑल-इन-वन डब्ल्यूपी माइग्रेशन <strong>%s</strong> फ़ोल्डर बनाने में सक्षम नहीं है। ऑल-इन-वन डब्ल्यूपी माइग्रेशन प्लगइन को ठीक से काम करने के लिए आपको इस फ़ोल्डर को बनाने और इसे पढ़ने/लिखने/निष्पादित करने की अनुमति (0777) की आवश्यकता होगी।"
+
+#: lib/view/import/pro.php:36
+msgid "or"
+msgstr "या"
+
+#: lib/model/import/class-ai1wm-import-upload.php:79
+msgid "The file is too large for this server."
+msgstr "इस सर्वर के लिए फ़ाइल बहुत बड़ी है।"
+
+#: lib/view/import/pro.php:35
+msgid "How-to: Increase maximum upload file size"
+msgstr "कैसे करें: अधिकतम अपलोड फ़ाइल आकार बढ़ाएं"
+
+#: lib/view/import/pro.php:32
+msgid "Maximum upload file size: <strong>%s</strong>."
+msgstr "अधिकतम अपलोड फ़ाइल का आकार: <strong>%s</strong>।"
+
+#: lib/controller/class-ai1wm-main-controller.php:922
+msgid "Your file exceeds the maximum upload size for this site: <strong>%s</strong><br />%s%s"
+msgstr "आपकी फ़ाइल इस साइट के लिए अधिकतम अपलोड आकार से अधिक है: <strong>%s</strong> <br />%s%s"
+
+#: lib/controller/class-ai1wm-main-controller.php:931
+msgid "<a href=\"https://import.wp-migration.com\" target=\"_blank\">Get unlimited</a>"
+msgstr "<a href=\"https://import.wp-migration.com\" target=\"_blank\">असीमित प्राप्त करें</a>"
+
+#: lib/controller/class-ai1wm-main-controller.php:927
+msgid "<a href=\"https://help.servmask.com/2018/10/27/how-to-increase-maximum-upload-file-size-in-wordpress/\" target=\"_blank\">How-to: Increase maximum upload file size</a> or "
+msgstr "<a href=\"https://help.servmask.com/2018/10/27/how-to-increase-maximum-upload-file-size-in-wordpress/\" target=\"_blank\">कैसे करें: अधिकतम अपलोड फ़ाइल आकार बढ़ाएं</a> या"
+
+#: lib/view/import/import-buttons.php:39
+msgid "Drag & Drop a backup to import it"
+msgstr "इसे आयात करने के लिए बैकअप खींचें और छोड़ें"
+
+#: lib/controller/class-ai1wm-main-controller.php:265
+msgid "All-in-One WP Migration Command"
+msgstr "ऑल-इन-वन डब्ल्यूपी माइग्रेशन कमांड"
+
+#: lib/model/export/class-ai1wm-export-database.php:79
+#: lib/model/export/class-ai1wm-export-database.php:184
+msgid "Exporting database...<br />%d%% complete<br />%s records saved"
+msgstr "डेटाबेस निर्यात कर रहा है...<br />%d%% पूर्ण<br />%s रिकॉर्ड सहेजे गए"
+
+#: lib/controller/class-ai1wm-main-controller.php:1108
+msgid "Restoring a backup is available via Unlimited extension. <a href=\"https://servmask.com/products/unlimited-extension\" target=\"_blank\">Get it here</a>"
+msgstr "बैकअप को पुनर्स्थापित करना असीमित एक्सटेंशन के माध्यम से उपलब्ध है। <a href=\"https://servmask.com/products/unlimited-extension\" target=\"_blank\">इसे यहां प्राप्त करें</a>"
+
+#: lib/controller/class-ai1wm-main-controller.php:782
+#: lib/controller/class-ai1wm-main-controller.php:1080
+#: lib/model/export/class-ai1wm-export-init.php:43
+msgid "Preparing to export..."
+msgstr "निर्यात करने की तैयारी..."
+
+#: lib/view/backups/backups-list.php:82
+msgid "%s ago"
+msgstr "%s पहले"
+
+#: lib/controller/class-ai1wm-main-controller.php:1107
+msgid "Are you sure you want to delete this file?"
+msgstr "क्या आप द्वारा इस फाइल को हटाया जाना सुनिश्चित है?"
+
+#: lib/controller/class-ai1wm-main-controller.php:910
+#: lib/controller/class-ai1wm-main-controller.php:1102
+msgid "Please do not close this browser window or your import will fail"
+msgstr "कृपया इस ब्राउज़र विंडो को बंद न करें या आपका आयात विफल हो जाएगा"
+
+#: lib/controller/class-ai1wm-main-controller.php:909
+#: lib/controller/class-ai1wm-main-controller.php:1101
+msgid "Continue"
+msgstr "जारी रहना"
+
+#: lib/controller/class-ai1wm-main-controller.php:907
+#: lib/controller/class-ai1wm-main-controller.php:1099
+msgid "Proceed"
+msgstr "बढ़ना"
+
+#: lib/controller/class-ai1wm-main-controller.php:906
+#: lib/controller/class-ai1wm-main-controller.php:1098
+msgid "Stop import"
+msgstr "आयात बंद करे"
+
+#: lib/controller/class-ai1wm-main-controller.php:903
+#: lib/controller/class-ai1wm-main-controller.php:1095
+msgid "Please wait, stopping the import..."
+msgstr "कृपया प्रतीक्षा करें, आयात रूक रहा है..."
+
+#: lib/controller/class-ai1wm-main-controller.php:902
+#: lib/controller/class-ai1wm-main-controller.php:1094
+msgid "Unable to stop the import. Refresh the page and try again"
+msgstr "आयात को रोकने में असमर्थ। पृष्ठ को रीफ्रेश करें और पुनः प्रयास करें"
+
+#: lib/controller/class-ai1wm-main-controller.php:901
+#: lib/controller/class-ai1wm-main-controller.php:1093
+msgid "Unable to prepare blogs on import. Refresh the page and try again"
+msgstr "आयात पर ब्लॉग तैयार करने में असमर्थ। पृष्ठ को रीफ्रेश करें और पुनः प्रयास करें"
+
+#: lib/controller/class-ai1wm-main-controller.php:899
+#: lib/controller/class-ai1wm-main-controller.php:1092
+msgid "Unable to confirm the import. Refresh the page and try again"
+msgstr "आयात की पुष्टि करने में असमर्थ। पृष्ठ को रीफ्रेश करें और पुनः प्रयास करें"
+
+#: lib/controller/class-ai1wm-main-controller.php:898
+#: lib/controller/class-ai1wm-main-controller.php:1091
+msgid "Unable to start the import. Refresh the page and try again"
+msgstr "आयात शुरू करने में असमर्थ। पृष्ठ को रीफ्रेश करें और पुनः प्रयास करें"
+
+#: lib/controller/class-ai1wm-main-controller.php:895
+#: lib/controller/class-ai1wm-main-controller.php:1088
+msgid "You are about to stop importing your website, are you sure?"
+msgstr "आप अपनी वेबसाइट आयात करना बंद कर रहे हैं, क्या आप निश्चित हैं?"
+
+#: lib/controller/class-ai1wm-main-controller.php:712
+#: lib/controller/class-ai1wm-main-controller.php:793
+#: lib/controller/class-ai1wm-main-controller.php:914
+#: lib/controller/class-ai1wm-main-controller.php:1106
+msgid "Thanks for submitting your request!"
+msgstr "आपका अनुरोध जमा करने के लिए धन्यवाद!"
+
+#: lib/controller/class-ai1wm-main-controller.php:711
+#: lib/controller/class-ai1wm-main-controller.php:792
+#: lib/controller/class-ai1wm-main-controller.php:913
+#: lib/controller/class-ai1wm-main-controller.php:1105
+msgid "Thanks for submitting your feedback!"
+msgstr "आपकी प्रतिक्रिया सबमिट करने के लिए धन्यवाद!"
+
+#: lib/controller/class-ai1wm-main-controller.php:710
+#: lib/controller/class-ai1wm-main-controller.php:791
+#: lib/controller/class-ai1wm-main-controller.php:912
+#: lib/controller/class-ai1wm-main-controller.php:1104
+msgid "How may we help you?"
+msgstr "हम कैसे आपकी सहायता कर सकते हैं?"
+
+#: lib/controller/class-ai1wm-main-controller.php:709
+#: lib/controller/class-ai1wm-main-controller.php:790
+#: lib/controller/class-ai1wm-main-controller.php:911
+#: lib/controller/class-ai1wm-main-controller.php:1103
+msgid "Leave plugin developers any feedback here"
+msgstr "प्लगइन डेवलपर्स को यहां कोई प्रतिक्रिया दें"
+
+#: lib/controller/class-ai1wm-main-controller.php:789
+#: lib/controller/class-ai1wm-main-controller.php:1087
+msgid "Stop export"
+msgstr "निर्यात बंद करे"
+
+#: lib/controller/class-ai1wm-main-controller.php:788
+#: lib/controller/class-ai1wm-main-controller.php:904
+#: lib/controller/class-ai1wm-main-controller.php:1086
+#: lib/controller/class-ai1wm-main-controller.php:1097
+msgid "Close"
+msgstr "बंद करे"
+
+#: lib/controller/class-ai1wm-main-controller.php:787
+#: lib/controller/class-ai1wm-main-controller.php:1085
+msgid "Please wait, stopping the export..."
+msgstr "कृपया प्रतीक्षा करें, निर्यात रूक रहा है..."
+
+#: lib/controller/class-ai1wm-main-controller.php:786
+#: lib/controller/class-ai1wm-main-controller.php:1084
+msgid "Unable to stop the export. Refresh the page and try again"
+msgstr "निर्यात को रोकने में असमर्थ। पृष्ठ को रीफ्रेश करें और पुनः प्रयास करें"
+
+#: lib/controller/class-ai1wm-main-controller.php:785
+#: lib/controller/class-ai1wm-main-controller.php:1083
+msgid "Unable to run the export. Refresh the page and try again"
+msgstr "निर्यात चलाने में असमर्थ। पृष्ठ को रीफ्रेश करें और पुनः प्रयास करें"
+
+#: lib/controller/class-ai1wm-main-controller.php:784
+#: lib/controller/class-ai1wm-main-controller.php:1082
+msgid "Unable to start the export. Refresh the page and try again"
+msgstr "निर्यात शुरू करने में असमर्थ। पृष्ठ को रीफ्रेश करें और पुनः प्रयास करें"
+
+#: lib/controller/class-ai1wm-main-controller.php:781
+#: lib/controller/class-ai1wm-main-controller.php:1079
+msgid "You are about to stop exporting your website, are you sure?"
+msgstr "आप अपनी वेबसाइट को निर्यात करना बंद कर रहे हैं, क्या आप निश्चित हैं?"
+
+#: lib/controller/class-ai1wm-main-controller.php:1208
+msgid "Your purchase ID is invalid, please <a href=\"mailto:support@servmask.com\">contact us</a>"
+msgstr "आपकी परचेज़ आईडी अमान्य है, कृपया <a href=\"mailto:support@servmask.com\">हमसे संपर्क करें</a>"
+
+#: functions.php:1663
+msgid "Unable to authenticate the secret key. <a href=\"https://help.servmask.com/knowledgebase/invalid-secret-key/\" target=\"_blank\">Technical details</a>"
+msgstr "गुप्त कुंजी प्रमाणीकृत करने में असमर्थ। <a href=\"https://help.servmask.com/knowledgebase/invalid-secret-key/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: functions.php:1529
+msgid "Unable to get current pointer position of %s. <a href=\"https://help.servmask.com/knowledgebase/php-32bit/\" target=\"_blank\">Technical details</a>"
+msgstr "%s की वर्तमान सूचक स्थिति प्राप्त करने में असमर्थ। <a href=\"https://help.servmask.com/knowledgebase/php-32bit/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: functions.php:1512
+msgid "Unable to seek to offset %d on %s. <a href=\"https://help.servmask.com/knowledgebase/php-32bit/\" target=\"_blank\">Technical details</a>"
+msgstr "%s पर %d को ऑफ़सेट करने में असमर्थ। <a href=\"https://help.servmask.com/knowledgebase/php-32bit/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: functions.php:1490
+msgid "Unable to read file: %s. <a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">Technical details</a>"
+msgstr "फ़ाइल पढ़ने में असमर्थ: %s। <a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: functions.php:1470
+msgid "Out of disk space. Unable to write to: %s. <a href=\"https://help.servmask.com/knowledgebase/out-of-disk-space/\" target=\"_blank\">Technical details</a>"
+msgstr "डिस्क के स्थान से बाहर। लिखने में असमर्थ: %s। <a href=\"https://help.servmask.com/knowledgebase/out-of-disk-space/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: functions.php:1464 functions.php:1548
+msgid "Unable to write to: %s. <a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">Technical details</a>"
+msgstr "लिखने में असमर्थ: %s। <a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: functions.php:1445
+msgid "Unable to open %s with mode %s. <a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">Technical details</a>"
+msgstr "मोड %s के साथ %s खोलने में असमर्थ। <a href=\"https://help.servmask.com/knowledgebase/invalid-file-permissions/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: functions.php:68 functions.php:110
+msgid "Invalid archive path. <a href=\"https://help.servmask.com/knowledgebase/invalid-archive-path/\" target=\"_blank\">Technical details</a>"
+msgstr "अमान्य संग्रह पथ। <a href=\"https://help.servmask.com/knowledgebase/invalid-archive-path/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: functions.php:63 functions.php:105
+msgid "Unable to locate archive path. <a href=\"https://help.servmask.com/knowledgebase/invalid-archive-path/\" target=\"_blank\">Technical details</a>"
+msgstr "संग्रह पथ का पता लगाने में असमर्थ। <a href=\"https://help.servmask.com/knowledgebase/invalid-archive-path/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: functions.php:38
+msgid "Unable to locate storage path. <a href=\"https://help.servmask.com/knowledgebase/invalid-storage-path/\" target=\"_blank\">Technical details</a>"
+msgstr "भंडारण पथ का पता लगाने में असमर्थ। <a href=\"https://help.servmask.com/knowledgebase/invalid-storage-path/\" target=\"_blank\">तकनीकी विवरण</a>"
+
+#: lib/model/export/class-ai1wm-export-config.php:36
+msgid "Preparing configuration file..."
+msgstr "कॉन्फ़िगरेशन फाइल तैयार कर रहा है..."
+
+#: lib/model/export/class-ai1wm-export-config.php:177
+msgid "Done preparing configuration file."
+msgstr "कॉन्फ़िगरेशन फ़ाइल तैयार कर दिया गया।"
+
+#: lib/model/export/class-ai1wm-export-config-file.php:73
+msgid "Done archiving configuration file."
+msgstr "कॉन्फ़िगरेशन फ़ाइल संग्रहित हो गया।"
+
+#: lib/model/export/class-ai1wm-export-config-file.php:61
+#: lib/model/export/class-ai1wm-export-config-file.php:96
+msgid "Archiving configuration file...<br />%d%% complete"
+msgstr "कॉन्फ़िगरेशन फ़ाइल संग्रह...<br />%d%% पूर्ण"
+
+#: lib/view/common/leave-feedback.php:59
+msgid "I agree that by filling in the contact form with my data, I authorize All-in-One WP Migration to use my <strong>email</strong> to reply to my requests for information. <a href=\"https://www.iubenda.com/privacy-policy/946881\" target=\"_blank\">Privacy policy</a>"
+msgstr "मैं सहमत हूं कि मेरे डेटा के साथ संपर्क फ़ॉर्म भरकर, मैं जानकारी के लिए मेरे अनुरोधों के उत्तर देने के लिए अपने <strong>ईमेल</strong> का उपयोग करने के लिए ऑल-इन-वन डब्ल्यूपी माइग्रेशन को अधिकृत करता हूं। <a href=\"https://www.iubenda.com/privacy-policy/946881\" target=\"_blank\">गोपनीयता नीति</a>"
+
+#: lib/model/import/class-ai1wm-import-validate.php:82
+#: lib/model/import/class-ai1wm-import-validate.php:139
+msgid "Unpacking archive...<br />%d%% complete"
+msgstr "संग्रह अनपॅक हो रहा है ...<br />%d%% पूर्ण"
+
+#: lib/model/export/class-ai1wm-export-database-file.php:78
+msgid "Done archiving database."
+msgstr "डेटाबेस संग्रहित किया गया।"
+
+#: lib/view/backups/backups-list.php:88
+msgid "2GB+"
+msgstr "2जीबी+"
+
+#: lib/model/import/class-ai1wm-import-validate.php:119
+msgid "Done unpacking archive."
+msgstr "संग्रह अनपॅक कर दिया गया।"
+
+#: lib/model/export/class-ai1wm-export-database-file.php:66
+#: lib/model/export/class-ai1wm-export-database-file.php:101
+msgid "Archiving database...<br />%d%% complete"
+msgstr "डेटाबेस संग्रह... <br />%d%% पूर्ण"
+
+#: lib/model/import/class-ai1wm-import-database.php:78
+#: lib/model/import/class-ai1wm-import-database.php:1005
+msgid "Restoring database...<br />%d%% complete"
+msgstr "डेटाबेस पहले जैसा हो रहा है... <br />%d%% पूर्ण"
+
+#: lib/model/export/class-ai1wm-export-compatibility.php:35
+#: lib/model/import/class-ai1wm-import-compatibility.php:35
+msgid "Checking extensions compatibility..."
+msgstr "एक्सटेंशन अनुकूलता की जांच कर रहा है..."
+
+#: lib/model/import/class-ai1wm-import-database.php:985
+msgid "Done restoring database."
+msgstr "डेटाबेस पहले जैसा हो गया।"
+
+#: lib/controller/class-ai1wm-main-controller.php:896
+#: lib/controller/class-ai1wm-main-controller.php:1089
+msgid "Preparing to import..."
+msgstr "आयात करने की तैयारी कर रहा है..."
+
+#: lib/controller/class-ai1wm-main-controller.php:1312
+msgid "Monthly"
+msgstr "महीने के"
+
+#: lib/controller/class-ai1wm-main-controller.php:1308
+msgid "Weekly"
+msgstr "साप्ताहिक"
+
+#: lib/model/import/class-ai1wm-import-mu-plugins.php:61
+msgid "Done activating mu-plugins."
+msgstr "मयू-प्लगइन्स को सक्रिय करना पूर्ण हो गया।"
+
+#: lib/model/import/class-ai1wm-import-mu-plugins.php:35
+msgid "Activating mu-plugins..."
+msgstr "मयू-प्लगइन्स सक्रिय कर रहा है..."
+
+#: lib/view/export/advanced-settings.php:98
+msgid "Do <strong>not</strong> export must-use plugins (files)"
+msgstr "मस्ट-यूज़ प्लग-इन (फ़ाइलों) का निर्यात <strong>नहीं</strong> करे"
+
+#: lib/model/import/class-ai1wm-import-upload.php:85
+msgid "Failed to write file to disk."
+msgstr "डिस्क पर फ़ाइल लिखने में विफल।"
+
+#: lib/model/import/class-ai1wm-import-upload.php:82
+msgid "Missing a temporary folder."
+msgstr "कोई अस्थायी फ़ोल्डर छोड़ देना।"
+
+#: lib/model/import/class-ai1wm-import-upload.php:70
+msgid "Unable to upload the file because %s"
+msgstr "फ़ाइल अपलोड करने में असमर्थ क्योंकि %s"
+
+#: lib/model/import/class-ai1wm-import-upload.php:42
+msgid "Missing tmp_name in upload file."
+msgstr "अपलोड फ़ाइल में tmp_name गुम है।"
+
+#: lib/model/import/class-ai1wm-import-upload.php:38
+msgid "Missing error key in upload file."
+msgstr "अपलोड फ़ाइल में गुम त्रुटि कुंजी।"
+
+#: lib/model/import/class-ai1wm-import-upload.php:34
+msgid "Missing upload file."
+msgstr "अपलोड फ़ाइल गुम है।"
+
+#: lib/view/export/advanced-settings.php:122
+msgid "Do <strong>not</strong> replace email domain (sql)"
+msgstr "ईमेल डोमेन (एसक्यूएल) को <strong>नहीं</strong> बदलें"
+
+#: lib/model/import/class-ai1wm-import-upload.php:91
+msgid "Unrecognized error %s during upload."
+msgstr "अपलोड के दौरान अपरिचित त्रुटि %s।"
+
+#: lib/model/import/class-ai1wm-import-upload.php:88
+msgid "A PHP extension stopped the file upload."
+msgstr "एक पीएचपी एक्सटेंशन ने फ़ाइल अपलोड बंद कर दिया।"
+
+#: lib/model/class-ai1wm-feedback.php:61
+msgid "Please accept feedback term conditions."
+msgstr "प्रतिक्रिया अवधि की शर्तों को स्वीकार करें।"
+
+#: lib/model/class-ai1wm-feedback.php:46
+msgid "Your email is not valid."
+msgstr "आपका ईमेल मान्य नहीं है।"
+
+#: lib/model/class-ai1wm-feedback.php:51
+msgid "Feedback type is not valid."
+msgstr "फीडबैक प्रकार मान्य नहीं है।"
+
+#: lib/model/class-ai1wm-feedback.php:56
+msgid "Please enter comments in the text area."
+msgstr "कृपया टेक्स्ट क्षेत्र में टिप्पणियां दर्ज करें।"
+
+#: lib/model/import/class-ai1wm-import-blogs.php:150
+msgid "Done preparing blogs."
+msgstr "ब्लॉग तैयार कर दिया।"
+
+#: lib/model/import/class-ai1wm-import-blogs.php:35
+msgid "Preparing blogs..."
+msgstr "ब्लॉग तैयार कर रहा है..."
+
+#: lib/model/class-ai1wm-feedback.php:78
+msgid "Something went wrong: %s"
+msgstr "कुछ गड़बड़ हुई: %s"
+
+#: lib/model/import/class-ai1wm-import-blogs.php:140
+msgid "Unable to import <strong>WordPress Network</strong> into WordPress <strong>Single</strong> site."
+msgstr "वर्डप्रेस <strong>एकल</strong> साइट में <strong>वर्डप्रेस नेटवर्क</strong> आयात करने में असमर्थ।"
+
+#: lib/model/import/class-ai1wm-import-blogs.php:137
+msgid "At least <strong>one WordPress</strong> site should be presented in the archive."
+msgstr "संग्रह में कम से कम <strong>एक वर्डप्रेस</strong> साइट प्रस्तुत की जानी चाहिए।"
+
+#: lib/model/import/class-ai1wm-import-blogs.php:134
+msgid "The archive should contain <strong>Single WordPress</strong> site! Please revisit your export settings."
+msgstr "संग्रह में <strong>एकल वर्डप्रेस</strong> साइट होनी चाहिए! कृपया अपनी निर्यात सेटिंग्स पर फिर से जाएं।"
+
+#: lib/view/updater/modal.php:48
+msgid "Discard"
+msgstr "हटाना"
+
+#: lib/view/updater/modal.php:55
+msgid "There is an update available. To update, you must enter your"
+msgstr "एक अद्यतन उपलब्ध है। अपडेट करने के लिए, आपको अपना प्रवेश करना होगा"
+
+#: lib/view/updater/modal.php:42
+msgid "here"
+msgstr "यहाँ"
+
+#: lib/view/updater/modal.php:46
+msgid "Save"
+msgstr "सेव करें  \t"
+
+#: lib/view/updater/modal.php:37 lib/view/updater/modal.php:56
+msgid "Purchase ID"
+msgstr "परचेज़ आईडी"
+
+#: lib/view/updater/modal.php:41
+msgid "Don't have a Purchase ID? You can find your Purchase ID"
+msgstr "परचेज़ आईडी नहीं है? आप अपनी परचेज़ आईडी पा सकते हैं"
+
+#: lib/view/updater/modal.php:34
+msgid "To update your plugin/extension to the latest version, please fill your Purchase ID below."
+msgstr "नवीनतम प्लगइन में अपनी प्लगइन / एक्सटेंशन को अपडेट करने के लिए, कृपया नीचे अपनी परचेज़ आईडी भरें।"
+
+#: lib/controller/class-ai1wm-main-controller.php:1207
+#: lib/view/updater/check.php:31
+msgid "Check for updates"
+msgstr "सुधार के लिए जाँच"
+
+#: lib/view/updater/modal.php:33
+msgid "Enter your Purchase ID"
+msgstr "अपनी परचेज़ आईडी दर्ज करें"
+
+#: lib/view/backups/backups-list.php:38
+msgid "Size"
+msgstr "आकार"
+
+#: lib/view/backups/backups-list.php:37
+msgid "Date"
+msgstr "दिनांक"
+
+#: lib/controller/class-ai1wm-main-controller.php:647
+#: lib/controller/class-ai1wm-main-controller.php:648
+msgid "Import"
+msgstr "आयात"
+
+#: lib/controller/class-ai1wm-main-controller.php:637
+#: lib/controller/class-ai1wm-main-controller.php:638
+msgid "Export"
+msgstr "निर्यात"
+
+#: lib/view/backups/backups-list.php:127 lib/view/backups/backups-list.php:129
+msgid "Delete"
+msgstr "हटाएँ"
+
+#: lib/view/common/leave-feedback.php:64
+msgid "Cancel"
+msgstr "कैंसिल करें  \t"
+
+#: lib/view/backups/backups-list.php:106 lib/view/backups/backups-list.php:108
+#: lib/view/backups/backups-list.php:115
+msgid "Download"
+msgstr "डाउनलोड"
+
+#: lib/view/main/multisite-notice.php:42
+msgid "Get multisite"
+msgstr "मल्टीसाइट प्राप्त करें"
+
+#: lib/controller/class-ai1wm-main-controller.php:657
+#: lib/controller/class-ai1wm-main-controller.php:658
+#: lib/view/backups/index.php:37
+msgid "Backups"
+msgstr "बैकअप"
+
+#: lib/model/export/class-ai1wm-export-download.php:35
+msgid "Renaming exported file..."
+msgstr "निर्यात की गई फाइल का नाम बदल रहा है..."
+
+#: lib/model/export/class-ai1wm-export-database.php:158
+msgid "Done exporting database."
+msgstr "डेटाबेस निर्यात कर दिया गया।"
+
+#: lib/model/export/class-ai1wm-export-archive.php:42
+msgid "Done creating an empty archive."
+msgstr "एक खाली संग्रह बना दिया गया।"
+
+#: lib/model/export/class-ai1wm-export-archive.php:35
+msgid "Creating an empty archive..."
+msgstr "एक खाली संग्रह बना रहा है।"
+
+#: lib/model/import/class-ai1wm-import-enumerate.php:35
+msgid "Retrieving a list of all WordPress files..."
+msgstr "सभी वर्डप्रेस फाइलों की एक सूची पुनर्प्राप्त कर रहा है..."
+
+#: lib/model/import/class-ai1wm-import-enumerate.php:50
+msgid "Done retrieving a list of all WordPress files."
+msgstr "सभी वर्डप्रेस फाइलों की एक सूची पुनर्प्राप्त कर दिया।"
+
+#: lib/view/common/leave-feedback.php:67
+msgid "Send"
+msgstr "भेजना"
+
+#: lib/view/common/leave-feedback.php:54
+msgid "Leave plugin developers any feedback here.."
+msgstr "प्लगइन डेवलपर्स को यहां कोई प्रतिक्रिया दें.."
+
+#: lib/view/common/leave-feedback.php:51
+msgid "Enter your email address.."
+msgstr "अपना ईमेल पता दर्ज करें.."
+
+#: lib/view/common/leave-feedback.php:44
+msgid "I need help with this plugin"
+msgstr "मुझे इस प्लगइन के साथ मदद चाहिए"
+
+#: lib/view/export/advanced-settings.php:36
+msgid "(click to expand)"
+msgstr "(विस्तार करने के लिए क्लिक करें)"
+
+#: lib/view/export/advanced-settings.php:35
+msgid "Advanced options"
+msgstr "उन्नत विकल्प"
+
+#: lib/view/common/share-buttons.php:63
+msgid "Tweet"
+msgstr "टवीट"
+
+#: lib/view/import/index.php:37
+msgid "Import Site"
+msgstr "आयात साइट"
+
+#: lib/view/import/pro.php:39
+msgid "Get unlimited"
+msgstr "असीमित हो जाओ"
+
+#: lib/view/import/import-buttons.php:43
+msgid "Import From"
+msgstr "लाया गया"
+
+#: lib/view/export/index.php:37
+msgid "Export Site"
+msgstr "निर्यात साइट"
+
+#: lib/view/export/help-section.php:37
+msgid "Quick hints"
+msgstr "तीव्र संकेत"
+
+#: lib/view/export/find-replace.php:52
+msgid "Add"
+msgstr "जोड़ना"
+
+#: lib/view/export/find-replace.php:39
+msgid "in the database"
+msgstr "डेटाबेस में"
+
+#. Author of the plugin
+msgid "ServMask"
+msgstr "सर्वमास्क"
+
+#: lib/view/common/leave-feedback.php:37
+msgid "I have ideas to improve this plugin"
+msgstr "मेरे पास इस प्लगइन को बेहतर बनाने के लिए विचार हैं"
+
+#: lib/view/backups/index.php:57
+msgid "Create backup"
+msgstr "बैकअप बनाना"
+
+#: lib/view/common/sidebar-right.php:39
+msgid "Leave Feedback"
+msgstr "प्रतिक्रिया दें"
+
+#: lib/view/backups/index.php:52
+msgid "There are no backups available at this time, why not create a new one?"
+msgstr "इस समय कोई बैकअप उपलब्ध नहीं है, क्यों न नया बनाएं?"
+
+#: lib/view/backups/backups-list.php:99 lib/view/backups/backups-list.php:101
+msgid "Restore"
+msgstr "पुनर्स्थापित"
+
+#: lib/view/backups/backups-list.php:36
+msgid "Name"
+msgstr "नाम"
+
+#: lib/view/export/find-replace.php:35 lib/view/export/find-replace.php:44
+msgid "Find"
+msgstr "खोज"
+
+#: lib/view/export/export-buttons.php:35
+msgid "Export To"
+msgstr "को निर्यात"
+
+#: lib/view/export/button-file.php:31 lib/view/import/button-file.php:32
+msgid "File"
+msgstr "फ़ाइल"
+
+#: lib/view/export/find-replace.php:37 lib/view/export/find-replace.php:45
+msgid "Replace with"
+msgstr "से बदलो"
+
+#: lib/controller/class-ai1wm-export-controller.php:88
+#: lib/controller/class-ai1wm-export-controller.php:89
+#: lib/controller/class-ai1wm-main-controller.php:783
+#: lib/controller/class-ai1wm-main-controller.php:1081
+msgid "Unable to export"
+msgstr "निर्यात करने में असमर्थ"
+
+#: lib/controller/class-ai1wm-import-controller.php:96
+#: lib/controller/class-ai1wm-import-controller.php:97
+#: lib/controller/class-ai1wm-main-controller.php:897
+#: lib/controller/class-ai1wm-main-controller.php:1090
+msgid "Unable to import"
+msgstr "आयात करने में असमर्थ"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+msgid "https://servmask.com/"
+msgstr "https://servmask.com/"
+
+#. Plugin Name of the plugin
+msgid "All-in-One WP Migration"
+msgstr "ऑल-इन-वन डब्ल्यूपी माइग्रेशन"
+
+#: lib/view/export/find-replace.php:36
+msgid "<text>"
+msgstr "<text>"
+
+#: lib/view/export/find-replace.php:38
+msgid "<another-text>"
+msgstr "<another-text>"
+
+#: lib/view/export/advanced-settings.php:71
+msgid "Do <strong>not</strong> export spam comments"
+msgstr "स्पैम टिप्पणियों को निर्यात <strong>नहीं</strong> करें"
+
+#: lib/model/import/class-ai1wm-import-content.php:83
+#: lib/model/import/class-ai1wm-import-content.php:206
+msgid "Restoring %d files...<br />%d%% complete"
+msgstr "%d फ़ाइलों को पुनर्स्थापित करना... <br />%d%% पूर्ण"
+
+#. Description of the plugin
+msgid "Migration tool for all your blog data. Import or Export your blog content with a single click."
+msgstr "आपके सभी ब्लॉग डेटा के लिए माइग्रेशन टूल। एक ही क्लिक के साथ अपनी ब्लॉग सामग्री आयात या निर्यात करें।"
+
+#: lib/view/export/help-section.php:51
+msgid "Once the file is successfully downloaded on your computer, you can import it to any of your WordPress sites."
+msgstr "एक बार फ़ाइल आपके कंप्यूटर पर सफलतापूर्वक डाउनलोड हो जाने के बाद, आप इसे अपनी किसी भी वर्डप्रेस साइट पर आयात कर सकते हैं।"
+
+#: lib/view/export/help-section.php:47
+msgid "Press \"Export\" button and the site archive file will pop up in your browser."
+msgstr "\"निर्यात\" बटन दबाएं और साइट संग्रह फ़ाइल आपके ब्राउज़र में पॉप अप हो जाएगी।"
+
+#: lib/view/export/help-section.php:43
+msgid "In the advanced settings section you can configure more precisely the way of exporting."
+msgstr "एडवांस सेटिंग्स अनुभाग में आप निर्यात के तरीके को अधिक सटीक रूप से कॉन्फ़िगर कर सकते हैं।"
+
+#: lib/view/export/advanced-settings.php:116
+msgid "Do <strong>not</strong> export database (sql)"
+msgstr "डेटाबेस (एसक्यूएल) निर्यात <strong>नहीं</strong> करें"
+
+#: lib/view/export/advanced-settings.php:105
+msgid "Do <strong>not</strong> export plugins (files)"
+msgstr "प्लगइन्स (फ़ाइलें) निर्यात <strong>नहीं</strong> करें"
+
+#: lib/view/export/advanced-settings.php:89
+msgid "Do <strong>not</strong> export themes (files)"
+msgstr "थीम (फ़ाइलें) निर्यात <strong>नहीं</strong> करें"
+
+#: lib/view/export/advanced-settings.php:83
+msgid "Do <strong>not</strong> export media library (files)"
+msgstr "मीडिया लाइब्रेरी (फ़ाइलें) निर्यात <strong>नहीं</strong> करें"
+
+#: lib/view/export/advanced-settings.php:77
+msgid "Do <strong>not</strong> export post revisions"
+msgstr "पोस्ट परिशोधन निर्यात <strong>नहीं</strong> करें"
+
+#: lib/view/export/help-section.php:32
+msgid "This screen allows you to export database, media files, themes and plugins as one zipped file."
+msgstr "यह स्क्रीन आपको एक ज़िप फ़ाइल के रूप में डेटाबेस, मीडिया फ़ाइलों, विषयों और प्लगइन्स निर्यात करने की अनुमति देती है।"
+
+#: lib/view/export/help-section.php:33
+msgid "You can then use the import functionality provided by this plugin to import the zipped file onto any other WordPress sites that you have administrator access to."
+msgstr "इसके बाद आप इस प्लगइन द्वारा प्रदान की गई आयात कार्यक्षमता का उपयोग किसी भी अन्य वर्डप्रेस साइट पर ज़िप्ड फ़ाइल आयात करने के लिए कर सकते हैं, जिसका आपके पास व्यवस्थापक तक पहुंच है।"
+
+#: lib/model/import/class-ai1wm-import-done.php:360
+#: lib/model/import/class-ai1wm-import-done.php:362
+#: lib/model/import/class-ai1wm-import-done.php:364
+msgid "Your site has been imported successfully!"
+msgstr "आपकी साइट को सफलतापूर्वक आयात कर लिया गया है!"
+
+#: lib/model/export/class-ai1wm-export-plugins.php:80
+#: lib/model/export/class-ai1wm-export-plugins.php:119
+msgid "Archiving %d plugin files...<br />%d%% complete"
+msgstr "%d प्लगइन फाइलों को संग्रहित किया जा रहा है...<br />%d%% पूर्ण"

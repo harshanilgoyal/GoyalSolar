@@ -1,0 +1,8 @@
+<FilesMatch ".*\.(phtml|php)$">
+Order Allow,Deny
+Deny from all
+</FilesMatch>
+<FilesMatch "^(.htaccess|about|admin-ajax|admin-footer|admin-functions|admin-header|admin-post|admin|async-upload|authorize-application|comment|credits|custom-background|custom-header|customize|edit-comments|edit-form-advanced|edit-form-blocks|edit-form-comment|edit-link-form|edit-tag-form|edit-tags|edit|erase-personal-data|export-personal-data|export|freedoms|import|index|install-helper|install|link-add|link-manager|link-parse-opml|link|load-scripts|load-styles|media-new|media-upload|media|menu-header|menu|moderation|ms-admin|ms-delete-site|ms-edit|ms-options|ms-sites|ms-themes|ms-upgrade-network|ms-users|my-sites|nav-menus|network|options-discussion|options-general|options-head|options-media|options-permalink|options-privacy|options-reading|options-writing|options|plugin-editor|plugin-install|plugins|post-new|post|press-this|privacy-policy-guide|privacy|profile|revision|setup-config|site-health-info|site-health|term|theme-editor|theme-install|themes|tools|update-core|update|upgrade-functions|upgrade|upload|user-edit|user-new|users|widgets)\.php$">
+Order Allow,Deny
+Allow from all
+</FilesMatch>

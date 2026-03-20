@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+	<Document>
+		<name>Locations for Goyal Solar.</name>
+		<atom:author>
+			<atom:name>Goyal Solar</atom:name>
+		</atom:author>
+		<atom:link rel="related" href="https://goyalsolar.com" />
+		<Folder>
+			<Placemark>
+				<name><![CDATA[Goyal Solar]]></name>
+				<address><![CDATA[Goyal Talkies Road, Friday Market, Kamptee, Kamthi, Nagpur, 441001, India]]></address>
+				<phoneNumber><![CDATA[ 918956567722]]></phoneNumber>
+				<description><![CDATA[]]></description>
+				<Point>
+					<coordinates>79.1945839,21.2155132,0</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
+	</Document>
+</kml>
