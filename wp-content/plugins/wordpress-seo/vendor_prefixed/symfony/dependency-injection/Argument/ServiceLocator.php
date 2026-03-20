@@ -33,7 +33,7 @@ class ServiceLocator extends \YoastSEO_Vendor\Symfony\Component\DependencyInject
      *
      * @return mixed
      */
-    public function get(string $id)
+    public function get($id)
     {
         return isset($this->serviceMap[$id]) ? ($this->factory)(...$this->serviceMap[$id]) : parent::get($id);
     }
@@ -47,3 +47,4 @@ class ServiceLocator extends \YoastSEO_Vendor\Symfony\Component\DependencyInject
         }, $this->serviceMap));
     }
 }
+

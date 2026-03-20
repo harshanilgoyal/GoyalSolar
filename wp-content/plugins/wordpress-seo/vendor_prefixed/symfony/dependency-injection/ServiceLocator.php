@@ -34,7 +34,7 @@ class ServiceLocator implements \YoastSEO_Vendor\Symfony\Contracts\Service\Servi
      *
      * @return mixed
      */
-    public function get(string $id)
+    public function get($id)
     {
         if (!$this->externalId) {
             return $this->doGet($id);
@@ -127,3 +127,4 @@ class ServiceLocator implements \YoastSEO_Vendor\Symfony\Contracts\Service\Servi
         return \sprintf($format, $alternatives ? \implode('", "', $alternatives) : $last, $alternatives ? \sprintf(' %s "%s"', $separator, $last) : '');
     }
 }
+
